@@ -1,0 +1,109 @@
+# Cassette ferrotype 57 × 57 pour Hasselblad V
+
+Cassette imprimée en 3D pour faire des ferrotypes et des ambrotypes (collodion
+humide) sur plaque de 57 × 57 × 1 mm avec un boîtier Hasselblad de la série 500.
+Elle se monte à la place du magasin A12, avec les crochets et le verrou d'origine
+du boîtier, et place l'émulsion au plan film, à 3,55 mm derrière la face d'appui.
+Le volet s'insère par la gauche.
+
+![Cassette assemblée](docs/vue-assemblee.png)
+![Vue éclatée, côté boîtier](docs/vue-eclatee.png)
+
+## Télécharger
+
+Les STL, STEP et le fichier FreeCAD sont publiés dans les
+[Releases](../../releases) ; ils ne sont pas versionnés dans le dépôt.
+
+| Fichier | Pièce | À imprimer |
+|---|---|---|
+| `piece1_interface.stl` | Contre le boîtier : crochets, verrou, fente du volet, gorge de la lèvre du boîtier | Face d'appui (côté boîtier) sur le plateau |
+| `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes | Face arrière (côté couvercle) sur le plateau |
+| `piece3_couvercle.stl` | Couvercle articulé, deux clips côté manivelle, nervure anti-lumière, tenon du ressort | Face extérieure sur le plateau |
+| `ressort_croix.stl` | Ressort en croix qui presse le dos de la plaque | Face plate sur le plateau, pieds vers le haut, 100 % de remplissage |
+| `glissiere_verrou.stl` | Glissière du verrou (dessin de Rayfor, remodélisé) | À plat, face côté boîtier sur le plateau |
+| `capot_verrou.stl` | Capot de la glissière (idem) | À plat |
+| `cassette_ferrotype.FCStd` | Modèle FreeCAD en esquisses, toutes les cotes dans la feuille `Parametres` | — |
+
+Matière : PETG noir (ou ASA), pas de PLA (nitrate d'argent, chaleur). Couches de
+0,12 à 0,16 et 4 périmètres pour les pièces 1 et 2 : en brouillon (0,28), les
+parois fines sortent trop épaisses et les rampes en escalier.
+
+## Quincaillerie
+
+- 4 vis M3 × 6 à tête fraisée, auto-taraudées dans la pièce 1.
+- 1 axe de charnière Ø2 × 44 mm (tige acier ou clou coupé).
+- Velours ou feutrine adhésive, 3 mm de large, 0,5 à 0,7 mm d'épaisseur,
+  2 bandes de 66 mm : à l'entrée de la fente du volet, une sur chaque pièce.
+- Volet : plaque métal de 65,88 mm de large, 0,35 mm d'épaisseur au plus
+  (fente de 66,38 × 0,4), environ 88 mm de long dont 73 engagés.
+- Colle cyano pour fixer le ressort sur le tenon.
+
+## Montage
+
+1. Poser la glissière dans sa poche, à l'arrière de la pièce 1, languette
+   moletée vers le haut, puis le capot par-dessus.
+2. Coller les deux bandes de velours.
+3. Emboîter la pièce 2 dans la pièce 1 : les deux chicanes s'engagent dans leurs
+   gorges. Visser les 4 vis M3.
+4. Coller le ressort sur le tenon du couvercle, pieds vers la plaque.
+5. Monter la charnière avec l'axe Ø2.
+
+Sur le boîtier : accrocher le bas sur les crochets, rabattre le haut, puis
+pousser la languette de la glissière vers la gauche (vue de l'arrière). Les
+griffes du boîtier montent sur la rampe des dents et plaquent la cassette.
+
+## Étanchéité à la lumière
+
+- Face d'appui : une gorge reçoit la lèvre du boîtier, et l'ouverture de 61,9
+  laisse entrer sa lèvre intérieure, comme sur un magasin d'origine.
+- Entre la pièce 1 et la pièce 2 : une nervure en U sous la collerette et une
+  nervure sous les rails du volet, chacune dans une gorge.
+- Couvercle : une nervure dans la gorge de la pièce 2.
+- Fente du volet : velours des deux côtés.
+- Les fenêtres des griffes, en haut, sont hors de la zone étanche : on y voit la
+  glissière, c'est normal.
+
+## Modifier une cote
+
+**Dans FreeCAD** : ouvrir `cassette_ferrotype.FCStd`, changer la valeur dans la
+feuille `Parametres` (colonne B ; les cotes dérivées sont des formules), puis
+recalculer (Ctrl+R). Chaque pièce est un corps PartDesign fait d'esquisses
+entièrement contraintes, dont les cotes et les plans suivent la feuille. On peut
+aussi retoucher une esquisse à la main. Exporter ensuite le corps en STL.
+
+**Par le script** (régénère le FCStd, les STL, les STEP et les contrôles) :
+changer l'expression dans `PARAMS`, en tête de
+[cad/build_cassette.py](cad/build_cassette.py), puis
+
+```
+/Applications/FreeCAD.app/Contents/Resources/bin/python cad/build_cassette.py
+/Applications/FreeCAD.app/Contents/Resources/bin/python cad/sections.py
+```
+
+Le script réécrit le FCStd : un changement fait seulement dans FreeCAD est perdu
+s'il n'est pas reporté dans `PARAMS`. La table est aussi écrite dans
+[cad/parameters.csv](cad/parameters.csv). Le script vérifie qu'aucune esquisse
+n'a de degré libre, qu'aucune pièce n'en chevauche une autre (verre, volet,
+glissière en position ouverte et verrouillée compris) et que le couvercle s'ouvre
+jusqu'à 120° sans rien accrocher.
+
+Publier une version : `tools/release.sh v0.1 "notes"` (construit puis crée la
+release GitHub avec `gh`). Captures d'écran : `tools/screenshots.py`, à lancer
+avec `/Applications/FreeCAD.app/Contents/MacOS/FreeCAD`.
+
+## Dossiers
+
+- `cad/` : générateur du modèle, table des paramètres, coupes.
+- `docs/` : [cotes et sources](docs/COTES.md), plan de l'interface, coupes,
+  captures.
+- `tools/` : relevé de l'interface sur les STL de Rayfor, captures, release.
+- `sources/` : la monture V de Rayfor (référence des cotes et des pièces du
+  verrou), voir [sources/README.md](sources/README.md).
+
+## Crédits et licence
+
+L'interface du boîtier, la glissière et le capot du verrou reprennent la
+monture V pour dos Imacon de **Rayfor**
+([Printables](https://www.printables.com/model/548055-hasselblad-v-mount-for-imacon-digital-back)),
+publiée en CC BY-NC-SA 4.0. Ce projet est donc publié sous la même licence :
+[CC BY-NC-SA 4.0](LICENSE.md). Pas d'usage commercial.

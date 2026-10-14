@@ -1,0 +1,10 @@
+# Build products: published as release assets, not versioned
+exports/
+*.FCBak
+__pycache__/
+.DS_Store
+
+# Third-party or private material kept locally only
+sources/*.avif
+sources/IMG_*
+sources/hasselblad-v-system-diascope-back-model_files/
