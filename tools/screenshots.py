@@ -32,25 +32,26 @@ try:
     for o in doc.Objects:
         if o.Name.startswith("Volet"):
             o.ViewObject.Visibility = False
+        if o.TypeId == "Assembly::JointGroup" or hasattr(o, "JointType"):   # joint markers
+            o.ViewObject.Visibility = False
     # assembled, rear three-quarter (photographer side)
     look_from(view, V(0.9, 0.55, 1.2))
     view.saveImage(os.path.join(DOCS, "vue-assemblee.png"), 1600, 1100, "White")
     # exploded in assembly order, from the body side (w = 0) to the lid; dark slide pulled out to the left
     offsets = {"Piece1_Interface": (0, 0), "Glissiere_Verrou": (0, 12), "Capot_Verrou": (0, 22),
                "Volet": (-60, 30), "Piece2_CadreVerre": (0, 36), "Verre_57x57": (0, 50),
-               "Ressort_Croix": (0, 60), "Piece3_Couvercle": (0, 72)}
+               "Ressort_Croix": (0, 60), "Piece3_Couvercle": (0, 72),
+               "Aimant_piece2_droite": (0, 36), "Aimant_piece2_gauche": (0, 36),
+               "Aimant_couvercle_droite": (0, 72), "Aimant_couvercle_gauche": (0, 72)}
     for name, (du, dw) in offsets.items():
         o = doc.getObject(name)
         move = App.Placement(V(du, 0, dw), App.Rotation())
-        if o.ExpressionEngine:                    # placement driven by the sheet: move a copy
-            c = doc.addObject("Part::Feature", name + "_eclate")
-            c.Shape = o.Shape.transformGeometry(move.toMatrix())
-            c.ViewObject.ShapeAppearance = o.ViewObject.ShapeAppearance
-            c.ViewObject.Transparency = o.ViewObject.Transparency
-            o.ViewObject.Visibility = False
-        else:
-            o.ViewObject.Visibility = True
-            o.Placement = move.multiply(o.Placement)
+        # move a copy: the assembly joints and the sheet expressions put the originals back
+        c = doc.addObject("Part::Feature", name + "_eclate")
+        c.Shape = o.Shape.transformGeometry(move.toMatrix())
+        c.ViewObject.ShapeAppearance = o.ViewObject.ShapeAppearance
+        c.ViewObject.Transparency = o.ViewObject.Transparency
+        o.ViewObject.Visibility = False
     doc.recompute()
     look_from(view, V(1.6, 0.7, 0.8))
     view.saveImage(os.path.join(DOCS, "vue-eclatee.png"), 1600, 1100, "White")
