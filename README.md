@@ -1,7 +1,8 @@
 # Cassette ferrotype 57 × 57 pour Hasselblad V
 
 Cassette imprimée en 3D pour faire des ferrotypes et des ambrotypes (collodion
-humide) sur plaque de 57 × 57 × 1 mm avec un boîtier Hasselblad de la série 500.
+humide) sur plaque de 57 × 57 mm, de 1 à 3 mm d'épaisseur, avec un boîtier
+Hasselblad de la série 500.
 Elle se monte à la place du magasin A12, avec les crochets et le verrou d'origine
 du boîtier, et place l'émulsion au plan film, à 3,55 mm derrière la face d'appui.
 Le volet s'insère par la gauche.
@@ -19,8 +20,8 @@ Les STL, STEP et le fichier FreeCAD sont publiés dans les
 | `piece1_interface.stl` | Contre le boîtier : crochets, verrou, fente du volet, gorge de la lèvre du boîtier | Face d'appui (côté boîtier) sur le plateau |
 | `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes, deux gorges anti-lumière, deux logements d'aimants Ø6 × 2 dans les coins opposés à la charnière | Face arrière (côté couvercle) sur le plateau |
 | `piece3_couvercle.stl` | Couvercle-boîte articulé, fermé sur ses 4 côtés : jupe en haut et à droite jusqu'au boîtier, à gauche jusqu'au-dessus de la fente du volet (on ouvre sans retirer le volet), paroi côté charnière, encoche du verrou, cadre d'appui et deux nervures anti-lumière, tenon du ressort, deux plots à aimants Ø6 × 2 dans les coins opposés à la charnière | Face extérieure sur le plateau |
-| `piece1_interface_clips.stl`, `piece2_cadre_verre_clips.stl`, `piece3_couvercle_clips.stl` | Variante fermée par deux clips découpés dans la jupe droite au lieu des aimants (`fermeture_aimants` = 0 dans la feuille) | Comme ci-dessus |
-| `ressort_croix.stl` | Ressort en croix qui presse le dos de la plaque | Face plate sur le plateau, pieds vers le haut, 100 % de remplissage |
+| `piece3_couvercle_pour_v0.1.stl` | Couvercle-boîte à clips pour des pièces 1 et 2 imprimées en v0.1 (`tools/lid_for_v0_1.py`), avec le ressort de la v0.1 | Face extérieure sur le plateau |
+| `ressort_croix.stl` | Ressort en croix qui presse le dos de la plaque, pour des verres de 1 à 3 mm (bras longs et fins) | Face plate sur le plateau, pieds vers le haut, 100 % de remplissage, PETG |
 | `glissiere_verrou.stl` | Glissière du verrou (dessin de Rayfor, remodélisé) | À plat, face côté boîtier sur le plateau |
 | `capot_verrou.stl` | Capot de la glissière (idem) | À plat |
 | `cassette_ferrotype.FCStd` | Modèle FreeCAD en esquisses, toutes les cotes dans la feuille `Parametres` | — |
@@ -92,7 +93,7 @@ Chaque pièce est un corps PartDesign construit comme à la main : un contour
 extrudé (coins arrondis dans l'esquisse), des plans de référence nommés (« Plan
 face arrière »…), des poches à leur vraie profondeur ou « à travers tout », des
 perçages (fonction Perçage, fraisures comprises), une seule moitié dessinée puis
-une symétrie, et des répétitions (clips, moletage, bras du ressort). Les
+une symétrie, et des répétitions (moletage, bras du ressort). Les
 esquisses sont cotées comme un plan : largeurs, hauteurs, diamètres, rayons
 égaux, symétrie sur les axes quand un profil est centré, sinon `position_x` /
 `position_y` depuis l'axe. Les cotes portent un nom (`largeur_plaque`,

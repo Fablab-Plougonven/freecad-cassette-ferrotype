@@ -87,7 +87,10 @@ PARAMS = [
     ("fente_demi_hauteur", "(volet_largeur + fente_jeu) / 2", "demi-hauteur de la fente"),
     ("fente_fond", "30.9", "butee de fond du volet (u)"),
     ("volet_epaisseur", "0.3", "volet : epaisseur (reference)"),
-    ("verre_cote", "57", "verre : cote (57 x 57)"), ("verre_epaisseur", "1", "verre : epaisseur"),
+    ("verre_cote", "57", "verre : cote (57 x 57)"),
+    ("verre_epaisseur_min", "1", "verres acceptes : du plus fin..."),
+    ("verre_epaisseur_max", "3", "...au plus epais (le logement et le ressort suivent)"),
+    ("verre_epaisseur", "verre_epaisseur_min", "verre affiche dans le modele"),
     ("verre_jeu", "0.2", "jeu du verre par cote"),
     ("verre_face_arriere", "plan_film + verre_epaisseur", "dos du verre"),
     ("butee_appui", "1", "appui du verre sur la butee, par cote"),
@@ -139,32 +142,18 @@ PARAMS = [
     ("noeuds_jeu", "0.4", ""), ("couvercle_noeuds_bout", "22", "noeuds du couvercle : bout"),
     ("gousset_depart_z", "1.1", "depart du gousset a 45 deg"),
     ("gousset_hauteur", "charniere_axe_z - noeud_rayon - gousset_depart_z", ""),
-    # Snap clip on the heel (right side)
-    ("clip_longueur", "13", "longueur des clips"),
-    ("clip1_bas", "20", "clip du haut"), ("clip1_haut", "clip1_bas + clip_longueur", ""),
-    ("clip2_bas", "-7", "clip du milieu"), ("clip2_haut", "clip2_bas + clip_longueur", ""),
-    ("clip_arret_saillie", "0.6", "saillie de l'arret"), ("clip_arret_debut_z", "3", ""), ("clip_arret_fin_z", "4", ""),
-    ("clip_rampe_fin_z", "6", "haut de la rampe (pente douce)"),
-    ("clip_doigt_epaisseur", "1.4", "doigt du clip : epaisseur"), ("clip_doigt_jeu", "0.2", "jeu doigt / arret"), ("clip_bec_debut_z", "2.3", ""),
-    ("clip_doigt_gauche", "talon_bord_droit + clip_arret_saillie + clip_doigt_jeu", "face interieure de la jupe droite"),
-    ("clip_doigt_droite", "clip_doigt_gauche + clip_doigt_epaisseur", ""),
-    ("clip_fente_largeur", "1", "fentes de part et d'autre des clips dans la jupe"),
-    ("clip_fente_haut_z", "couvercle_face_interieure - 1", "haut des fentes (longueur de flexion des clips)"),
-    ("clip_tirette_saillie", "2", "tirette au bas du clip, pour l'ouvrir"), ("clip_tirette_hauteur", "1.5", ""),
-    ("clip_tirette_retrait", "3", "retrait de la tirette aux bouts du clip"),
-    # Lid skirt (box): left, top and right sides, open at the hinge
-    ("jupe_epaisseur", "1.6", "jupe du couvercle : epaisseur (a droite : celle des clips)"),
+    # Lid skirt (box): left, top and right sides; on the hinge side a wall above the hinge
+    ("jupe_epaisseur", "1.6", "jupe du couvercle : epaisseur"),
     ("jupe_jeu", "0.3", "jeu entre la jupe et les pieces 1 et 2"),
     ("jupe_bas_z", "0.3", "bas de la jupe, au-dessus de la face d'appui du boitier"),
     ("boite_gauche", "-(plaque_demi_largeur + jupe_jeu + jupe_epaisseur)", "boite : bord gauche"),
-    ("boite_droite", "clip_doigt_droite", "boite : bord droit (face exterieure des clips)"),
+    ("boite_droite", "talon_bord_droit + jupe_jeu + jupe_epaisseur", "boite : bord droit"),
     ("boite_haut", "languette_bord_haut + jupe_jeu + jupe_epaisseur", "boite : bord haut"),
     ("jupe_gauche_bas_z", "butee_face_avant + 0.2", "cote volet, la jupe s'arrete au-dessus de la fente : on ouvre sans retirer le volet"),
     ("encoche_verrou_gauche", "-11", "encoche de la jupe haute pour la languette du verrou (course et doigt)"),
     ("encoche_verrou_droite", "19", ""),
     ("encoche_verrou_haut_z", "collerette_face_arriere", "encoche : hauteur"),
-    # Magnetic closure (alternative to the clips)
-    ("fermeture_aimants", "1", "fermeture du couvercle : 1 = aimants, 0 = clips"),
+    # Magnetic closure
     ("aimant_diametre", "6", "aimants : diametre (6 au plus avec le jeu de colle : place entre la gorge et le bord)"), ("aimant_epaisseur", "2", "aimants : epaisseur"),
     ("aimant_jeu_colle", "1", "logements des aimants : jeu au diametre pour la colle (0,5 tout autour)"),
     ("aimant_paroi", "0.9", "paroi entre le logement d'un aimant et le bord de la piece 2"),
@@ -175,12 +164,14 @@ PARAMS = [
     ("paroi_charniere_retrait", "1", "paroi du couvercle cote charniere : retrait depuis le bord bas (laisse tourner le couvercle)"),
     ("paroi_charniere_coin_bas_z", "charniere_axe_z - 5.7", "a droite, sous le talon, la paroi descend jusqu'ici (plus bas, elle heurte le talon en s'ouvrant)"),
     # Cross spring
-    ("ressort_bras_longueur", "24", "bras : longueur depuis le centre"), ("ressort_bras_largeur", "6", ""),
-    ("ressort_epaisseur", "1.6", "bras : epaisseur"), ("ressort_moyeu_diametre", "14", ""),
-    ("ressort_pied_diametre", "5", ""), ("ressort_pied_rayon", "21.5", ""),
-    ("ressort_precharge", "0.8", "ecrasement du ressort"), ("ressort_jeu_verre", "0.3", "jeu moyeu / verre"),
-    ("ressort_pied_bout_z", "verre_face_arriere - ressort_precharge", ""),
-    ("ressort_face_avant", "verre_face_arriere + ressort_jeu_verre", ""),
+    ("ressort_bras_longueur", "27", "bras : longueur depuis le centre (longs et fins : souples sur toute la course)"),
+    ("ressort_bras_largeur", "6", ""),
+    ("ressort_epaisseur", "1", "bras : epaisseur"), ("ressort_moyeu_diametre", "14", ""),
+    ("ressort_pied_diametre", "5", ""), ("ressort_pied_rayon", "ressort_bras_longueur - ressort_bras_largeur / 2", "pieds au bout des bras"),
+    ("ressort_precharge", "1.5", "ecrasement avec le verre le plus fin (le plus epais ajoute la difference)"),
+    ("ressort_jeu_verre", "0.3", "jeu entre le moyeu et le verre le plus epais"),
+    ("ressort_pied_bout_z", "plan_film + verre_epaisseur_min - ressort_precharge", "bout des pieds, ressort libre"),
+    ("ressort_face_avant", "plan_film + verre_epaisseur_max + ressort_jeu_verre", "moyeu et bras au-dessus du verre le plus epais"),
     ("ressort_face_arriere", "ressort_face_avant + ressort_epaisseur", ""),
     ("tenon_diametre", "8", "tenon du couvercle"), ("pion_diametre", "3", ""), ("pion_longueur", "1", ""),
     ("ressort_trou_diametre", "pion_diametre + 0.5", "trou du ressort (Ø3.2 trop serre a l'essai)"),
@@ -598,12 +589,6 @@ class PD:
         cs.Visibility = False
         return cs
 
-    def suppressed_when(self, feats, cond):
-        """Variant: the features are suppressed while cond (an expression on the sheet) holds."""
-        for f in feats:
-            f.setExpression("Suppressed", X(cond))
-        return feats
-
     def _insert(self, body, f, label):
         """Transform features: created outside the body, then added, so that they
         take their place in the chain (body.newObject leaves the tip behind)."""
@@ -687,7 +672,7 @@ def square_rings(pd, s, axes, width):
 
 def build_piece1(pd):
     """Interface piece, modelled as by hand: the outline (rounded corners)
-    padded; hinge and clip stops added; then the
+    padded; hinge added; then the
     mating face and the rear face machined (pockets, drilled holes), symmetric
     features mirrored and repeated ones patterned."""
     b = pd.body("Piece1_Interface")
@@ -708,12 +693,6 @@ def build_piece1(pd):
         ("plaque_bord_bas - gousset_hauteur", "charniere_axe_z - noeud_rayon")])), L, symmetric=True)
     pd.pocket(b, "Trou_axe", pd.sk(b, "Trou_axe", "YZ", lambda s: pd.circle(s, "charniere_axe_y", "charniere_axe_z", "axe_trou_diametre")),
               symmetric=True)
-    # clip stops on the heel: one profile, repeated
-    stop = pd.pad(b, "Arret_clip", pd.sk(b, "Arret_clip", "XZ", lambda s: pd.poly(s, [
-        ("talon_bord_droit", "clip_arret_debut_z"), ("talon_bord_droit + clip_arret_saillie", "clip_arret_debut_z"), ("talon_bord_droit + clip_arret_saillie", "clip_arret_fin_z"), ("talon_bord_droit", "clip_rampe_fin_z")]),
-        off=neg("clip1_haut")), "clip_longueur")
-    pd.suppressed_when([stop, pd.linear(b, "Arrets_clips", [stop], "Y_Axis", "clip1_bas - clip2_bas", 2, reverse=True)],
-                       "fermeture_aimants == 1")
     # mating face (sketches on the XY plane, pockets towards the rear)
     gi, ge = "gorge_cote_interieur / 2", "gorge_cote_interieur / 2 + gorge_largeur"
     pd.pocket(b, "Gorge_levre_boitier", pd.sk(b, "Gorge_levre_boitier", "XY", lambda s: (
@@ -797,8 +776,8 @@ def build_piece2(pd):
     pd.pocket(b, "Gorges_couvercle", pd.sk(b, "Gorges_couvercle", rear, lambda s: square_rings(
         pd, s, ("couvercle_gorge_axe", "couvercle_gorge2_axe"), "couvercle_gorge_largeur")), "couvercle_gorge_profondeur")
     magnets = magnet_points()
-    pd.suppressed_when([pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", rear, lambda s: pd.circles(
-        s, magnets, "aimant_diametre + aimant_jeu_colle")), "aimant_epaisseur")], "fermeture_aimants == 0")
+    pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", rear, lambda s: pd.circles(
+        s, magnets, "aimant_diametre + aimant_jeu_colle")), "aimant_epaisseur")
     cr = "griffes_degagement"
     claw = pd.pocket(b, "Degagement_griffe", pd.sk(b, "Degagement_griffe", rear, lambda s: pd.rect(
         s, f"fenetre_griffe_gauche - {cr}", f"fenetre_griffe_droite + {cr}", f"fenetre_griffe_bas - {cr}",
@@ -815,10 +794,8 @@ def build_piece3(pd):
     the dark slide slot on the left (the lid opens with the slide in); on the
     hinge side a wall above the hinge line closes it down to piece 2. A frame
     bears on piece 2 and carries two light-seal ribs; the post presses the
-    spring. Notch for the latch tab. The clips are tongues cut in the right
-    skirt (one drawn, repeated), or, with fermeture_aimants = 1, two posts in
-    the corners opposite the hinge hold magnets touching those of piece 2. One
-    hinge knuckle mirrored."""
+    spring. Notch for the latch tab. Two posts in the corners opposite the
+    hinge hold magnets touching those of piece 2. One hinge knuckle mirrored."""
     b = pd.body("Piece3_Couvercle")
     bottom = pd.datum(b, "Plan_bas_jupe", "jupe_bas_z")
     seat = pd.datum(b, "Plan_appui_piece2", "collerette_face_arriere")
@@ -829,7 +806,7 @@ def build_piece3(pd):
         s, "boite_gauche", "boite_droite", "plaque_bord_bas", "boite_haut", "rayon_coins")),
         "couvercle_face_exterieure - jupe_bas_z")
     pd.pocket(b, "Interieur", pd.sk(b, "Interieur", inner, lambda s: pd.rect(
-        s, "-(plaque_demi_largeur + jupe_jeu)", "clip_doigt_gauche", "plaque_bord_bas - 1",
+        s, "-(plaque_demi_largeur + jupe_jeu)", "talon_bord_droit + jupe_jeu", "plaque_bord_bas - 1",
         "languette_bord_haut + jupe_jeu")))
     # bearing on piece 2: frame, two light-seal ribs, post and pin
     fo = "couvercle_gorge_axe + couvercle_gorge_largeur / 2 + cadre_appui_debord"
@@ -843,10 +820,10 @@ def build_piece3(pd):
     # wall closing the hinge side: down to piece 2, and lower under the heel on the right
     wb = "plaque_bord_bas + paroi_charniere_retrait"
     pd.pad(b, "Paroi_charniere", pd.sk(b, "Paroi_charniere", inner, lambda s: pd.rect(
-        s, "-(plaque_demi_largeur + jupe_jeu)", "clip_doigt_gauche", wb, f"{wb} + jupe_epaisseur")),
+        s, "-(plaque_demi_largeur + jupe_jeu)", "talon_bord_droit + jupe_jeu", wb, f"{wb} + jupe_epaisseur")),
         "couvercle_recul", reverse=True)
     pd.pad(b, "Paroi_charniere_coin", pd.sk(b, "Paroi_charniere_coin", inner, lambda s: pd.rect(
-        s, "plaque_demi_largeur + jupe_jeu", "clip_doigt_gauche", wb, f"{wb} + jupe_epaisseur")),
+        s, "plaque_demi_largeur + jupe_jeu", "talon_bord_droit + jupe_jeu", wb, f"{wb} + jupe_epaisseur")),
         "couvercle_face_interieure - paroi_charniere_coin_bas_z", reverse=True)
     pd.pad(b, "Tenon", pd.sk(b, "Tenon", inner, lambda s: pd.circle(s, 0, 0, "tenon_diametre")),
            "couvercle_face_interieure - ressort_face_arriere", reverse=True)
@@ -858,31 +835,13 @@ def build_piece3(pd):
     pd.pocket(b, "Encoche_verrou", pd.sk(b, "Encoche_verrou", "XZ", lambda s: pd.rect(
         s, "encoche_verrou_gauche", "encoche_verrou_droite", "jupe_bas_z - 1", "encoche_verrou_haut_z"),
         off=neg("languette_bord_haut + jupe_jeu")), "jupe_epaisseur + jupe_jeu")
-    # one clip: two slits free a tongue of the right skirt; hook inside, pull tab outside
-    v0, v1, fw = "clip1_bas", "clip1_haut", "clip_fente_largeur"
-    clip = [
-        pd.pocket(b, "Fentes_clip", pd.sk(b, "Fentes_clip", "YZ", lambda s: (
-            pd.rect(s, f"{v0} - {fw}", v0, "jupe_bas_z - 1", "clip_fente_haut_z", "fente_bas"),
-            pd.rect(s, v1, f"{v1} + {fw}", "jupe_bas_z - 1", "clip_fente_haut_z", "fente_haut")), off="boite_droite"),
-            "clip_doigt_epaisseur + jupe_jeu"),
-        pd.pad(b, "Bec_clip", pd.sk(b, "Bec_clip", "XZ", lambda s: pd.poly(s, [
-            ("clip_doigt_gauche", "clip_bec_debut_z"), ("clip_doigt_gauche", "clip_arret_debut_z - 0.1"),
-            ("talon_bord_droit + 0.2", "clip_arret_debut_z - 0.1")]), off=neg(v1)), "clip_longueur"),
-        pd.pad(b, "Tirette_clip", pd.sk(b, "Tirette_clip", bottom, lambda s: pd.rect(
-            s, "boite_droite", "boite_droite + clip_tirette_saillie", f"{v0} + clip_tirette_retrait",
-            f"{v1} - clip_tirette_retrait")), "clip_tirette_hauteur"),
-    ]
-    clip.append(pd.linear(b, "Clips", clip, "Y_Axis", "clip1_bas - clip2_bas", 2, reverse=True))
-    pd.suppressed_when(clip, "fermeture_aimants == 1")
-    # or magnets: two posts in the corners opposite the hinge reach down to piece 2; their
+    # closure: two posts in the corners opposite the hinge reach down to piece 2; their
     # magnets, flush, touch those of piece 2 when the lid is closed
     magnets = magnet_points()
-    pd.suppressed_when([
-        pd.pad(b, "Plots_aimants", pd.sk(b, "Plots_aimants", inner, lambda s: pd.circles(
-            s, magnets, "plot_aimant_diametre")), "couvercle_recul", reverse=True),
-        pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", seat, lambda s: pd.circles(
-            s, magnets, "aimant_diametre + aimant_jeu_colle")), "aimant_epaisseur", reverse=True),
-    ], "fermeture_aimants == 0")
+    pd.pad(b, "Plots_aimants", pd.sk(b, "Plots_aimants", inner, lambda s: pd.circles(
+        s, magnets, "plot_aimant_diametre")), "couvercle_recul", reverse=True)
+    pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", seat, lambda s: pd.circles(
+        s, magnets, "aimant_diametre + aimant_jeu_colle")), "aimant_epaisseur", reverse=True)
     # hinge: right knuckle (lug + barrel), mirrored to the left
     k0 = "bossage_demi_longueur + noeuds_jeu"
     knuckle = [
@@ -902,13 +861,14 @@ def build_spring(pd):
     """Cross spring: hub, one arm with its two feet, turned a quarter."""
     b = pd.body("Ressort_Croix")
     front = pd.datum(b, "Plan_face_avant", "ressort_face_avant")
+    tips = pd.datum(b, "Plan_bout_pieds", "ressort_pied_bout_z")
     r, c = "ressort_pied_rayon", "ressort_bras_longueur - ressort_bras_largeur / 2"
     pd.pad(b, "Moyeu", pd.sk(b, "Moyeu", front, lambda s: pd.circle(s, 0, 0, "ressort_moyeu_diametre")), "ressort_epaisseur")
     arm = [
         pd.pad(b, "Bras", pd.sk(b, "Bras", front, lambda s: pd.slot(s, "u", c, "ressort_bras_largeur", "bras")),
                "ressort_epaisseur"),
-        pd.pad(b, "Pieds", pd.sk(b, "Pieds", front, lambda s: pd.circles(s, ((r, 0), (neg(r), 0)), "ressort_pied_diametre")),
-               "ressort_face_avant - ressort_pied_bout_z", reverse=True),
+        pd.pad(b, "Pieds", pd.sk(b, "Pieds", tips, lambda s: pd.circles(s, ((r, 0), (neg(r), 0)), "ressort_pied_diametre")),
+               "ressort_face_avant - ressort_pied_bout_z"),
     ]
     pd.polar(b, "Bras_croix", arm, 2, angle=90)
     pd.pocket(b, "Trou_pion", pd.sk(b, "Trou_pion", front, lambda s: pd.circle(s, 0, 0, "ressort_trou_diametre")),
@@ -1033,7 +993,6 @@ def assemble(doc, pd, pieces):
             m.Label = f"Aimant {where} {side}"
             m.setExpression("Radius", X("aimant_diametre / 2"))
             m.setExpression("Height", X("aimant_epaisseur"))
-            m.setExpression("Visibility", X("fermeture_aimants == 1"))
             magnets[m.Name] = (m, b, seats[(b.Name, side)])
     doc.recompute()
 
@@ -1265,13 +1224,11 @@ def motion_check(doc, pieces, refs, say, top=None):
        along u only. (The solver leaves a free joint at an angle of its own
        choice and applies the limits only when dragging in FreeCAD.)
     2. Degree by degree up to the stop, the lid and what it carries must not
-       enter what stays. With the clips, their hooks snapping over the stops in
-       the first degrees are expected."""
+       enter what stays."""
     sheet, asm = doc.getObject(SHEET), doc.getObject("Cassette")
     get = lambda n: float(sheet.get(n))  # noqa: E731
     lid, spring = pieces["piece3_couvercle"], pieces["ressort_croix"]
-    magnets_on = get("fermeture_aimants") == 1
-    mags = [o for o in asm.Group if o.TypeId == "Part::Cylinder"] if magnets_on else []
+    mags = [o for o in asm.Group if o.TypeId == "Part::Cylinder"]
     moving = {"couvercle": lid, "ressort": spring}
     moving.update({m.Label: m for m in mags if "couvercle" in m.Name})
     fixed = {"piece 1": pieces["piece1_interface"], "piece 2": pieces["piece2_cadre_verre"],
@@ -1302,7 +1259,6 @@ def motion_check(doc, pieces, refs, say, top=None):
     top = get("couvercle_ouverture_max") if top is None else top
     angles = list(range(0, 31)) + list(range(32, int(top), 2)) + [top]
     fixed_shapes = {k: o.Shape for k, o in fixed.items()}
-    snaps = []
     for a in angles:
         turn = App.Placement(V(), App.Rotation(V(1, 0, 0), a), center)
         for k, o in moving.items():
@@ -1311,13 +1267,8 @@ def motion_check(doc, pieces, refs, say, top=None):
             for f, fs in fixed_shapes.items():
                 if k == "ressort" and f.startswith("Aimant"):
                     continue
-                v, bb = solid_overlap(o.Shape, fs)
-                if v < 0.01:
-                    continue
-                if not magnets_on and k == "couvercle" and f == "piece 1" and a <= 5 \
-                        and bb.XMin >= get("talon_bord_droit") - 0.5:
-                    snaps.append(a)
-                else:
+                v, _ = solid_overlap(o.Shape, fs)
+                if v >= 0.01:
                     ok = False
                     problems.append(f"{a} deg: {k} enters {f} ({v:.2f} mm3)")
     for k, o in moving.items():                 # closed again (not solved: the hinge angle is free)
@@ -1341,8 +1292,7 @@ def motion_check(doc, pieces, refs, say, top=None):
     say(f"  joints: lid on the hinge axis, spring and magnets following, latch on its travel: "
         f"{'yes' if not any('solved' in p or 'slider' in p for p in problems) else 'NO'}")
     say(f"  {len(angles)} positions from 0 to {top:g} deg: "
-        f"{'no collision' if not problems else str(len(problems)) + ' problems'}"
-        + (f"; clip hooks snapping over their stops up to {max(snaps)} deg (expected)" if snaps else ""))
+        f"{'no collision' if not problems else str(len(problems)) + ' problems'}")
     for p in problems[:12]:
         say(f"    {p}  <-- !")
     return ok
@@ -1383,7 +1333,29 @@ def run_checks(doc, pieces, refs, verbose=True):
         ok &= v < 0.01
         note = "  (contact)" if c.Volume > 0.01 and v < 0.01 else ""
         say(f"  {name:12s} {v:8.3f}{'' if v < 0.01 else '  <-- !'}{note}")
-    say(f"  spring-glass {sp.common(gl).Volume:8.3f}  (preload: expected > 0, feet only)")
+    vals = param_values()
+    feet = 4 * math.pi * (vals["ressort_pied_diametre"] / 2) ** 2
+    for t in ("verre_epaisseur_min", "verre_epaisseur_max"):
+        back = vals["plan_film"] + vals[t]
+        g = Part.makeBox(vals["verre_cote"], vals["verre_cote"], vals[t],
+                         V(-vals["verre_cote"] / 2, -vals["verre_cote"] / 2, vals["plan_film"]))
+        squeeze = back - vals["ressort_pied_bout_z"]
+        got, want = sp.common(g).Volume, feet * min(squeeze, vals[t])   # rigid feet may go right through
+        good = abs(got - want) < 0.01 * want and back + vals["ressort_jeu_verre"] <= vals["ressort_face_avant"] + 1e-9
+        ok &= good
+        say(f"  spring on a {vals[t]:g} mm glass: feet squeezed {squeeze:.2f} mm, only the feet touch it"
+            + ("" if good else f"  <-- ! ({got:.1f} vs {want:.1f} mm3)"))
+    # on the thickest glass the arm tips rise by the whole squeeze: the ring they sweep must be free
+    lift = vals["plan_film"] + vals["verre_epaisseur_max"] - vals["ressort_pied_bout_z"]
+    top, r_in = vals["ressort_face_arriere"] + lift + 0.2, vals["ressort_moyeu_diametre"] / 2
+    r_out = vals["ressort_bras_longueur"] + 0.2
+    ring = Part.makeCylinder(r_out, top - vals["ressort_face_avant"], V(0, 0, vals["ressort_face_avant"])).cut(
+        Part.makeCylinder(r_in, top, V(0, 0, 0)))
+    for name, other in (("piece 2", p2), ("couvercle", p3)):
+        v = ring.common(other).Volume
+        ok &= v < 0.01
+        say(f"  room for the spring arms lifted {lift:.1f} mm (up to z {top:.1f}) against {name}: {v:.3f} mm3"
+            + ("" if v < 0.01 else "  <-- !"))
     shift = {"glissiere_verrou": param_values()["verrou_paroi"] - 1.0, "capot_verrou": 0.0}
     for key, ref in (("glissiere_verrou", "Rayfor_glissiere"), ("capot_verrou", "Rayfor_capot")):
         r = doc.getObject(ref).Shape.transformGeometry(
@@ -1411,22 +1383,6 @@ def main():
     ok &= not loose
     for name, s in shapes.items():
         export(s, name)
-    # the other closure: clips instead of magnets (pieces 1, 2 and 3 change)
-    sheet = doc.getObject(SHEET)
-    cell, default = sheet.getCellFromAlias("fermeture_aimants"), param_values()["fermeture_aimants"]
-    sheet.set(cell, "0" if default else "1")
-    doc.recompute()
-    other = "clips" if default else "aimants"
-    print(f"\n--- variant fermeture_aimants = {0 if default else 1} ({other}) ---", flush=True)
-    bad = invalid_objects(doc)
-    if bad:
-        print("INVALID:", bad, flush=True)
-    ok_other, shapes_other = run_checks(doc, pieces, refs)
-    ok &= ok_other and not bad
-    for name in ("piece1_interface", "piece2_cadre_verre", "piece3_couvercle"):
-        export(shapes_other[name], f"{name}_{other}")
-    sheet.set(cell, str(int(default)))
-    doc.recompute()
     doc.saveAs(FCSTD)
     write_gui_document(FCSTD, doc, colors)
     App.closeDocument(doc.Name)

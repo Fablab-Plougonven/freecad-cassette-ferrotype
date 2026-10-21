@@ -7,16 +7,30 @@ notch in its hinge-side wall over the old hinge block. It is then checked
 against the v0.1 pieces (closed, and opening from 0 to 180 deg with the dark
 slide in) and exported to exports/piece3_couvercle_pour_v0.1.stl / .step.
 
+The clips were removed from the model afterwards: the lid is built with the
+builder of commit 411fa5c, the last one with the clips (and the spring of the
+time, for 1 mm glass), taken from git.
+
 Run with FreeCAD's interpreter, with the STEP files of the v0.1 release
 (gh release download v0.1 -p "*.step" -D <dir>):
   /Applications/FreeCAD.app/Contents/Resources/bin/python tools/lid_for_v0_1.py <dir>
 """
 import os
+import subprocess
 import sys
+import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, "cad"))
+BUILDER = "411fa5c"           # last model with the clips
+_tmp = tempfile.mkdtemp()
+os.makedirs(os.path.join(_tmp, "cad"))
+with open(os.path.join(_tmp, "cad", "build_cassette.py"), "wb") as f:
+    f.write(subprocess.check_output(["git", "-C", ROOT, "show", f"{BUILDER}:cad/build_cassette.py"]))
+os.symlink(os.path.join(ROOT, "sources"), os.path.join(_tmp, "sources"))
+sys.path.insert(0, os.path.join(_tmp, "cad"))
 import build_cassette as bc  # noqa: E402
+
+bc.OUT = os.path.join(ROOT, "exports")
 
 App, V, Part = bc.App, bc.V, bc.Part
 V01 = {"collerette_epaisseur": "2", "fermeture_aimants": "0"}

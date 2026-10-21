@@ -54,7 +54,9 @@ fente_demi_hauteur,(volet_largeur + fente_jeu) / 2,mm,demi-hauteur de la fente
 fente_fond,30.9,mm,butee de fond du volet (u)
 volet_epaisseur,0.3,mm,volet : epaisseur (reference)
 verre_cote,57,mm,verre : cote (57 x 57)
-verre_epaisseur,1,mm,verre : epaisseur
+verre_epaisseur_min,1,mm,verres acceptes : du plus fin...
+verre_epaisseur_max,3,mm,...au plus epais (le logement et le ressort suivent)
+verre_epaisseur,verre_epaisseur_min,mm,verre affiche dans le modele
 verre_jeu,0.2,mm,jeu du verre par cote
 verre_face_arriere,plan_film + verre_epaisseur,mm,dos du verre
 butee_appui,1,mm,"appui du verre sur la butee, par cote"
@@ -114,36 +116,16 @@ noeuds_jeu,0.4,mm,
 couvercle_noeuds_bout,22,mm,noeuds du couvercle : bout
 gousset_depart_z,1.1,mm,depart du gousset a 45 deg
 gousset_hauteur,charniere_axe_z - noeud_rayon - gousset_depart_z,mm,
-clip_longueur,13,mm,longueur des clips
-clip1_bas,20,mm,clip du haut
-clip1_haut,clip1_bas + clip_longueur,mm,
-clip2_bas,-7,mm,clip du milieu
-clip2_haut,clip2_bas + clip_longueur,mm,
-clip_arret_saillie,0.6,mm,saillie de l'arret
-clip_arret_debut_z,3,mm,
-clip_arret_fin_z,4,mm,
-clip_rampe_fin_z,6,mm,haut de la rampe (pente douce)
-clip_doigt_epaisseur,1.4,mm,doigt du clip : epaisseur
-clip_doigt_jeu,0.2,mm,jeu doigt / arret
-clip_bec_debut_z,2.3,mm,
-clip_doigt_gauche,talon_bord_droit + clip_arret_saillie + clip_doigt_jeu,mm,face interieure de la jupe droite
-clip_doigt_droite,clip_doigt_gauche + clip_doigt_epaisseur,mm,
-clip_fente_largeur,1,mm,fentes de part et d'autre des clips dans la jupe
-clip_fente_haut_z,couvercle_face_interieure - 1,mm,haut des fentes (longueur de flexion des clips)
-clip_tirette_saillie,2,mm,"tirette au bas du clip, pour l'ouvrir"
-clip_tirette_hauteur,1.5,mm,
-clip_tirette_retrait,3,mm,retrait de la tirette aux bouts du clip
-jupe_epaisseur,1.6,mm,jupe du couvercle : epaisseur (a droite : celle des clips)
+jupe_epaisseur,1.6,mm,jupe du couvercle : epaisseur
 jupe_jeu,0.3,mm,jeu entre la jupe et les pieces 1 et 2
 jupe_bas_z,0.3,mm,"bas de la jupe, au-dessus de la face d'appui du boitier"
 boite_gauche,-(plaque_demi_largeur + jupe_jeu + jupe_epaisseur),mm,boite : bord gauche
-boite_droite,clip_doigt_droite,mm,boite : bord droit (face exterieure des clips)
+boite_droite,talon_bord_droit + jupe_jeu + jupe_epaisseur,mm,boite : bord droit
 boite_haut,languette_bord_haut + jupe_jeu + jupe_epaisseur,mm,boite : bord haut
 jupe_gauche_bas_z,butee_face_avant + 0.2,mm,"cote volet, la jupe s'arrete au-dessus de la fente : on ouvre sans retirer le volet"
 encoche_verrou_gauche,-11,mm,encoche de la jupe haute pour la languette du verrou (course et doigt)
 encoche_verrou_droite,19,mm,
 encoche_verrou_haut_z,collerette_face_arriere,mm,encoche : hauteur
-fermeture_aimants,1,mm,"fermeture du couvercle : 1 = aimants, 0 = clips"
 aimant_diametre,6,mm,aimants : diametre (6 au plus avec le jeu de colle : place entre la gorge et le bord)
 aimant_epaisseur,2,mm,aimants : epaisseur
 aimant_jeu_colle,1,mm,"logements des aimants : jeu au diametre pour la colle (0,5 tout autour)"
@@ -154,16 +136,16 @@ plot_aimant_diametre,aimant_diametre + aimant_jeu_colle + 3,mm,plots du couvercl
 couvercle_ouverture_max,180,mm,charniere : butee de la liaison pivot (couvercle a plat ; il touche la piece 1 vers 198 deg)
 paroi_charniere_retrait,1,mm,paroi du couvercle cote charniere : retrait depuis le bord bas (laisse tourner le couvercle)
 paroi_charniere_coin_bas_z,charniere_axe_z - 5.7,mm,"a droite, sous le talon, la paroi descend jusqu'ici (plus bas, elle heurte le talon en s'ouvrant)"
-ressort_bras_longueur,24,mm,bras : longueur depuis le centre
+ressort_bras_longueur,27,mm,bras : longueur depuis le centre (longs et fins : souples sur toute la course)
 ressort_bras_largeur,6,mm,
-ressort_epaisseur,1.6,mm,bras : epaisseur
+ressort_epaisseur,1,mm,bras : epaisseur
 ressort_moyeu_diametre,14,mm,
 ressort_pied_diametre,5,mm,
-ressort_pied_rayon,21.5,mm,
-ressort_precharge,0.8,mm,ecrasement du ressort
-ressort_jeu_verre,0.3,mm,jeu moyeu / verre
-ressort_pied_bout_z,verre_face_arriere - ressort_precharge,mm,
-ressort_face_avant,verre_face_arriere + ressort_jeu_verre,mm,
+ressort_pied_rayon,ressort_bras_longueur - ressort_bras_largeur / 2,mm,pieds au bout des bras
+ressort_precharge,1.5,mm,ecrasement avec le verre le plus fin (le plus epais ajoute la difference)
+ressort_jeu_verre,0.3,mm,jeu entre le moyeu et le verre le plus epais
+ressort_pied_bout_z,plan_film + verre_epaisseur_min - ressort_precharge,mm,"bout des pieds, ressort libre"
+ressort_face_avant,plan_film + verre_epaisseur_max + ressort_jeu_verre,mm,moyeu et bras au-dessus du verre le plus epais
 ressort_face_arriere,ressort_face_avant + ressort_epaisseur,mm,
 tenon_diametre,8,mm,tenon du couvercle
 pion_diametre,3,mm,

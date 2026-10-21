@@ -65,8 +65,8 @@ l'arrière :
 | Peau avant de la pièce 1, ouverture 61,9 (à gauche, sous la fente, il reste 0,7 au-dessus de la gorge) | 0 → 1,9 | 1,9 |
 | Fente du volet, entre la peau et les rails de la pièce 2 | 1,9 → 2,3 | 0,4 |
 | Butée de la pièce 2, ouverture 55 × 55 (1 d'appui par côté) | 2,3 → 3,55 | 1,25 |
-| Plaque 57 × 57 × 1 dans un logement de 57,4 | 3,55 → 4,55 | 1,0 |
-| Ressort en croix (pieds écrasés de 0,8) | à partir de 4,55 | — |
+| Plaque 57 × 57, de 1 à 3 d'épaisseur, dans un logement de 57,4 | 3,55 → 4,55 à 6,55 | 1 à 3 |
+| Ressort en croix : moyeu et bras à 0,3 au-dessus du verre le plus épais, pieds écrasés de 1,5 (verre de 1) à 3,5 (verre de 3) | 6,85 → 7,85 | 1,0 |
 
 ## Volet
 
@@ -119,17 +119,20 @@ l'arrière :
   haut et en bas. Collerette de la pièce 2 passée de 2 à 3 mm, plots Ø10 du
   couvercle soudés à la jupe et au cadre. Vis : deux en bas (x ±20), une en
   haut à gauche du verrou (x −28), une sur le talon droit (44, 28), M3 × 8.
-  Avec `fermeture_aimants` = 0, les clips ci-dessous à la place.
 - Assemblage FreeCAD : liaison pivot de la charnière, butée à 180° (couvercle à
   plat ; il touche la pièce 1 vers 198°). Le build vérifie que la liaison est
   bien la charnière modélisée, puis ouvre le couvercle degré par degré de 0 à
-  30°, de 2 en 2 au-delà, volet en place : aucune collision dans les deux
-  variantes (avec les clips, les becs passent sur leurs ergots jusqu'à 2°).
-- Deux clips côté manivelle (y 20 → 33 et −7 → 6), languettes de 1,4 découpées
-  dans la jupe droite par deux fentes de 1 qui montent jusqu'à 1 mm sous le
-  dessus ; arrêt de 0,6 sur une rampe de 2 de haut, bec biseauté, tirette de 2
-  au bas de chaque languette pour les ouvrir. Un seul clip de 1,2 paraissait
-  fragile à l'essai.
+  30°, de 2 en 2 au-delà, volet en place : aucune collision.
+- Clips abandonnés (2026-10-21) : plus d'ergots sur le talon de la pièce 1, la
+  jupe droite est à 0,3 du talon comme les autres côtés. Le couvercle de test
+  pour les pièces de la v0.1 (`tools/lid_for_v0_1.py`) garde les clips.
+- Ressort pour des verres de 1 à 3 mm (`verre_epaisseur_min`, `verre_epaisseur_max`) :
+  bras de 27 × 6 × 1, pieds Ø5 au bout. Écrasement 1,5 sur le verre le plus fin,
+  3,5 sur le plus épais ; le bout des bras monte alors jusqu'à z 11,4, dans le
+  logement du verre, sans toucher la pièce 2 ni le couvercle (vérifié au build).
+  Force estimée (PETG, E ≈ 2 GPa) : environ 4 N sur un verre de 1, 8 à 9 N sur
+  un verre de 3, que les deux paires d'aimants doivent retenir : à vérifier à
+  l'essai. Déformation maximale des bras environ 1,8 %.
 
 ## Verrou
 
