@@ -101,7 +101,7 @@ l'arrière :
   jusqu'à z 11,85 : bras soulevés de 3,5 + 0,5), des nervures, des logements
   d'aimants et d'un dégagement de 2,5 × 2,8 au-dessus du nœud central de la
   charnière. 5,65 de matière au-dessus de la chambre. Cassette de 17,5
-  d'épaisseur (pièce 2 à 3,4 pour les aimants incrustés).
+  d'épaisseur avec des aimants de 2 mm (pièce 2 à 3,4 pour les aimants incrustés).
 - Deux nervures de 1,0 × 0,8 dans deux gorges de 1,6 × 1,0 de la pièce 2
   (axes 33,5 et 30,7), autour de la chambre du ressort.
 - Charnière côté crochets, axe Ø2. Le bloc du nœud central de la pièce 1 est
@@ -114,11 +114,17 @@ l'arrière :
   vis du haut (1 de paroi). Logements fermés Ø6,2 × 2,2 (jeu 0,2) sous une peau
   de 0,4 côté joint, posés pendant une pause d'impression (pièce 2 à 2,60 mm,
   couvercle à 7,00 mm) ; 1,0 entre les aimants couvercle fermé. Collerette de
-  la pièce 2 passée à 3,4 (0,8 au-dessus de la cavité). Vis : deux en bas
-  (x ±20), une en haut à gauche du verrou (x −28), une sur le talon droit
+  la pièce 2 = peau + aimant + jeu + 0,8 (3,4 avec des aimants de 2) : elle suit
+  l'épaisseur des aimants, la cassette aussi (15,5 + épaisseur de l'aimant).
+  Tailles essayées au build : Ø5 × 1, Ø6 × 2, Ø7 × 3, Ø6 × 4 bonnes ; Ø8
+  refusée (0,27 de paroi vers la gorge et le bord haut ; le build exige 0,6).
+  Vis : deux dans les coins du bas (x ±38, y −39 : 0,9 de paroi entre la
+  fraisure et les bords, contre 0,44 en v0.1), une en haut à gauche du verrou
+  (x −28), une sur le talon droit
   (44, 28), M3 × 8.
-- Assemblage FreeCAD : liaison pivot de la charnière, butée à 160° (le couvercle
-  plein touche le gousset de la pièce 1 vers 168°). Le build vérifie que la liaison est
+- Assemblage FreeCAD : liaison pivot de la charnière, butée à 140° (le couvercle
+  plein touche le gousset de la pièce 1 vers 168° avec des aimants de 2 mm,
+  151° avec 3 mm : la pièce 2 s'épaissit et la charnière monte d'autant). Le build vérifie que la liaison est
   bien la charnière modélisée, puis ouvre le couvercle degré par degré de 0 à
   30°, de 2 en 2 au-delà, volet en place : aucune collision.
 - Clips abandonnés (2026-10-21) : plus d'ergots sur le talon de la pièce 1. Le couvercle de test

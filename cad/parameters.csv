@@ -65,7 +65,12 @@ peau_ouverture,61.9,mm,ouverture de la peau avant : laisse entrer la levre inter
 poche_cadre_droite,34,mm,poche de la piece 2 : bord droit
 poche_cadre_demi_hauteur,34.8,mm,poche de la piece 2 : demi-hauteur (reste a l'interieur de la gorge)
 cadre_jeu,0.2,mm,jeu insert / poche
-collerette_epaisseur,3.4,mm,"collerette de la piece 2 (aimant incruste : peau 0,4 + logement 2,2 + 0,8 par-dessus)"
+aimant_diametre,6,mm,"aimants : diametre (7 au plus : bande de 8,75 entre la gorge et le bord haut)"
+aimant_epaisseur,2,mm,aimants : epaisseur (la collerette de la piece 2 suit)
+aimant_jeu,0.2,mm,logements des aimants : jeu au diametre et en profondeur
+aimant_peau,0.4,mm,aimants incrustes : peau entre l'aimant et le joint (pause d'impression pour les poser)
+aimant_couverture,0.8,mm,matiere au-dessus de la cavite de l'aimant dans la piece 2
+collerette_epaisseur,aimant_peau + aimant_epaisseur + aimant_jeu + aimant_couverture,mm,collerette de la piece 2 : epaisseur (porte les aimants incrustes)
 collerette_face_arriere,piece1_epaisseur + collerette_epaisseur,mm,face arriere de la piece 2
 velours_gauche,-41.2,mm,gorges du velours a l'entree de la fente
 velours_droite,-38.2,mm,
@@ -90,8 +95,8 @@ chicane_rails_gorge_profondeur,0.6,mm,
 chicane_rails_nervure_largeur,0.5,mm,largeur de la nervure sous les rails
 chicane_rails_nervure_hauteur,0.5,mm,
 griffes_degagement,0.3,mm,degagement des griffes dans la collerette (par cote)
-vis_bas_x,20,mm,"vis du bas, paire symetrique (les coins sont aux aimants) : x"
-vis_bas_y,-39.5,mm,
+vis_bas_x,38,mm,"vis du bas, dans les coins, paire symetrique : x"
+vis_bas_y,-39,mm,"y (0,9 de paroi entre la fraisure et le bord)"
 vis_haut_x,-28,mm,"vis du haut, a gauche du verrou : x"
 vis_haut_y,39,mm,
 vis_talon_x,44,mm,vis du talon droit : x
@@ -113,14 +118,10 @@ noeuds_jeu,0.4,mm,
 couvercle_noeuds_bout,22,mm,noeuds du couvercle : bout
 gousset_depart_z,1.1,mm,depart du gousset a 45 deg
 gousset_hauteur,charniere_axe_z - noeud_rayon - gousset_depart_z,mm,
-aimant_diametre,6,mm,aimants : diametre
-aimant_epaisseur,2,mm,aimants : epaisseur
-aimant_jeu,0.2,mm,logements des aimants : jeu au diametre et en profondeur
-aimant_peau,0.4,mm,aimants incrustes : peau entre l'aimant et le joint (pause d'impression pour les poser)
 aimant_paroi,1,mm,paroi entre le logement d'un aimant et la fraisure de la vis du haut
 aimant_x,-vis_haut_x + vis_fraisure_diametre / 2 + aimant_paroi + (aimant_diametre + aimant_jeu) / 2,mm,"deux aimants, dans les coins opposes a la charniere, au plus loin du bord lateral (3,9) que permet la vis du haut"
 aimant_y,(plaque_bord_haut + couvercle_gorge_axe + couvercle_gorge_largeur / 2) / 2,mm,au milieu de la bande entre la gorge exterieure et le bord haut
-couvercle_ouverture_max,160,mm,charniere : butee de la liaison pivot (le couvercle touche le gousset de la piece 1 vers 168 deg)
+couvercle_ouverture_max,140,mm,"charniere : butee de la liaison pivot (le couvercle touche le gousset de la piece 1 vers 168 deg avec des aimants de 2, 151 deg avec 3)"
 ressort_bras_longueur,27,mm,bras : longueur depuis le centre (longs et fins : souples sur toute la course)
 ressort_bras_largeur,6,mm,
 ressort_epaisseur,1,mm,bras : epaisseur
@@ -138,7 +139,7 @@ pion_longueur,1,mm,
 ressort_trou_diametre,pion_diametre + 0.5,mm,trou du ressort (Ø3.2 trop serre a l'essai)
 ressort_course,plan_film + verre_epaisseur_max - ressort_pied_bout_z,mm,ecrasement sur le verre le plus epais : les bras montent d'autant
 chambre_ressort_rayon,ressort_bras_longueur + 0.5,mm,chambre du ressort dans le couvercle
-chambre_ressort_haut_z,ressort_face_arriere + ressort_course + 0.5,mm,"plafond de la chambre : bras souleves + 0,5"
+chambre_ressort_haut_z,max(ressort_face_arriere + ressort_course + 0.5; collerette_face_arriere + 0.5),mm,"plafond de la chambre : bras souleves + 0,5, au moins 0,5 au-dessus de la piece 2"
 charniere_degagement_largeur,2.5,mm,degagement du couvercle au-dessus du noeud central de la piece 1
 glissiere_gauche,-14.7,mm,glissiere : bout gauche
 glissiere_barre_bas,41.25,mm,glissiere : bas de la barre

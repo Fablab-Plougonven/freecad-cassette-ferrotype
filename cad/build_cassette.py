@@ -100,7 +100,12 @@ PARAMS = [
     ("poche_cadre_droite", "34", "poche de la piece 2 : bord droit"),
     ("poche_cadre_demi_hauteur", "34.8", "poche de la piece 2 : demi-hauteur (reste a l'interieur de la gorge)"),
     ("cadre_jeu", "0.2", "jeu insert / poche"),
-    ("collerette_epaisseur", "3.4", "collerette de la piece 2 (aimant incruste : peau 0,4 + logement 2,2 + 0,8 par-dessus)"),
+    ("aimant_diametre", "6", "aimants : diametre (7 au plus : bande de 8,75 entre la gorge et le bord haut)"),
+    ("aimant_epaisseur", "2", "aimants : epaisseur (la collerette de la piece 2 suit)"),
+    ("aimant_jeu", "0.2", "logements des aimants : jeu au diametre et en profondeur"),
+    ("aimant_peau", "0.4", "aimants incrustes : peau entre l'aimant et le joint (pause d'impression pour les poser)"),
+    ("aimant_couverture", "0.8", "matiere au-dessus de la cavite de l'aimant dans la piece 2"),
+    ("collerette_epaisseur", "aimant_peau + aimant_epaisseur + aimant_jeu + aimant_couverture", "collerette de la piece 2 : epaisseur (porte les aimants incrustes)"),
     ("collerette_face_arriere", "piece1_epaisseur + collerette_epaisseur", "face arriere de la piece 2"),
     ("velours_gauche", "-41.2", "gorges du velours a l'entree de la fente"), ("velours_droite", "-38.2", ""),
     ("velours_profondeur", "0.6", ""),
@@ -121,7 +126,7 @@ PARAMS = [
     ("chicane_rails_nervure_largeur", "0.5", "largeur de la nervure sous les rails"), ("chicane_rails_nervure_hauteur", "0.5", ""),
     ("griffes_degagement", "0.3", "degagement des griffes dans la collerette (par cote)"),
     # Screws M3 x 6 countersunk
-    ("vis_bas_x", "20", "vis du bas, paire symetrique (les coins sont aux aimants) : x"), ("vis_bas_y", "-39.5", ""),
+    ("vis_bas_x", "38", "vis du bas, dans les coins, paire symetrique : x"), ("vis_bas_y", "-39", "y (0,9 de paroi entre la fraisure et le bord)"),
     ("vis_haut_x", "-28", "vis du haut, a gauche du verrou : x"), ("vis_haut_y", "39", ""),
     ("vis_talon_x", "44", "vis du talon droit : x"), ("vis_talon_y", "28", ""),
     ("avant_trou_diametre", "2.5", "avant-trou piece 1 (vis M3 x 8 fraisees)"), ("avant_trou_profondeur", "5.5", ""),
@@ -140,13 +145,10 @@ PARAMS = [
     ("gousset_depart_z", "1.1", "depart du gousset a 45 deg"),
     ("gousset_hauteur", "charniere_axe_z - noeud_rayon - gousset_depart_z", ""),
     # Magnetic closure
-    ("aimant_diametre", "6", "aimants : diametre"), ("aimant_epaisseur", "2", "aimants : epaisseur"),
-    ("aimant_jeu", "0.2", "logements des aimants : jeu au diametre et en profondeur"),
-    ("aimant_peau", "0.4", "aimants incrustes : peau entre l'aimant et le joint (pause d'impression pour les poser)"),
     ("aimant_paroi", "1", "paroi entre le logement d'un aimant et la fraisure de la vis du haut"),
     ("aimant_x", "-vis_haut_x + vis_fraisure_diametre / 2 + aimant_paroi + (aimant_diametre + aimant_jeu) / 2", "deux aimants, dans les coins opposes a la charniere, au plus loin du bord lateral (3,9) que permet la vis du haut"),
     ("aimant_y", "(plaque_bord_haut + couvercle_gorge_axe + couvercle_gorge_largeur / 2) / 2", "au milieu de la bande entre la gorge exterieure et le bord haut"),
-    ("couvercle_ouverture_max", "160", "charniere : butee de la liaison pivot (le couvercle touche le gousset de la piece 1 vers 168 deg)"),
+    ("couvercle_ouverture_max", "140", "charniere : butee de la liaison pivot (le couvercle touche le gousset de la piece 1 vers 168 deg avec des aimants de 2, 151 deg avec 3)"),
     # Cross spring
     ("ressort_bras_longueur", "27", "bras : longueur depuis le centre (longs et fins : souples sur toute la course)"),
     ("ressort_bras_largeur", "6", ""),
@@ -161,7 +163,7 @@ PARAMS = [
     ("ressort_trou_diametre", "pion_diametre + 0.5", "trou du ressort (Ø3.2 trop serre a l'essai)"),
     ("ressort_course", "plan_film + verre_epaisseur_max - ressort_pied_bout_z", "ecrasement sur le verre le plus epais : les bras montent d'autant"),
     ("chambre_ressort_rayon", "ressort_bras_longueur + 0.5", "chambre du ressort dans le couvercle"),
-    ("chambre_ressort_haut_z", "ressort_face_arriere + ressort_course + 0.5", "plafond de la chambre : bras souleves + 0,5"),
+    ("chambre_ressort_haut_z", "max(ressort_face_arriere + ressort_course + 0.5; collerette_face_arriere + 0.5)", "plafond de la chambre : bras souleves + 0,5, au moins 0,5 au-dessus de la piece 2"),
     ("charniere_degagement_largeur", "2.5", "degagement du couvercle au-dessus du noeud central de la piece 1"),
     # Latch slider and cover (Rayfor, remodelled; slider at rest)
     ("glissiere_gauche", "-14.7", "glissiere : bout gauche"), ("glissiere_barre_bas", "41.25", "glissiere : bas de la barre"),
@@ -199,8 +201,8 @@ def param_values(rng=None):
     With rng, every literal parameter is scaled at random: a relation that holds
     for both evaluations is structural, not a coincidence of the defaults."""
     vals = {}
-    for n, e, _ in PARAMS:
-        vals[n] = eval(e, {"__builtins__": {}}, dict(vals))
+    for n, e, _ in PARAMS:      # the sheet separates function arguments with ';'
+        vals[n] = eval(e.replace(";", ","), {"__builtins__": {}, "max": max, "min": min}, dict(vals))
         if rng and re.fullmatch(r"-?[\d.]+", e):
             vals[n] *= rng.uniform(0.7, 1.3)
     return vals
@@ -1321,6 +1323,14 @@ def run_checks(doc, pieces, refs, verbose=True):
             say(f"  {m.Label} enters its piece ({v:.2f} mm3)  <-- !")
     cover = vals["collerette_epaisseur"] - vals["aimant_peau"] - vals["aimant_epaisseur"] - vals["aimant_jeu"]
     ok &= cover >= 0.6
+    seat_r = (vals["aimant_diametre"] + vals["aimant_jeu"]) / 2
+    walls = {"groove": vals["aimant_y"] - seat_r - vals["couvercle_gorge_axe"] - vals["couvercle_gorge_largeur"] / 2,
+             "top edge": vals["plaque_bord_haut"] - vals["aimant_y"] - seat_r,
+             "side edge": vals["plaque_demi_largeur"] - vals["aimant_x"] - seat_r}
+    thin = {k: w for k, w in walls.items() if w < 0.6}
+    ok &= not thin
+    say("  walls around the magnet seats: " + ", ".join(f"{k} {w:.2f}" for k, w in walls.items())
+        + (f"  <-- ! under 0.6 mm" if thin else ""))
     say(f"  magnets: {2 * vals['aimant_peau'] + vals['aimant_jeu']:.1f} mm apart through two skins, "
         f"{cover:.1f} mm over the cavity of piece 2" + ("" if cover >= 0.6 else "  <-- !"))
     say(f"  print pause to drop the magnets in: piece 2 (rear face down) at "

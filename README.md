@@ -32,8 +32,8 @@ parois fines sortent trop épaisses et les rampes en escalier.
 
 ## Quincaillerie
 
-- 4 vis M3 × 8 à tête fraisée, auto-taraudées dans la pièce 1 (deux en bas, une en
-  haut à gauche du verrou, une sur le talon droit).
+- 4 vis M3 × 8 à tête fraisée, auto-taraudées dans la pièce 1 (deux dans les coins
+  du bas, une en haut à gauche du verrou, une sur le talon droit).
 - 4 aimants néodyme Ø6 × 2 mm (N52 ou N45, aimantés dans l'épaisseur), incrustés
   à l'impression : deux dans les coins hauts de la pièce 2, deux en face dans le
   couvercle. Couvercle fermé, 1 mm de plastique les sépare (deux peaux de 0,4 et
@@ -49,7 +49,8 @@ parois fines sortent trop épaisses et les rampes en escalier.
 
 Les logements des aimants sont fermés : il faut une pause d'impression pour les
 poser, à 2,60 mm pour la pièce 2 (face arrière sur le plateau) et à 7,00 mm pour
-le couvercle (face extérieure sur le plateau). Dans le trancheur, insérer la
+le couvercle (face extérieure sur le plateau). Ces hauteurs valent pour des aimants de
+2 mm ; le build les recalcule et les affiche si l'on change `aimant_epaisseur`. Dans le trancheur, insérer la
 pause avant le premier calque au-dessus de cette hauteur. Logements Ø6,2 × 2,2 :
 l'aimant tombe au fond, il reste 0,2 au-dessus pour que la buse ne le touche pas.
 
