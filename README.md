@@ -18,8 +18,8 @@ Les STL, STEP et le fichier FreeCAD sont publiés dans les
 | Fichier | Pièce | À imprimer |
 |---|---|---|
 | `piece1_interface.stl` | Contre le boîtier : crochets, verrou, fente du volet, gorge de la lèvre du boîtier | Face d'appui (côté boîtier) sur le plateau |
-| `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes, deux gorges anti-lumière, deux logements d'aimants Ø6 × 2 dans les coins opposés à la charnière | Face arrière (côté couvercle) sur le plateau |
-| `piece3_couvercle.stl` | Couvercle articulé plein, dans le prolongement des pièces (on ouvre volet en place) : chambre du ressort, deux nervures anti-lumière, tenon du ressort, deux logements d'aimants Ø6 × 2 dans les coins opposés à la charnière | Face extérieure sur le plateau ; 4 périmètres et remplissage élevé contre la transparence du PETG |
+| `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes, deux gorges anti-lumière, deux aimants Ø6 × 2 incrustés dans les coins opposés à la charnière | Face arrière (côté couvercle) sur le plateau ; **pause à 2,60 mm** pour poser les aimants |
+| `piece3_couvercle.stl` | Couvercle articulé plein, dans le prolongement des pièces (on ouvre volet en place) : chambre du ressort, deux nervures anti-lumière, tenon du ressort, deux aimants Ø6 × 2 incrustés dans les coins opposés à la charnière | Face extérieure sur le plateau ; **pause à 7,00 mm** pour poser les aimants ; 4 périmètres et remplissage élevé contre la transparence du PETG |
 | `piece3_couvercle_pour_v0.1.stl` | Couvercle-boîte à clips pour des pièces 1 et 2 imprimées en v0.1 (`tools/lid_for_v0_1.py`), avec le ressort de la v0.1 | Face extérieure sur le plateau |
 | `ressort_croix.stl` | Ressort en croix qui presse le dos de la plaque, pour des verres de 1 à 3 mm (bras longs et fins) | Face plate sur le plateau, pieds vers le haut, 100 % de remplissage, PETG |
 | `glissiere_verrou.stl` | Glissière du verrou (dessin de Rayfor, remodélisé) | À plat, face côté boîtier sur le plateau |
@@ -34,15 +34,28 @@ parois fines sortent trop épaisses et les rampes en escalier.
 
 - 4 vis M3 × 8 à tête fraisée, auto-taraudées dans la pièce 1 (deux en bas, une en
   haut à gauche du verrou, une sur le talon droit).
-- 4 aimants néodyme Ø6 × 2 mm (N52 ou N45, aimantés dans l'épaisseur) : deux dans
-  les coins hauts de la pièce 2, deux au bout des plots du couvercle. Couvercle
-  fermé, ils sont en contact deux à deux.
+- 4 aimants néodyme Ø6 × 2 mm (N52 ou N45, aimantés dans l'épaisseur), incrustés
+  à l'impression : deux dans les coins hauts de la pièce 2, deux en face dans le
+  couvercle. Couvercle fermé, 1 mm de plastique les sépare (deux peaux de 0,4 et
+  le jeu de 0,2).
 - 1 axe de charnière Ø2 × 44 mm (tige acier ou clou coupé).
 - Velours ou feutrine adhésive, 3 mm de large, 0,5 à 0,7 mm d'épaisseur,
   2 bandes de 66 mm : à l'entrée de la fente du volet, une sur chaque pièce.
 - Volet : plaque métal de 65,88 mm de large, 0,35 mm d'épaisseur au plus
   (fente de 66,38 × 0,4), environ 88 mm de long dont 73 engagés.
 - Colle cyano pour fixer le ressort sur le tenon.
+
+## Aimants incrustés (pendant l'impression)
+
+Les logements des aimants sont fermés : il faut une pause d'impression pour les
+poser, à 2,60 mm pour la pièce 2 (face arrière sur le plateau) et à 7,00 mm pour
+le couvercle (face extérieure sur le plateau). Dans le trancheur, insérer la
+pause avant le premier calque au-dessus de cette hauteur. Logements Ø6,2 × 2,2 :
+l'aimant tombe au fond, il reste 0,2 au-dessus pour que la buse ne le touche pas.
+
+**Polarité** (on ne peut plus la changer ensuite) : coller deux aimants l'un sur
+l'autre et marquer au feutre les deux faces en contact. Dans la pièce 2, face
+marquée **vers le plateau** ; dans le couvercle, face marquée **vers le haut**.
 
 ## Montage
 
@@ -52,11 +65,6 @@ parois fines sortent trop épaisses et les rampes en escalier.
 3. Emboîter la pièce 2 dans la pièce 1 : les deux chicanes s'engagent dans leurs
    gorges. Visser les 4 vis M3.
 4. Coller le ressort sur le tenon du couvercle, pieds vers la plaque.
-   Version aimants : coller les 4 aimants Ø6 × 2 (époxy ou cyanoacrylate gel)
-   dans leurs logements, à fleur : les logements font 1 mm de plus au diamètre
-   (0,5 tout autour) pour la colle. Vérifier avant de coller que chaque paire
-   s'attire ; poser l'aimant du couvercle sur celui de la pièce 2, couvercle
-   fermé, pendant la prise pour qu'ils soient bien face à face.
 5. Monter la charnière avec l'axe Ø2.
 
 Sur le boîtier : accrocher le bas sur les crochets, rabattre le haut, puis
@@ -71,7 +79,7 @@ griffes du boîtier montent sur la rampe des dents et plaquent la cassette.
   nervure sous les rails du volet, chacune dans une gorge.
 - Couvercle : plein, posé à plat sur la pièce 2, avec deux nervures dans deux
   gorges autour de la chambre du ressort, sur les 4 côtés. Au-dessus de la
-  chambre, 5,25 mm de matière contre la transparence du PETG.
+  chambre, 5,65 mm de matière contre la transparence du PETG.
 - Valider par un essai : papier photo dans la cassette fermée, 10 min au soleil,
   puis développement.
 - Fente du volet : velours des deux côtés.

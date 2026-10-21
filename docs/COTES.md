@@ -100,20 +100,23 @@ l'arrière :
   PETG : il n'est creusé que d'une chambre ronde pour le ressort (rayon 27,5,
   jusqu'à z 11,85 : bras soulevés de 3,5 + 0,5), des nervures, des logements
   d'aimants et d'un dégagement de 2,5 × 2,8 au-dessus du nœud central de la
-  charnière. 5,25 de matière au-dessus de la chambre. Cassette de 17,1
-  d'épaisseur (pièce 2 à 3 pour les aimants).
+  charnière. 5,65 de matière au-dessus de la chambre. Cassette de 17,5
+  d'épaisseur (pièce 2 à 3,4 pour les aimants incrustés).
 - Deux nervures de 1,0 × 0,8 dans deux gorges de 1,6 × 1,0 de la pièce 2
   (axes 33,5 et 30,7), autour de la chambre du ressort.
 - Charnière côté crochets, axe Ø2. Le bloc du nœud central de la pièce 1 est
   hors de la cassette, sous la pièce 2 (jeu 0,4), tenu par le gousset à 45° :
   il laisse tourner le couvercle. La pièce 2 n'a plus de dégagement.
-- Fermeture par aimants (`fermeture_aimants` = 1) : deux paires d'aimants
-  Ø6 × 2, dans les coins opposés à la charnière (x ±37,8, y 38,675), entre la
-  gorge extérieure (34,3) et le bord haut. Logements Ø7 (1 mm de jeu au diamètre
-  pour la colle) × 2, aimants à fleur : couvercle fermé, ils sont en contact.
-  Ø6 au plus : avec le jeu de colle, il reste 0,9 de paroi au bord et 0,875 en
-  haut et en bas. Collerette de la pièce 2 passée de 2 à 3 mm. Vis : deux en bas (x ±20), une en
-  haut à gauche du verrou (x −28), une sur le talon droit (44, 28), M3 × 8.
+- Fermeture par aimants incrustés : deux paires Ø6 × 2 dans les coins opposés à
+  la charnière, x ±35,2, y 38,675. En y, au milieu de la bande entre la gorge
+  extérieure (34,3) et le bord haut (43,05) : 1,28 de paroi de chaque côté, le
+  maximum. En x, au plus loin du bord latéral (3,9) que permet la fraisure de la
+  vis du haut (1 de paroi). Logements fermés Ø6,2 × 2,2 (jeu 0,2) sous une peau
+  de 0,4 côté joint, posés pendant une pause d'impression (pièce 2 à 2,60 mm,
+  couvercle à 7,00 mm) ; 1,0 entre les aimants couvercle fermé. Collerette de
+  la pièce 2 passée à 3,4 (0,8 au-dessus de la cavité). Vis : deux en bas
+  (x ±20), une en haut à gauche du verrou (x −28), une sur le talon droit
+  (44, 28), M3 × 8.
 - Assemblage FreeCAD : liaison pivot de la charnière, butée à 160° (le couvercle
   plein touche le gousset de la pièce 1 vers 168°). Le build vérifie que la liaison est
   bien la charnière modélisée, puis ouvre le couvercle degré par degré de 0 à
