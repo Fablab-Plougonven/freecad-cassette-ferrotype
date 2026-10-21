@@ -127,11 +127,8 @@ PARAMS = [
     ("avant_trou_diametre", "2.5", "avant-trou piece 1 (vis M3 x 8 fraisees)"), ("avant_trou_profondeur", "5.5", ""),
     ("vis_passage_diametre", "3.4", "passage piece 2"), ("vis_fraisure_diametre", "6.2", "fraisure 90 deg"),
     # Lid
-    ("couvercle_epaisseur", "2.4", "epaisseur du dessus du couvercle"),
-    ("couvercle_recul", "5", "recul du dessus du couvercle derriere la piece 2 (hauteur de prise)"),
-    ("couvercle_face_interieure", "collerette_face_arriere + couvercle_recul", "face interieure du dessus"),
-    ("couvercle_face_exterieure", "couvercle_face_interieure + couvercle_epaisseur", "face exterieure du couvercle"),
-    ("cadre_appui_debord", "0.6", "cadre qui descend du dessus et s'appuie sur la piece 2 (porte les nervures) : debord de chaque cote des gorges"),
+    ("couvercle_hauteur", "7.4", "couvercle plein, dans le prolongement de la piece 2 : hauteur (prise ; matiere contre la transparence du PETG)"),
+    ("couvercle_face_exterieure", "collerette_face_arriere + couvercle_hauteur", "face exterieure du couvercle"),
     # Hinge (pin 2 mm, along u)
     ("noeud_rayon", "2.4", ""), ("axe_trou_diametre", "2.1", "trou de l'axe (axe 2)"),
     ("charniere_jeu_bord", "0.4", "jeu entre noeuds et bord bas"),
@@ -142,27 +139,13 @@ PARAMS = [
     ("noeuds_jeu", "0.4", ""), ("couvercle_noeuds_bout", "22", "noeuds du couvercle : bout"),
     ("gousset_depart_z", "1.1", "depart du gousset a 45 deg"),
     ("gousset_hauteur", "charniere_axe_z - noeud_rayon - gousset_depart_z", ""),
-    # Lid skirt (box): left, top and right sides; on the hinge side a wall above the hinge
-    ("jupe_epaisseur", "1.6", "jupe du couvercle : epaisseur"),
-    ("jupe_jeu", "0.3", "jeu entre la jupe et les pieces 1 et 2"),
-    ("jupe_bas_z", "0.3", "bas de la jupe, au-dessus de la face d'appui du boitier"),
-    ("boite_gauche", "-(plaque_demi_largeur + jupe_jeu + jupe_epaisseur)", "boite : bord gauche"),
-    ("boite_droite", "talon_bord_droit + jupe_jeu + jupe_epaisseur", "boite : bord droit"),
-    ("boite_haut", "languette_bord_haut + jupe_jeu + jupe_epaisseur", "boite : bord haut"),
-    ("jupe_gauche_bas_z", "butee_face_avant + 0.2", "cote volet, la jupe s'arrete au-dessus de la fente : on ouvre sans retirer le volet"),
-    ("encoche_verrou_gauche", "-11", "encoche de la jupe haute pour la languette du verrou (course et doigt)"),
-    ("encoche_verrou_droite", "19", ""),
-    ("encoche_verrou_haut_z", "collerette_face_arriere", "encoche : hauteur"),
     # Magnetic closure
     ("aimant_diametre", "6", "aimants : diametre (6 au plus avec le jeu de colle : place entre la gorge et le bord)"), ("aimant_epaisseur", "2", "aimants : epaisseur"),
     ("aimant_jeu_colle", "1", "logements des aimants : jeu au diametre pour la colle (0,5 tout autour)"),
     ("aimant_paroi", "0.9", "paroi entre le logement d'un aimant et le bord de la piece 2"),
     ("aimant_x", "plaque_demi_largeur - aimant_paroi - (aimant_diametre + aimant_jeu_colle) / 2", "deux aimants, dans les coins opposes a la charniere"),
     ("aimant_y", "(plaque_bord_haut + couvercle_gorge_axe + couvercle_gorge_largeur / 2) / 2", "entre la gorge exterieure et le bord haut"),
-    ("plot_aimant_diametre", "aimant_diametre + aimant_jeu_colle + 3", "plots du couvercle qui portent les aimants (soudes a la jupe et au cadre)"),
-    ("couvercle_ouverture_max", "180", "charniere : butee de la liaison pivot (couvercle a plat ; il touche la piece 1 vers 198 deg)"),
-    ("paroi_charniere_retrait", "1", "paroi du couvercle cote charniere : retrait depuis le bord bas (laisse tourner le couvercle)"),
-    ("paroi_charniere_coin_bas_z", "charniere_axe_z - 5.7", "a droite, sous le talon, la paroi descend jusqu'ici (plus bas, elle heurte le talon en s'ouvrant)"),
+    ("couvercle_ouverture_max", "160", "charniere : butee de la liaison pivot (le couvercle touche le gousset de la piece 1 vers 168 deg)"),
     # Cross spring
     ("ressort_bras_longueur", "27", "bras : longueur depuis le centre (longs et fins : souples sur toute la course)"),
     ("ressort_bras_largeur", "6", ""),
@@ -175,6 +158,10 @@ PARAMS = [
     ("ressort_face_arriere", "ressort_face_avant + ressort_epaisseur", ""),
     ("tenon_diametre", "8", "tenon du couvercle"), ("pion_diametre", "3", ""), ("pion_longueur", "1", ""),
     ("ressort_trou_diametre", "pion_diametre + 0.5", "trou du ressort (Ø3.2 trop serre a l'essai)"),
+    ("ressort_course", "plan_film + verre_epaisseur_max - ressort_pied_bout_z", "ecrasement sur le verre le plus epais : les bras montent d'autant"),
+    ("chambre_ressort_rayon", "ressort_bras_longueur + 0.5", "chambre du ressort dans le couvercle"),
+    ("chambre_ressort_haut_z", "ressort_face_arriere + ressort_course + 0.5", "plafond de la chambre : bras souleves + 0,5"),
+    ("charniere_degagement_largeur", "2.5", "degagement du couvercle au-dessus du noeud central de la piece 1"),
     # Latch slider and cover (Rayfor, remodelled; slider at rest)
     ("glissiere_gauche", "-14.7", "glissiere : bout gauche"), ("glissiere_barre_bas", "41.25", "glissiere : bas de la barre"),
     ("glissiere_dent_droite_bout", "18.25", "dent droite : bout (la dent va jusqu'a verrou_poche_droite)"),
@@ -789,64 +776,39 @@ def build_piece2(pd):
 
 
 def build_piece3(pd):
-    """Hinged lid shaped as a box: a rounded block hollowed from the inside, its
-    skirt reaching down to the body on the top and right, and down to just above
-    the dark slide slot on the left (the lid opens with the slide in); on the
-    hinge side a wall above the hinge line closes it down to piece 2. A frame
-    bears on piece 2 and carries two light-seal ribs; the post presses the
-    spring. Notch for the latch tab. Two posts in the corners opposite the
-    hinge hold magnets touching those of piece 2. One hinge knuckle mirrored."""
+    """Solid hinged lid in line with the pieces: the outline of piece 2 (plate and
+    heel) raised from its rear face, as much material as possible against the
+    translucency of PETG. It bears flat on piece 2 and is hollowed only for what
+    needs room: the chamber of the spring (its arms lift on a thick glass), the
+    two light-seal ribs below it, the magnet seats in the corners opposite the
+    hinge, and a clearance over the central knuckle of piece 1 so that it turns.
+    One hinge knuckle mirrored."""
     b = pd.body("Piece3_Couvercle")
-    bottom = pd.datum(b, "Plan_bas_jupe", "jupe_bas_z")
     seat = pd.datum(b, "Plan_appui_piece2", "collerette_face_arriere")
-    inner = pd.datum(b, "Plan_face_interieure", "couvercle_face_interieure")
+    ceiling = pd.datum(b, "Plan_plafond_chambre", "chambre_ressort_haut_z")
     post = pd.datum(b, "Plan_bout_tenon", "ressort_face_arriere")
-    # the box
-    pd.pad(b, "Boite", pd.sk(b, "Boite", bottom, lambda s: pd.rounded_rect(
-        s, "boite_gauche", "boite_droite", "plaque_bord_bas", "boite_haut", "rayon_coins")),
-        "couvercle_face_exterieure - jupe_bas_z")
-    pd.pocket(b, "Interieur", pd.sk(b, "Interieur", inner, lambda s: pd.rect(
-        s, "-(plaque_demi_largeur + jupe_jeu)", "talon_bord_droit + jupe_jeu", "plaque_bord_bas - 1",
-        "languette_bord_haut + jupe_jeu")))
-    # bearing on piece 2: frame, two light-seal ribs, post and pin
-    fo = "couvercle_gorge_axe + couvercle_gorge_largeur / 2 + cadre_appui_debord"
-    fi = "couvercle_gorge2_axe - couvercle_gorge_largeur / 2 - cadre_appui_debord"
-    pd.pad(b, "Cadre_appui", pd.sk(b, "Cadre_appui", inner, lambda s: (
-        pd.rect(s, neg(fo), fo, neg(fo), fo, "exterieur"), pd.rect(s, neg(fi), fi, neg(fi), fi, "interieur"))),
-        "couvercle_recul", reverse=True)
+    vb = "plaque_bord_bas"
+    pd.pad(b, "Couvercle", pd.sk(b, "Contour", seat, lambda s: contour(pd, s, tab=False)), "couvercle_hauteur")
+    pd.pocket(b, "Chambre_ressort", pd.sk(b, "Chambre_ressort", seat, lambda s: pd.circle(
+        s, 0, 0, "2 * chambre_ressort_rayon")), "chambre_ressort_haut_z - collerette_face_arriere", reverse=True)
+    pd.pad(b, "Tenon", pd.sk(b, "Tenon", ceiling, lambda s: pd.circle(s, 0, 0, "tenon_diametre")),
+           "chambre_ressort_haut_z - ressort_face_arriere", reverse=True)
+    pd.pad(b, "Pion", pd.sk(b, "Pion", post, lambda s: pd.circle(s, 0, 0, "pion_diametre")), "pion_longueur", reverse=True)
     pd.pad(b, "Nervures", pd.sk(b, "Nervures", seat, lambda s: square_rings(
         pd, s, ("couvercle_gorge_axe", "couvercle_gorge2_axe"), "couvercle_nervure_largeur")),
         "couvercle_nervure_hauteur", reverse=True)
-    # wall closing the hinge side: down to piece 2, and lower under the heel on the right
-    wb = "plaque_bord_bas + paroi_charniere_retrait"
-    pd.pad(b, "Paroi_charniere", pd.sk(b, "Paroi_charniere", inner, lambda s: pd.rect(
-        s, "-(plaque_demi_largeur + jupe_jeu)", "talon_bord_droit + jupe_jeu", wb, f"{wb} + jupe_epaisseur")),
-        "couvercle_recul", reverse=True)
-    pd.pad(b, "Paroi_charniere_coin", pd.sk(b, "Paroi_charniere_coin", inner, lambda s: pd.rect(
-        s, "plaque_demi_largeur + jupe_jeu", "talon_bord_droit + jupe_jeu", wb, f"{wb} + jupe_epaisseur")),
-        "couvercle_face_interieure - paroi_charniere_coin_bas_z", reverse=True)
-    pd.pad(b, "Tenon", pd.sk(b, "Tenon", inner, lambda s: pd.circle(s, 0, 0, "tenon_diametre")),
-           "couvercle_face_interieure - ressort_face_arriere", reverse=True)
-    pd.pad(b, "Pion", pd.sk(b, "Pion", post, lambda s: pd.circle(s, 0, 0, "pion_diametre")), "pion_longueur", reverse=True)
-    # openings in the skirt
-    pd.pocket(b, "Jupe_gauche_relevee", pd.sk(b, "Jupe_gauche_relevee", bottom, lambda s: pd.rect(
-        s, "boite_gauche - 1", "-plaque_demi_largeur", "plaque_bord_bas - 1", "boite_haut + 1")),
-        "jupe_gauche_bas_z - jupe_bas_z", reverse=True)
-    pd.pocket(b, "Encoche_verrou", pd.sk(b, "Encoche_verrou", "XZ", lambda s: pd.rect(
-        s, "encoche_verrou_gauche", "encoche_verrou_droite", "jupe_bas_z - 1", "encoche_verrou_haut_z"),
-        off=neg("languette_bord_haut + jupe_jeu")), "jupe_epaisseur + jupe_jeu")
-    # closure: two posts in the corners opposite the hinge reach down to piece 2; their
-    # magnets, flush, touch those of piece 2 when the lid is closed
-    magnets = magnet_points()
-    pd.pad(b, "Plots_aimants", pd.sk(b, "Plots_aimants", inner, lambda s: pd.circles(
-        s, magnets, "plot_aimant_diametre")), "couvercle_recul", reverse=True)
+    # closure: magnets flush in the corners opposite the hinge, touching those of piece 2
     pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", seat, lambda s: pd.circles(
-        s, magnets, "aimant_diametre + aimant_jeu_colle")), "aimant_epaisseur", reverse=True)
+        s, magnet_points(), "aimant_diametre + aimant_jeu_colle")), "aimant_epaisseur", reverse=True)
+    # hinge: clearance over the central knuckle of piece 1, from piece 2 up
+    pd.pocket(b, "Degagement_noeud_central", pd.sk(b, "Degagement_noeud_central", seat, lambda s: pd.rect(
+        s, "-bossage_demi_longueur - noeuds_jeu", "bossage_demi_longueur + noeuds_jeu", f"{vb} - 1",
+        f"{vb} + charniere_degagement_largeur")), "noeud_rayon + 0.4", reverse=True)
     # hinge: right knuckle (lug + barrel), mirrored to the left
     k0 = "bossage_demi_longueur + noeuds_jeu"
     knuckle = [
         pd.pad(b, "Patte_noeud", pd.sk(b, "Patte_noeud", "YZ", lambda s: pd.rect(
-            s, "charniere_axe_y", "plaque_bord_bas + 0.5", "charniere_axe_z", "couvercle_face_exterieure"), off=k0),
+            s, "charniere_axe_y", f"{vb} + 0.5", "charniere_axe_z", "couvercle_face_exterieure"), off=k0),
             f"couvercle_noeuds_bout - ({k0})"),
         pd.pad(b, "Noeud", pd.sk(b, "Noeud", "YZ", lambda s: pd.circle(
             s, "charniere_axe_y", "charniere_axe_z", "2 * noeud_rayon"), off=k0), f"couvercle_noeuds_bout - ({k0})"),

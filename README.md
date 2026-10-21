@@ -19,7 +19,7 @@ Les STL, STEP et le fichier FreeCAD sont publiés dans les
 |---|---|---|
 | `piece1_interface.stl` | Contre le boîtier : crochets, verrou, fente du volet, gorge de la lèvre du boîtier | Face d'appui (côté boîtier) sur le plateau |
 | `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes, deux gorges anti-lumière, deux logements d'aimants Ø6 × 2 dans les coins opposés à la charnière | Face arrière (côté couvercle) sur le plateau |
-| `piece3_couvercle.stl` | Couvercle-boîte articulé, fermé sur ses 4 côtés : jupe en haut et à droite jusqu'au boîtier, à gauche jusqu'au-dessus de la fente du volet (on ouvre sans retirer le volet), paroi côté charnière, encoche du verrou, cadre d'appui et deux nervures anti-lumière, tenon du ressort, deux plots à aimants Ø6 × 2 dans les coins opposés à la charnière | Face extérieure sur le plateau |
+| `piece3_couvercle.stl` | Couvercle articulé plein, dans le prolongement des pièces (on ouvre volet en place) : chambre du ressort, deux nervures anti-lumière, tenon du ressort, deux logements d'aimants Ø6 × 2 dans les coins opposés à la charnière | Face extérieure sur le plateau ; 4 périmètres et remplissage élevé contre la transparence du PETG |
 | `piece3_couvercle_pour_v0.1.stl` | Couvercle-boîte à clips pour des pièces 1 et 2 imprimées en v0.1 (`tools/lid_for_v0_1.py`), avec le ressort de la v0.1 | Face extérieure sur le plateau |
 | `ressort_croix.stl` | Ressort en croix qui presse le dos de la plaque, pour des verres de 1 à 3 mm (bras longs et fins) | Face plate sur le plateau, pieds vers le haut, 100 % de remplissage, PETG |
 | `glissiere_verrou.stl` | Glissière du verrou (dessin de Rayfor, remodélisé) | À plat, face côté boîtier sur le plateau |
@@ -69,12 +69,9 @@ griffes du boîtier montent sur la rampe des dents et plaquent la cassette.
   laisse entrer sa lèvre intérieure, comme sur un magasin d'origine.
 - Entre la pièce 1 et la pièce 2 : une nervure en U sous la collerette et une
   nervure sous les rails du volet, chacune dans une gorge.
-- Couvercle : un cadre d'appui descend du dessus jusqu'à la pièce 2 et porte deux
-  nervures qui entrent dans deux gorges, sur les 4 côtés : c'est la barrière qui
-  protège la plaque côté couvercle. La jupe et la paroi côté charnière ferment en
-  plus la boîte (première barrière), sauf aux ouvertures nécessaires : fente du
-  encoche du verrou, jeu au-dessus du boîtier et, à gauche, passage du volet
-  (la jupe s'arrête au-dessus de la fente).
+- Couvercle : plein, posé à plat sur la pièce 2, avec deux nervures dans deux
+  gorges autour de la chambre du ressort, sur les 4 côtés. Au-dessus de la
+  chambre, 5,25 mm de matière contre la transparence du PETG.
 - Valider par un essai : papier photo dans la cassette fermée, 10 min au soleil,
   puis développement.
 - Fente du volet : velours des deux côtés.

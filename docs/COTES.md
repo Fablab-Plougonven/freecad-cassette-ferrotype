@@ -93,38 +93,32 @@ l'arrière :
 
 ## Fermeture du couvercle
 
-- Couvercle-boîte (2026-10-21, pour une meilleure prise) : le dessus est reculé
-  de 5 mm derrière la pièce 2 (`couvercle_recul`). Jupe de 1,6 à 0,3 des pièces
-  1 et 2 : en haut et à droite jusqu'à 0,3 du boîtier, à gauche jusqu'à 0,2
-  au-dessus de la fente du volet (`jupe_gauche_bas_z`) pour ouvrir sans retirer
-  le volet. Cassette de 17,1 d'épaisseur (pièce 2 à 3 pour les aimants).
-- Encoche de la jupe haute de x −11 à 19 jusqu'à la face arrière de la pièce 2,
-  pour la languette du verrou (course et doigt).
-- Le cadre d'appui descend du dessus jusqu'à la pièce 2 ; le tenon du ressort
-  s'allonge d'autant.
-- Face de la charnière fermée par une paroi du couvercle, au-dessus de l'axe,
-  posée sur la pièce 2, à 1 du bord bas (`paroi_charniere_retrait`) pour que le
-  couvercle tourne ; à droite, sous le talon, elle descend jusqu'à z 3 (plus
-  bas, elle heurte le talon en s'ouvrant).
+- Couvercle plein dans le prolongement des pièces (2026-10-21) : contour de la
+  pièce 2 (plaque et talon), 7,4 de haut au-dessus d'elle (`couvercle_hauteur`),
+  posé à plat sur toute sa face arrière, sans rien qui descende sur les côtés :
+  on ouvre volet en place. Plein pour la matière contre la transparence du
+  PETG : il n'est creusé que d'une chambre ronde pour le ressort (rayon 27,5,
+  jusqu'à z 11,85 : bras soulevés de 3,5 + 0,5), des nervures, des logements
+  d'aimants et d'un dégagement de 2,5 × 2,8 au-dessus du nœud central de la
+  charnière. 5,25 de matière au-dessus de la chambre. Cassette de 17,1
+  d'épaisseur (pièce 2 à 3 pour les aimants).
 - Deux nervures de 1,0 × 0,8 dans deux gorges de 1,6 × 1,0 de la pièce 2
-  (axes 33,5 et 30,7), portées par le cadre d'appui.
+  (axes 33,5 et 30,7), autour de la chambre du ressort.
 - Charnière côté crochets, axe Ø2. Le bloc du nœud central de la pièce 1 est
   hors de la cassette, sous la pièce 2 (jeu 0,4), tenu par le gousset à 45° :
-  il laisse passer la paroi côté charnière. La pièce 2 n'a plus de dégagement.
+  il laisse tourner le couvercle. La pièce 2 n'a plus de dégagement.
 - Fermeture par aimants (`fermeture_aimants` = 1) : deux paires d'aimants
   Ø6 × 2, dans les coins opposés à la charnière (x ±37,8, y 38,675), entre la
   gorge extérieure (34,3) et le bord haut. Logements Ø7 (1 mm de jeu au diamètre
   pour la colle) × 2, aimants à fleur : couvercle fermé, ils sont en contact.
   Ø6 au plus : avec le jeu de colle, il reste 0,9 de paroi au bord et 0,875 en
-  haut et en bas. Collerette de la pièce 2 passée de 2 à 3 mm, plots Ø10 du
-  couvercle soudés à la jupe et au cadre. Vis : deux en bas (x ±20), une en
+  haut et en bas. Collerette de la pièce 2 passée de 2 à 3 mm. Vis : deux en bas (x ±20), une en
   haut à gauche du verrou (x −28), une sur le talon droit (44, 28), M3 × 8.
-- Assemblage FreeCAD : liaison pivot de la charnière, butée à 180° (couvercle à
-  plat ; il touche la pièce 1 vers 198°). Le build vérifie que la liaison est
+- Assemblage FreeCAD : liaison pivot de la charnière, butée à 160° (le couvercle
+  plein touche le gousset de la pièce 1 vers 168°). Le build vérifie que la liaison est
   bien la charnière modélisée, puis ouvre le couvercle degré par degré de 0 à
   30°, de 2 en 2 au-delà, volet en place : aucune collision.
-- Clips abandonnés (2026-10-21) : plus d'ergots sur le talon de la pièce 1, la
-  jupe droite est à 0,3 du talon comme les autres côtés. Le couvercle de test
+- Clips abandonnés (2026-10-21) : plus d'ergots sur le talon de la pièce 1. Le couvercle de test
   pour les pièces de la v0.1 (`tools/lid_for_v0_1.py`) garde les clips.
 - Ressort pour des verres de 1 à 3 mm (`verre_epaisseur_min`, `verre_epaisseur_max`) :
   bras de 27 × 6 × 1, pieds Ø5 au bout. Écrasement 1,5 sur le verre le plus fin,

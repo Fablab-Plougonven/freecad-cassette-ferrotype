@@ -100,11 +100,8 @@ avant_trou_diametre,2.5,mm,avant-trou piece 1 (vis M3 x 8 fraisees)
 avant_trou_profondeur,5.5,mm,
 vis_passage_diametre,3.4,mm,passage piece 2
 vis_fraisure_diametre,6.2,mm,fraisure 90 deg
-couvercle_epaisseur,2.4,mm,epaisseur du dessus du couvercle
-couvercle_recul,5,mm,recul du dessus du couvercle derriere la piece 2 (hauteur de prise)
-couvercle_face_interieure,collerette_face_arriere + couvercle_recul,mm,face interieure du dessus
-couvercle_face_exterieure,couvercle_face_interieure + couvercle_epaisseur,mm,face exterieure du couvercle
-cadre_appui_debord,0.6,mm,cadre qui descend du dessus et s'appuie sur la piece 2 (porte les nervures) : debord de chaque cote des gorges
+couvercle_hauteur,7.4,mm,"couvercle plein, dans le prolongement de la piece 2 : hauteur (prise ; matiere contre la transparence du PETG)"
+couvercle_face_exterieure,collerette_face_arriere + couvercle_hauteur,mm,face exterieure du couvercle
 noeud_rayon,2.4,mm,
 axe_trou_diametre,2.1,mm,trou de l'axe (axe 2)
 charniere_jeu_bord,0.4,mm,jeu entre noeuds et bord bas
@@ -116,26 +113,13 @@ noeuds_jeu,0.4,mm,
 couvercle_noeuds_bout,22,mm,noeuds du couvercle : bout
 gousset_depart_z,1.1,mm,depart du gousset a 45 deg
 gousset_hauteur,charniere_axe_z - noeud_rayon - gousset_depart_z,mm,
-jupe_epaisseur,1.6,mm,jupe du couvercle : epaisseur
-jupe_jeu,0.3,mm,jeu entre la jupe et les pieces 1 et 2
-jupe_bas_z,0.3,mm,"bas de la jupe, au-dessus de la face d'appui du boitier"
-boite_gauche,-(plaque_demi_largeur + jupe_jeu + jupe_epaisseur),mm,boite : bord gauche
-boite_droite,talon_bord_droit + jupe_jeu + jupe_epaisseur,mm,boite : bord droit
-boite_haut,languette_bord_haut + jupe_jeu + jupe_epaisseur,mm,boite : bord haut
-jupe_gauche_bas_z,butee_face_avant + 0.2,mm,"cote volet, la jupe s'arrete au-dessus de la fente : on ouvre sans retirer le volet"
-encoche_verrou_gauche,-11,mm,encoche de la jupe haute pour la languette du verrou (course et doigt)
-encoche_verrou_droite,19,mm,
-encoche_verrou_haut_z,collerette_face_arriere,mm,encoche : hauteur
 aimant_diametre,6,mm,aimants : diametre (6 au plus avec le jeu de colle : place entre la gorge et le bord)
 aimant_epaisseur,2,mm,aimants : epaisseur
 aimant_jeu_colle,1,mm,"logements des aimants : jeu au diametre pour la colle (0,5 tout autour)"
 aimant_paroi,0.9,mm,paroi entre le logement d'un aimant et le bord de la piece 2
 aimant_x,plaque_demi_largeur - aimant_paroi - (aimant_diametre + aimant_jeu_colle) / 2,mm,"deux aimants, dans les coins opposes a la charniere"
 aimant_y,(plaque_bord_haut + couvercle_gorge_axe + couvercle_gorge_largeur / 2) / 2,mm,entre la gorge exterieure et le bord haut
-plot_aimant_diametre,aimant_diametre + aimant_jeu_colle + 3,mm,plots du couvercle qui portent les aimants (soudes a la jupe et au cadre)
-couvercle_ouverture_max,180,mm,charniere : butee de la liaison pivot (couvercle a plat ; il touche la piece 1 vers 198 deg)
-paroi_charniere_retrait,1,mm,paroi du couvercle cote charniere : retrait depuis le bord bas (laisse tourner le couvercle)
-paroi_charniere_coin_bas_z,charniere_axe_z - 5.7,mm,"a droite, sous le talon, la paroi descend jusqu'ici (plus bas, elle heurte le talon en s'ouvrant)"
+couvercle_ouverture_max,160,mm,charniere : butee de la liaison pivot (le couvercle touche le gousset de la piece 1 vers 168 deg)
 ressort_bras_longueur,27,mm,bras : longueur depuis le centre (longs et fins : souples sur toute la course)
 ressort_bras_largeur,6,mm,
 ressort_epaisseur,1,mm,bras : epaisseur
@@ -151,6 +135,10 @@ tenon_diametre,8,mm,tenon du couvercle
 pion_diametre,3,mm,
 pion_longueur,1,mm,
 ressort_trou_diametre,pion_diametre + 0.5,mm,trou du ressort (Ø3.2 trop serre a l'essai)
+ressort_course,plan_film + verre_epaisseur_max - ressort_pied_bout_z,mm,ecrasement sur le verre le plus epais : les bras montent d'autant
+chambre_ressort_rayon,ressort_bras_longueur + 0.5,mm,chambre du ressort dans le couvercle
+chambre_ressort_haut_z,ressort_face_arriere + ressort_course + 0.5,mm,"plafond de la chambre : bras souleves + 0,5"
+charniere_degagement_largeur,2.5,mm,degagement du couvercle au-dessus du noeud central de la piece 1
 glissiere_gauche,-14.7,mm,glissiere : bout gauche
 glissiere_barre_bas,41.25,mm,glissiere : bas de la barre
 glissiere_dent_droite_bout,18.25,mm,dent droite : bout (la dent va jusqu'a verrou_poche_droite)
