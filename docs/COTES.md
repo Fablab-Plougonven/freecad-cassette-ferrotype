@@ -42,8 +42,8 @@ y = 16,22 et la face arrière en y = 9,52.
 | Verrou coulissant (pièce `Latch`) | 40,9 × 4,7 × 11,7. Course ≈ 3,5 selon u. Languette moletée de 16,9 qui sort de ≈ 3 au-dessus du bord haut. Le dos des deux dents est une **rampe** : 0,81 d'épaisseur au bout, pleine épaisseur 6,59 plus loin (≈ 18°) ; la griffe monte dessus et plaque la cassette. Capot `LatchCover` de 56,4 × 2,4, fixé par 2 trous Ø1,8, avec deux fenêtres en face de celles des griffes. Remodélisés en esquisses (`glissiere_verrou`, `capot_verrou`), écart de volume 2 % avec les STL |
 | Poche A (côté manivelle) | 3 × 17 : u +39 → +42, v +2,76 → +19,76, profonde de 5,9 depuis la face d'appui |
 | Poche B (côté manivelle) | 2 × 4,5 : u +39,5 → +41,5, v −24,0 → −28,5, profonde de 5,9 |
-| Gorge anti-lumière (face d'appui) | 2 de large × 1,2 de profondeur. Axe sur un carré de 72 × 72 centré, contournée autour des 4 trous. Elle **reçoit une lèvre du boîtier** : sans gorge sur le côté gauche, la pièce 1 se soulevait (essai du 2026-10-14). Remise sur les 4 côtés ; profondeur du côté gauche réglable (`seal_depth_left`), car sous la fente il ne reste que 0,7 de peau |
-| Fenêtre de la plaque Rayfor | 61,5 × 61,5 centrée. Elle laisse entrer la **lèvre intérieure** du boîtier, autour de son ouverture. Dans la cassette : ouverture de la peau avant de 61,9 (`skin_aperture`) ; avec 56, la lèvre intérieure soulevait la pièce 1 |
+| Gorge anti-lumière (face d'appui) | Carré intérieur 70,7 × 70,7 centré, 1,5 de large × 0,5 de profondeur, sur les 4 côtés, une seule esquisse (`gorge_cote_interieur`, `gorge_largeur`, `gorge_profondeur`). Elle **reçoit une lèvre du boîtier** : sans gorge sur le côté gauche, la pièce 1 se soulevait (essai du 2026-10-14). Avant le 2026-10-21 : 2 × 1,2, axe sur un carré de 72, profondeur du côté gauche réglable à part |
+| Fenêtre de la plaque Rayfor | 61,5 × 61,5 centrée. Elle laisse entrer la **lèvre intérieure** du boîtier, autour de son ouverture. Dans la cassette : ouverture de la peau avant de 61,9 (`peau_ouverture`) ; avec 56, la lèvre intérieure soulevait la pièce 1 |
 | 4 trous Ø3,1, entraxe 75 × 75 | Propres à l'Imacon. À réutiliser pour assembler la pièce 1 à la pièce 2 |
 
 Les poches A et B servent de dégagement pour les ergots et l'accouplement du
@@ -86,16 +86,50 @@ l'arrière :
   butée de fond, dans une gorge de 0,9 × 0,6 du fond de la poche de la pièce 1.
   Elle coupe le chemin de la lumière qui longerait l'insert depuis le bord
   gauche jusqu'à la fente.
-- **Couvercle** : nervure de 1,0 × 0,8 dans une gorge de 1,6 × 1,0 de la pièce 2.
+- **Couvercle** : deux nervures de 1,0 × 0,8 dans deux gorges de 1,6 × 1,0 de la pièce 2, et une paroi qui ferme la face de la charnière.
 - Les fenêtres des griffes, en haut, sont hors de la zone étanche (au-delà de
   la lèvre du boîtier) ; la collerette de la pièce 2 a un dégagement en face
   d'elles, au cas où les griffes dépassent du capot.
 
 ## Fermeture du couvercle
 
-- Charnière côté crochets, axe Ø2 ; deux clips côté manivelle (v 20 → 33 et
-  −7 → 6), doigts de 1,4, arrêt de 0,6 sur une rampe de 2 de haut, bec biseauté.
-  Un seul clip de 1,2 paraissait fragile à l'essai.
+- Couvercle-boîte (2026-10-21, pour une meilleure prise) : le dessus est reculé
+  de 5 mm derrière la pièce 2 (`couvercle_recul`). Jupe de 1,6 à 0,3 des pièces
+  1 et 2 : en haut et à droite jusqu'à 0,3 du boîtier, à gauche jusqu'à 0,2
+  au-dessus de la fente du volet (`jupe_gauche_bas_z`) pour ouvrir sans retirer
+  le volet. Cassette de 17,1 d'épaisseur (pièce 2 à 3 pour les aimants).
+- Encoche de la jupe haute de x −11 à 19 jusqu'à la face arrière de la pièce 2,
+  pour la languette du verrou (course et doigt).
+- Le cadre d'appui descend du dessus jusqu'à la pièce 2 ; le tenon du ressort
+  s'allonge d'autant.
+- Face de la charnière fermée par une paroi du couvercle, au-dessus de l'axe,
+  posée sur la pièce 2, à 1 du bord bas (`paroi_charniere_retrait`) pour que le
+  couvercle tourne ; à droite, sous le talon, elle descend jusqu'à z 3 (plus
+  bas, elle heurte le talon en s'ouvrant).
+- Deux nervures de 1,0 × 0,8 dans deux gorges de 1,6 × 1,0 de la pièce 2
+  (axes 33,5 et 30,7), portées par le cadre d'appui.
+- Charnière côté crochets, axe Ø2. Le bloc du nœud central de la pièce 1 est
+  hors de la cassette, sous la pièce 2 (jeu 0,4), tenu par le gousset à 45° :
+  il laisse passer la paroi côté charnière. La pièce 2 n'a plus de dégagement.
+- Fermeture par aimants (`fermeture_aimants` = 1) : deux paires d'aimants
+  Ø6 × 2, dans les coins opposés à la charnière (x ±37,8, y 38,675), entre la
+  gorge extérieure (34,3) et le bord haut. Logements Ø7 (1 mm de jeu au diamètre
+  pour la colle) × 2, aimants à fleur : couvercle fermé, ils sont en contact.
+  Ø6 au plus : avec le jeu de colle, il reste 0,9 de paroi au bord et 0,875 en
+  haut et en bas. Collerette de la pièce 2 passée de 2 à 3 mm, plots Ø10 du
+  couvercle soudés à la jupe et au cadre. Vis : deux en bas (x ±20), une en
+  haut à gauche du verrou (x −28), une sur le talon droit (44, 28), M3 × 8.
+  Avec `fermeture_aimants` = 0, les clips ci-dessous à la place.
+- Assemblage FreeCAD : liaison pivot de la charnière, butée à 180° (couvercle à
+  plat ; il touche la pièce 1 vers 198°). Le build vérifie que la liaison est
+  bien la charnière modélisée, puis ouvre le couvercle degré par degré de 0 à
+  30°, de 2 en 2 au-delà, volet en place : aucune collision dans les deux
+  variantes (avec les clips, les becs passent sur leurs ergots jusqu'à 2°).
+- Deux clips côté manivelle (y 20 → 33 et −7 → 6), languettes de 1,4 découpées
+  dans la jupe droite par deux fentes de 1 qui montent jusqu'à 1 mm sous le
+  dessus ; arrêt de 0,6 sur une rampe de 2 de haut, bec biseauté, tirette de 2
+  au bas de chaque languette pour les ouvrir. Un seul clip de 1,2 paraissait
+  fragile à l'essai.
 
 ## Verrou
 

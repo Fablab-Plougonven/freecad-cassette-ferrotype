@@ -17,8 +17,9 @@ Les STL, STEP et le fichier FreeCAD sont publiés dans les
 | Fichier | Pièce | À imprimer |
 |---|---|---|
 | `piece1_interface.stl` | Contre le boîtier : crochets, verrou, fente du volet, gorge de la lèvre du boîtier | Face d'appui (côté boîtier) sur le plateau |
-| `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes | Face arrière (côté couvercle) sur le plateau |
-| `piece3_couvercle.stl` | Couvercle articulé, deux clips côté manivelle, nervure anti-lumière, tenon du ressort | Face extérieure sur le plateau |
+| `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes, deux gorges anti-lumière, deux logements d'aimants Ø6 × 2 dans les coins opposés à la charnière | Face arrière (côté couvercle) sur le plateau |
+| `piece3_couvercle.stl` | Couvercle-boîte articulé, fermé sur ses 4 côtés : jupe en haut et à droite jusqu'au boîtier, à gauche jusqu'au-dessus de la fente du volet (on ouvre sans retirer le volet), paroi côté charnière, encoche du verrou, cadre d'appui et deux nervures anti-lumière, tenon du ressort, deux plots à aimants Ø6 × 2 dans les coins opposés à la charnière | Face extérieure sur le plateau |
+| `piece1_interface_clips.stl`, `piece2_cadre_verre_clips.stl`, `piece3_couvercle_clips.stl` | Variante fermée par deux clips découpés dans la jupe droite au lieu des aimants (`fermeture_aimants` = 0 dans la feuille) | Comme ci-dessus |
 | `ressort_croix.stl` | Ressort en croix qui presse le dos de la plaque | Face plate sur le plateau, pieds vers le haut, 100 % de remplissage |
 | `glissiere_verrou.stl` | Glissière du verrou (dessin de Rayfor, remodélisé) | À plat, face côté boîtier sur le plateau |
 | `capot_verrou.stl` | Capot de la glissière (idem) | À plat |
@@ -30,7 +31,11 @@ parois fines sortent trop épaisses et les rampes en escalier.
 
 ## Quincaillerie
 
-- 4 vis M3 × 6 à tête fraisée, auto-taraudées dans la pièce 1.
+- 4 vis M3 × 8 à tête fraisée, auto-taraudées dans la pièce 1 (deux en bas, une en
+  haut à gauche du verrou, une sur le talon droit).
+- 4 aimants néodyme Ø6 × 2 mm (N52 ou N45, aimantés dans l'épaisseur) : deux dans
+  les coins hauts de la pièce 2, deux au bout des plots du couvercle. Couvercle
+  fermé, ils sont en contact deux à deux.
 - 1 axe de charnière Ø2 × 44 mm (tige acier ou clou coupé).
 - Velours ou feutrine adhésive, 3 mm de large, 0,5 à 0,7 mm d'épaisseur,
   2 bandes de 66 mm : à l'entrée de la fente du volet, une sur chaque pièce.
@@ -46,6 +51,11 @@ parois fines sortent trop épaisses et les rampes en escalier.
 3. Emboîter la pièce 2 dans la pièce 1 : les deux chicanes s'engagent dans leurs
    gorges. Visser les 4 vis M3.
 4. Coller le ressort sur le tenon du couvercle, pieds vers la plaque.
+   Version aimants : coller les 4 aimants Ø6 × 2 (époxy ou cyanoacrylate gel)
+   dans leurs logements, à fleur : les logements font 1 mm de plus au diamètre
+   (0,5 tout autour) pour la colle. Vérifier avant de coller que chaque paire
+   s'attire ; poser l'aimant du couvercle sur celui de la pièce 2, couvercle
+   fermé, pendant la prise pour qu'ils soient bien face à face.
 5. Monter la charnière avec l'axe Ø2.
 
 Sur le boîtier : accrocher le bas sur les crochets, rabattre le haut, puis
@@ -58,7 +68,14 @@ griffes du boîtier montent sur la rampe des dents et plaquent la cassette.
   laisse entrer sa lèvre intérieure, comme sur un magasin d'origine.
 - Entre la pièce 1 et la pièce 2 : une nervure en U sous la collerette et une
   nervure sous les rails du volet, chacune dans une gorge.
-- Couvercle : une nervure dans la gorge de la pièce 2.
+- Couvercle : un cadre d'appui descend du dessus jusqu'à la pièce 2 et porte deux
+  nervures qui entrent dans deux gorges, sur les 4 côtés : c'est la barrière qui
+  protège la plaque côté couvercle. La jupe et la paroi côté charnière ferment en
+  plus la boîte (première barrière), sauf aux ouvertures nécessaires : fente du
+  encoche du verrou, jeu au-dessus du boîtier et, à gauche, passage du volet
+  (la jupe s'arrête au-dessus de la fente).
+- Valider par un essai : papier photo dans la cassette fermée, 10 min au soleil,
+  puis développement.
 - Fente du volet : velours des deux côtés.
 - Les fenêtres des griffes, en haut, sont hors de la zone étanche : on y voit la
   glissière, c'est normal.
@@ -67,9 +84,35 @@ griffes du boîtier montent sur la rampe des dents et plaquent la cassette.
 
 **Dans FreeCAD** : ouvrir `cassette_ferrotype.FCStd`, changer la valeur dans la
 feuille `Parametres` (colonne B ; les cotes dérivées sont des formules), puis
-recalculer (Ctrl+R). Chaque pièce est un corps PartDesign fait d'esquisses
-entièrement contraintes, dont les cotes et les plans suivent la feuille. On peut
-aussi retoucher une esquisse à la main. Exporter ensuite le corps en STL.
+recalculer (Ctrl+R). Les noms de la feuille sont en français, dans le repère vu
+de l'arrière (côté photographe) : X vers la droite (`_gauche`, `_droite`), Y vers
+le haut (`_bas`, `_haut`), Z = profondeur depuis la face d'appui du boîtier.
+
+Chaque pièce est un corps PartDesign construit comme à la main : un contour
+extrudé (coins arrondis dans l'esquisse), des plans de référence nommés (« Plan
+face arrière »…), des poches à leur vraie profondeur ou « à travers tout », des
+perçages (fonction Perçage, fraisures comprises), une seule moitié dessinée puis
+une symétrie, et des répétitions (clips, moletage, bras du ressort). Les
+esquisses sont cotées comme un plan : largeurs, hauteurs, diamètres, rayons
+égaux, symétrie sur les axes quand un profil est centré, sinon `position_x` /
+`position_y` depuis l'axe. Les cotes portent un nom (`largeur_plaque`,
+`hauteur_talon`, `rayon_coins`, `diametre`…) et affichent la formule de la
+feuille qui les pilote (icône ƒx) : une cote pilotée se change dans la feuille,
+pas dans l'esquisse. Exporter ensuite le corps en STL.
+
+Les pièces sont réunies dans l'assemblage **Cassette** (atelier Assemblage), par
+des liaisons : pièce 1 fixe, pièce 2 et capot fixés dessus, couvercle en
+**pivot** sur la charnière (butée à `couvercle_ouverture_max`), ressort fixé au
+couvercle, glissière du verrou en **glissière** sur sa course, aimants fixés dans
+leurs logements. Pour ouvrir le couvercle : double-cliquer *Cassette*, puis
+faire glisser le couvercle à la souris.
+
+Deux animations sont prêtes (Cassette › Simulations) : *Ouvrir et fermer le
+couvercle* (jusqu'à la butée) et *Verrouiller et déverrouiller*. Atelier
+**Assembly**, double-cliquer *Cassette*, puis double-cliquer l'animation,
+cliquer **Générer** (*Generate*) et lancer la lecture sous la barre des images. Les liaisons s'appuient sur des repères
+(« Repère charnière »…) placés par la feuille, jamais sur une arête : elles
+suivent les changements de cotes.
 
 **Par le script** (régénère le FCStd, les STL, les STEP et les contrôles) :
 changer l'expression dans `PARAMS`, en tête de

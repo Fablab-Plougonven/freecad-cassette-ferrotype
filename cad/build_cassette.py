@@ -16,6 +16,7 @@ Run with FreeCAD's interpreter:
 import csv
 import math
 import os
+import random
 import re
 import struct
 import sys
@@ -28,6 +29,9 @@ import MeshPart  # noqa: E402
 import Part  # noqa: E402
 import Sketcher  # noqa: E402
 
+sys.path.append("/Applications/FreeCAD.app/Contents/Resources/Mod/Assembly")
+import JointObject  # noqa: E402
+
 V = App.Vector
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "exports")
@@ -35,134 +39,166 @@ FCSTD = os.path.join(OUT, "cassette_ferrotype.FCStd")
 SHEET = "Parametres"
 
 # --- Parameter table: (name, expression, note) -----------------------------
-# Expressions use other names of the table; numbers are mm.
+# Expressions use other names of the table; numbers are mm. Names are French:
+# they are what the user reads in the sheet. Frame seen from the rear: x to the
+# right (gauche / droite), y up (bas / haut), z = depth from the mating face.
 PARAMS = [
     # Body interface (Rayfor V mount)
-    ("plate_u", "42.2", "demi-largeur de la plaque"),
-    ("plate_v_top", "43.05", "bord haut (cote verrou)"),
-    ("plate_v_bot", "-43.04", "bord bas (cote crochets)"),
-    ("corner_r", "3", "rayon des coins"),
-    ("tab_u", "32", "demi-largeur de la languette haute"),
-    ("tab_v", "45.8", "bord haut de la languette"),
-    ("tab_chamfer_u", "34.95", "pied des chanfreins de la languette"),
-    ("tab_v0", "38", "base de la languette (noyee dans la plaque)"),
-    ("heel_u", "48.5", "talon cote manivelle : bord exterieur"),
-    ("heel_v", "37.5", "talon : demi-hauteur"),
-    ("heel_overlap", "3.2", "recouvrement talon / plaque"),
-    ("t1", "6.7", "epaisseur de la piece 1"),
-    ("seal_out", "37", "gorge anti-lumiere : demi-cote exterieur"),
-    ("seal_in", "35", "gorge anti-lumiere : demi-cote interieur"),
-    ("seal_depth", "1.2", "gorge qui recoit la levre du boitier : profondeur"),
-    ("seal_depth_left", "seal_depth", "profondeur de la gorge a gauche, sous la fente du volet"),
-    ("pin_pocket_depth", "5.9", "poches des ergots du boitier"),
-    ("pocketA_u0", "39", ""), ("pocketA_u1", "42", ""),
-    ("pocketA_v0", "2.76", ""), ("pocketA_v1", "19.76", ""),
-    ("pocketB_u0", "39.5", ""), ("pocketB_u1", "41.5", ""),
-    ("pocketB_v0", "-28.49", ""), ("pocketB_v1", "-23.99", ""),
-    ("latch_win_u0", "11.75", "fenetres des griffes (symetriques)"),
-    ("latch_win_u1", "18.2", ""),
-    ("latch_win_v0", "39.25", ""), ("latch_win_v1", "40.86", ""),
-    ("latch_skin", "0.8", "paroi devant la poche du verrou (1.0 trop epais a l'essai)"),
-    ("slider_t", "3", "glissiere : epaisseur"),
-    ("latch_depth", "latch_skin + slider_t + 0.2", "fond de la poche du verrou"),
-    ("latch_u0", "-18.2", "poche de la glissiere Rayfor"), ("latch_u1", "26.2", ""),
-    ("latch_v0", "37.25", ""), ("latch_v1", "44.3", ""),
-    ("latch_block_u0", "2.75", "ilot de guidage dans la poche"), ("latch_block_u1", "11.75", ""),
-    ("latch_block_v1", "40.25", ""),
-    ("cover_u0", "-24.2", "poche du capot Rayfor"), ("cover_u1", "32.2", ""),
-    ("latch_fit", "0.2", "jeu par cote de la glissiere et du capot Rayfor"),
-    ("tabopen_u0", "-6.2", "passage de la languette de la glissiere"), ("tabopen_u1", "14.2", ""),
-    ("hook_u0", "23.8", "encoches des crochets (symetriques)"), ("hook_u1", "30.3", ""),
-    ("hook_depth", "1.55", ""), ("hook_lip", "1.1", "levre gardee cote boitier"),
+    ("plaque_demi_largeur", "42.2", "demi-largeur de la plaque"),
+    ("plaque_bord_haut", "43.05", "bord haut (cote verrou)"),
+    ("plaque_bord_bas", "-43.04", "bord bas (cote crochets)"),
+    ("rayon_coins", "3", "rayon des coins"),
+    ("languette_demi_largeur", "32", "demi-largeur de la languette haute"),
+    ("languette_bord_haut", "45.8", "bord haut de la languette"),
+    ("languette_demi_largeur_pied", "34.95", "languette : demi-largeur au pied des pans"),
+    ("talon_bord_droit", "48.5", "talon cote manivelle : bord droit"),
+    ("talon_demi_hauteur", "37.5", "talon : demi-hauteur"),
+    ("piece1_epaisseur", "6.7", "epaisseur de la piece 1"),
+    ("gorge_cote_interieur", "70.7", "gorge de la face d'appui (recoit la levre du boitier) : cote interieur du carre"),
+    ("gorge_largeur", "1.5", "gorge : largeur"),
+    ("gorge_profondeur", "0.5", "gorge : profondeur"),
+    ("ergots_profondeur", "5.9", "poches des ergots du boitier"),
+    ("ergot1_gauche", "39", ""), ("ergot1_droite", "42", ""),
+    ("ergot1_bas", "2.76", ""), ("ergot1_haut", "19.76", ""),
+    ("ergot2_gauche", "39.5", ""), ("ergot2_droite", "41.5", ""),
+    ("ergot2_bas", "-28.49", ""), ("ergot2_haut", "-23.99", ""),
+    ("fenetre_griffe_gauche", "11.75", "fenetres des griffes (symetriques)"),
+    ("fenetre_griffe_droite", "18.2", ""),
+    ("fenetre_griffe_bas", "39.25", ""), ("fenetre_griffe_haut", "40.86", ""),
+    ("verrou_paroi", "0.8", "paroi devant la poche du verrou (1.0 trop epais a l'essai)"),
+    ("glissiere_epaisseur", "3", "glissiere : epaisseur"),
+    ("verrou_poche_fond", "verrou_paroi + glissiere_epaisseur + 0.2", "fond de la poche du verrou"),
+    ("verrou_poche_gauche", "-18.2", "poche de la glissiere Rayfor"), ("verrou_poche_droite", "26.2", ""),
+    ("verrou_poche_bas", "37.25", ""), ("verrou_poche_haut", "44.3", ""),
+    ("verrou_ilot_gauche", "2.75", "ilot de guidage dans la poche"), ("verrou_ilot_droite", "11.75", ""),
+    ("verrou_ilot_haut", "40.25", ""),
+    ("capot_gauche", "-24.2", "poche du capot Rayfor"), ("capot_droite", "32.2", ""),
+    ("verrou_jeu", "0.2", "jeu par cote de la glissiere et du capot Rayfor"),
+    ("passage_languette_gauche", "-6.2", "passage de la languette de la glissiere"), ("passage_languette_droite", "14.2", ""),
+    ("encoche_crochet_gauche", "23.8", "encoches des crochets (symetriques)"), ("encoche_crochet_droite", "30.3", ""),
+    ("encoche_crochet_hauteur", "1.55", ""), ("encoche_crochet_levre", "1.1", "levre gardee cote boitier"),
     # Film plane and dark slide stack
-    ("film", "3.55", "face d'appui -> emulsion"),
-    ("skin", "1.9", "peau avant de la piece 1"),
-    ("slot", "0.4", "epaisseur de la fente du volet"),
-    ("ledge_w", "skin + slot", "face avant de la butee du verre"),
-    ("slide_w", "65.88", "volet : largeur de la plaque metal mesuree"),
-    ("slot_play", "0.5", "jeu total du volet en hauteur"),
-    ("slot_half", "(slide_w + slot_play) / 2", "demi-hauteur de la fente"),
-    ("slot_end", "30.9", "butee de fond du volet (u)"),
-    ("slide_t", "0.3", "volet : epaisseur (reference)"),
-    ("glass", "57", "verre : cote (57 x 57)"), ("glass_t", "1", "verre : epaisseur"),
-    ("glass_gap", "0.2", "jeu du verre par cote"),
-    ("glass_back", "film + glass_t", "dos du verre"),
-    ("ledge_overlap", "1", "appui du verre sur la butee, par cote"),
-    ("aperture", "glass - 2 * ledge_overlap", "ouverture de la butee = image"),
-    ("skin_aperture", "61.9", "ouverture de la peau avant : laisse entrer la levre interieure du boitier (fenetre Rayfor 61.5 + jeu)"),
+    ("plan_film", "3.55", "face d'appui -> emulsion"),
+    ("peau_epaisseur", "1.9", "peau avant de la piece 1"),
+    ("fente_epaisseur", "0.4", "epaisseur de la fente du volet"),
+    ("butee_face_avant", "peau_epaisseur + fente_epaisseur", "face avant de la butee du verre"),
+    ("volet_largeur", "65.88", "volet : largeur de la plaque metal mesuree"),
+    ("fente_jeu", "0.5", "jeu total du volet en hauteur"),
+    ("fente_demi_hauteur", "(volet_largeur + fente_jeu) / 2", "demi-hauteur de la fente"),
+    ("fente_fond", "30.9", "butee de fond du volet (u)"),
+    ("volet_epaisseur", "0.3", "volet : epaisseur (reference)"),
+    ("verre_cote", "57", "verre : cote (57 x 57)"), ("verre_epaisseur", "1", "verre : epaisseur"),
+    ("verre_jeu", "0.2", "jeu du verre par cote"),
+    ("verre_face_arriere", "plan_film + verre_epaisseur", "dos du verre"),
+    ("butee_appui", "1", "appui du verre sur la butee, par cote"),
+    ("butee_ouverture", "verre_cote - 2 * butee_appui", "ouverture de la butee = image"),
+    ("peau_ouverture", "61.9", "ouverture de la peau avant : laisse entrer la levre interieure du boitier (fenetre Rayfor 61.5 + jeu)"),
     # Insert pocket (piece 1) / insert (piece 2)
-    ("pocket_u_max", "34", "poche de la piece 2 : bord droit"),
-    ("pocket_v", "34.8", "poche de la piece 2 : demi-hauteur (reste dans la gorge, seal_in)"),
-    ("fit", "0.2", "jeu insert / poche"),
-    ("flange_t", "2", "collerette de la piece 2"),
-    ("flange_w1", "t1 + flange_t", "face arriere de la piece 2"),
-    ("felt_u0", "-41.2", "gorges du velours a l'entree de la fente"), ("felt_u1", "-38.2", ""),
-    ("felt_depth", "0.6", ""),
-    ("lid_seal_c", "33.5", "gorge du couvercle : axe"), ("lid_seal_w", "1.6", ""),
-    ("lid_seal_d", "1", ""),
-    ("rib_w", "1", "nervure du couvercle"), ("rib_h", "0.8", ""),
+    ("poche_cadre_droite", "34", "poche de la piece 2 : bord droit"),
+    ("poche_cadre_demi_hauteur", "34.8", "poche de la piece 2 : demi-hauteur (reste a l'interieur de la gorge)"),
+    ("cadre_jeu", "0.2", "jeu insert / poche"),
+    ("collerette_epaisseur", "3", "collerette de la piece 2 (3 : logements des aimants de 2 + fond de 0,9)"),
+    ("collerette_face_arriere", "piece1_epaisseur + collerette_epaisseur", "face arriere de la piece 2"),
+    ("velours_gauche", "-41.2", "gorges du velours a l'entree de la fente"), ("velours_droite", "-38.2", ""),
+    ("velours_profondeur", "0.6", ""),
+    ("couvercle_gorge_axe", "33.5", "gorges du couvercle (piece 2) : axe de la gorge exterieure"),
+    ("couvercle_gorges_entraxe", "2.8", "deux gorges et deux nervures : entraxe"),
+    ("couvercle_gorge2_axe", "couvercle_gorge_axe - couvercle_gorges_entraxe", "axe de la gorge interieure"),
+    ("couvercle_gorge_largeur", "1.6", ""),
+    ("couvercle_gorge_profondeur", "1", ""),
+    ("couvercle_nervure_largeur", "1", "nervures du couvercle"), ("couvercle_nervure_hauteur", "0.8", ""),
     # Light traps between piece 1 and piece 2
-    ("trap_c", "36.1", "chicane collerette : axe (haut, bas, droite)"),
-    ("trap_u_left", "-40.2", "chicane collerette : bout gauche"),
-    ("trap_w", "1", "chicane collerette : largeur de la gorge"), ("trap_d", "1", "profondeur de la gorge"),
-    ("trap_rib", "0.6", "largeur de la nervure"), ("trap_h", "0.8", "hauteur de la nervure"),
-    ("rail_trap_c", "33.9", "chicane des rails : axe (haut, bas)"),
-    ("rail_trap_u", "32.35", "chicane des rails : axe du cote droit"),
-    ("rail_trap_w", "0.9", "largeur de la gorge dans le fond de la piece 1"), ("rail_trap_d", "0.6", ""),
-    ("rail_trap_rib", "0.5", "largeur de la nervure sous les rails"), ("rail_trap_h", "0.5", ""),
-    ("claw_relief", "0.3", "degagement des griffes dans la collerette (par cote)"),
+    ("chicane_axe", "36.1", "chicane collerette : axe (haut, bas, droite)"),
+    ("chicane_bout_gauche", "-40.2", "chicane collerette : bout gauche"),
+    ("chicane_gorge_largeur", "1", "chicane collerette : largeur de la gorge"), ("chicane_gorge_profondeur", "1", "profondeur de la gorge"),
+    ("chicane_nervure_largeur", "0.6", "largeur de la nervure"), ("chicane_nervure_hauteur", "0.8", "hauteur de la nervure"),
+    ("chicane_rails_axe", "33.9", "chicane des rails : axe (haut, bas)"),
+    ("chicane_rails_axe_droit", "32.35", "chicane des rails : axe du cote droit"),
+    ("chicane_rails_gorge_largeur", "0.9", "largeur de la gorge dans le fond de la piece 1"), ("chicane_rails_gorge_profondeur", "0.6", ""),
+    ("chicane_rails_nervure_largeur", "0.5", "largeur de la nervure sous les rails"), ("chicane_rails_nervure_hauteur", "0.5", ""),
+    ("griffes_degagement", "0.3", "degagement des griffes dans la collerette (par cote)"),
     # Screws M3 x 6 countersunk
-    ("screw_u", "38.5", "vis : |u|"), ("screw_v_top", "39", "vis du haut : v"),
-    ("screw_v_bot", "-39.5", "vis du bas : v"),
-    ("pilot_d", "2.5", "avant-trou piece 1"), ("pilot_depth", "4.5", ""),
-    ("clear_d", "3.4", "passage piece 2"), ("csk_d", "6.2", "fraisure 90 deg"),
+    ("vis_bas_x", "20", "vis du bas, paire symetrique (les coins sont aux aimants) : x"), ("vis_bas_y", "-39.5", ""),
+    ("vis_haut_x", "-28", "vis du haut, a gauche du verrou : x"), ("vis_haut_y", "39", ""),
+    ("vis_talon_x", "44", "vis du talon droit : x"), ("vis_talon_y", "28", ""),
+    ("avant_trou_diametre", "2.5", "avant-trou piece 1 (vis M3 x 8 fraisees)"), ("avant_trou_profondeur", "5.5", ""),
+    ("vis_passage_diametre", "3.4", "passage piece 2"), ("vis_fraisure_diametre", "6.2", "fraisure 90 deg"),
     # Lid
-    ("lid_t", "2.4", "epaisseur du couvercle"),
-    ("lid_w1", "flange_w1 + lid_t", "face exterieure du couvercle"),
+    ("couvercle_epaisseur", "2.4", "epaisseur du dessus du couvercle"),
+    ("couvercle_recul", "5", "recul du dessus du couvercle derriere la piece 2 (hauteur de prise)"),
+    ("couvercle_face_interieure", "collerette_face_arriere + couvercle_recul", "face interieure du dessus"),
+    ("couvercle_face_exterieure", "couvercle_face_interieure + couvercle_epaisseur", "face exterieure du couvercle"),
+    ("cadre_appui_debord", "0.6", "cadre qui descend du dessus et s'appuie sur la piece 2 (porte les nervures) : debord de chaque cote des gorges"),
     # Hinge (pin 2 mm, along u)
-    ("knuckle_r", "2.4", ""), ("pin_d", "2.1", "trou de l'axe (axe 2)"),
-    ("hinge_clear", "0.4", "jeu entre noeuds et bord bas"),
-    ("hinge_v", "plate_v_bot - knuckle_r - hinge_clear", "axe de la charniere : v"),
-    ("hinge_w", "flange_w1", "axe de la charniere : w"),
-    ("boss_u", "14", "noeud central (piece 1) : demi-longueur"),
-    ("boss_v_top", "-37.5", "haut du bossage de charniere (laisse passer la chicane)"),
-    ("boss_lid_gap", "0.8", "jeu couvercle / haut du bossage (ouverture sans frotter)"),
-    ("knuckle_gap", "0.4", ""), ("lid_knuckle_u1", "22", "noeuds du couvercle : bout"),
-    ("gusset_w0", "1.1", "depart du gousset a 45 deg"),
-    ("gusset_drop", "hinge_w - knuckle_r - gusset_w0", ""),
+    ("noeud_rayon", "2.4", ""), ("axe_trou_diametre", "2.1", "trou de l'axe (axe 2)"),
+    ("charniere_jeu_bord", "0.4", "jeu entre noeuds et bord bas"),
+    ("charniere_axe_y", "plaque_bord_bas - noeud_rayon - charniere_jeu_bord", "axe de la charniere : v"),
+    ("charniere_axe_z", "collerette_face_arriere", "axe de la charniere : w"),
+    ("bossage_demi_longueur", "14", "noeud central (piece 1) : demi-longueur"),
+    ("bossage_haut", "plaque_bord_bas - charniere_jeu_bord", "haut du bloc de charniere : hors de la cassette, sous la piece 2 (tenu par le gousset)"),
+    ("noeuds_jeu", "0.4", ""), ("couvercle_noeuds_bout", "22", "noeuds du couvercle : bout"),
+    ("gousset_depart_z", "1.1", "depart du gousset a 45 deg"),
+    ("gousset_hauteur", "charniere_axe_z - noeud_rayon - gousset_depart_z", ""),
     # Snap clip on the heel (right side)
-    ("clipA_v0", "20", "clip du haut"), ("clipA_v1", "33", ""),
-    ("clipB_v0", "-7", "clip du milieu"), ("clipB_v1", "6", ""),
-    ("bump", "0.6", "saillie de l'arret"), ("bump_w0", "3", ""), ("bump_w1", "4", ""),
-    ("ramp_w", "6", "haut de la rampe (pente douce)"),
-    ("finger_t", "1.4", "doigt du clip : epaisseur"), ("finger_gap", "0.2", "jeu doigt / arret"), ("lip_w0", "2.3", ""),
-    ("finger_u0", "heel_u + bump + finger_gap", ""),
-    ("finger_u1", "finger_u0 + finger_t", ""),
+    ("clip_longueur", "13", "longueur des clips"),
+    ("clip1_bas", "20", "clip du haut"), ("clip1_haut", "clip1_bas + clip_longueur", ""),
+    ("clip2_bas", "-7", "clip du milieu"), ("clip2_haut", "clip2_bas + clip_longueur", ""),
+    ("clip_arret_saillie", "0.6", "saillie de l'arret"), ("clip_arret_debut_z", "3", ""), ("clip_arret_fin_z", "4", ""),
+    ("clip_rampe_fin_z", "6", "haut de la rampe (pente douce)"),
+    ("clip_doigt_epaisseur", "1.4", "doigt du clip : epaisseur"), ("clip_doigt_jeu", "0.2", "jeu doigt / arret"), ("clip_bec_debut_z", "2.3", ""),
+    ("clip_doigt_gauche", "talon_bord_droit + clip_arret_saillie + clip_doigt_jeu", "face interieure de la jupe droite"),
+    ("clip_doigt_droite", "clip_doigt_gauche + clip_doigt_epaisseur", ""),
+    ("clip_fente_largeur", "1", "fentes de part et d'autre des clips dans la jupe"),
+    ("clip_fente_haut_z", "couvercle_face_interieure - 1", "haut des fentes (longueur de flexion des clips)"),
+    ("clip_tirette_saillie", "2", "tirette au bas du clip, pour l'ouvrir"), ("clip_tirette_hauteur", "1.5", ""),
+    ("clip_tirette_retrait", "3", "retrait de la tirette aux bouts du clip"),
+    # Lid skirt (box): left, top and right sides, open at the hinge
+    ("jupe_epaisseur", "1.6", "jupe du couvercle : epaisseur (a droite : celle des clips)"),
+    ("jupe_jeu", "0.3", "jeu entre la jupe et les pieces 1 et 2"),
+    ("jupe_bas_z", "0.3", "bas de la jupe, au-dessus de la face d'appui du boitier"),
+    ("boite_gauche", "-(plaque_demi_largeur + jupe_jeu + jupe_epaisseur)", "boite : bord gauche"),
+    ("boite_droite", "clip_doigt_droite", "boite : bord droit (face exterieure des clips)"),
+    ("boite_haut", "languette_bord_haut + jupe_jeu + jupe_epaisseur", "boite : bord haut"),
+    ("jupe_gauche_bas_z", "butee_face_avant + 0.2", "cote volet, la jupe s'arrete au-dessus de la fente : on ouvre sans retirer le volet"),
+    ("encoche_verrou_gauche", "-11", "encoche de la jupe haute pour la languette du verrou (course et doigt)"),
+    ("encoche_verrou_droite", "19", ""),
+    ("encoche_verrou_haut_z", "collerette_face_arriere", "encoche : hauteur"),
+    # Magnetic closure (alternative to the clips)
+    ("fermeture_aimants", "1", "fermeture du couvercle : 1 = aimants, 0 = clips"),
+    ("aimant_diametre", "6", "aimants : diametre (6 au plus avec le jeu de colle : place entre la gorge et le bord)"), ("aimant_epaisseur", "2", "aimants : epaisseur"),
+    ("aimant_jeu_colle", "1", "logements des aimants : jeu au diametre pour la colle (0,5 tout autour)"),
+    ("aimant_paroi", "0.9", "paroi entre le logement d'un aimant et le bord de la piece 2"),
+    ("aimant_x", "plaque_demi_largeur - aimant_paroi - (aimant_diametre + aimant_jeu_colle) / 2", "deux aimants, dans les coins opposes a la charniere"),
+    ("aimant_y", "(plaque_bord_haut + couvercle_gorge_axe + couvercle_gorge_largeur / 2) / 2", "entre la gorge exterieure et le bord haut"),
+    ("plot_aimant_diametre", "aimant_diametre + aimant_jeu_colle + 3", "plots du couvercle qui portent les aimants (soudes a la jupe et au cadre)"),
+    ("couvercle_ouverture_max", "180", "charniere : butee de la liaison pivot (couvercle a plat ; il touche la piece 1 vers 198 deg)"),
+    ("paroi_charniere_retrait", "1", "paroi du couvercle cote charniere : retrait depuis le bord bas (laisse tourner le couvercle)"),
+    ("paroi_charniere_coin_bas_z", "charniere_axe_z - 5.7", "a droite, sous le talon, la paroi descend jusqu'ici (plus bas, elle heurte le talon en s'ouvrant)"),
     # Cross spring
-    ("spring_arm", "24", "bras : longueur depuis le centre"), ("spring_arm_w", "6", ""),
-    ("spring_t", "1.6", "bras : epaisseur"), ("spring_hub_d", "14", ""),
-    ("spring_foot_d", "5", ""), ("spring_foot_r", "21.5", ""),
-    ("preload", "0.8", "ecrasement du ressort"), ("hub_clear", "0.3", "jeu moyeu / verre"),
-    ("foot_tip", "glass_back - preload", ""),
-    ("arm_front", "glass_back + hub_clear", ""),
-    ("post_end", "arm_front + spring_t", ""),
-    ("post_d", "8", "tenon du couvercle"), ("pin_post_d", "3", ""), ("pin_post_l", "1", ""),
-    ("spring_hole_d", "pin_post_d + 0.5", "trou du ressort (Ø3.2 trop serre a l'essai)"),
+    ("ressort_bras_longueur", "24", "bras : longueur depuis le centre"), ("ressort_bras_largeur", "6", ""),
+    ("ressort_epaisseur", "1.6", "bras : epaisseur"), ("ressort_moyeu_diametre", "14", ""),
+    ("ressort_pied_diametre", "5", ""), ("ressort_pied_rayon", "21.5", ""),
+    ("ressort_precharge", "0.8", "ecrasement du ressort"), ("ressort_jeu_verre", "0.3", "jeu moyeu / verre"),
+    ("ressort_pied_bout_z", "verre_face_arriere - ressort_precharge", ""),
+    ("ressort_face_avant", "verre_face_arriere + ressort_jeu_verre", ""),
+    ("ressort_face_arriere", "ressort_face_avant + ressort_epaisseur", ""),
+    ("tenon_diametre", "8", "tenon du couvercle"), ("pion_diametre", "3", ""), ("pion_longueur", "1", ""),
+    ("ressort_trou_diametre", "pion_diametre + 0.5", "trou du ressort (Ø3.2 trop serre a l'essai)"),
     # Latch slider and cover (Rayfor, remodelled; slider at rest)
-    ("sl_u0", "-14.7", "glissiere : bout gauche"), ("sl_bar_v0", "41.25", "glissiere : bas de la barre"),
-    ("sl_toothA_u0", "18.25", "dent droite : bout (la dent va jusqu'a latch_u1)"),
-    ("sl_toothB_u0", "-11.75", "dent gauche : bout"), ("sl_toothB_u1", "-5.25", "dent gauche : pied"),
-    ("sl_ramp_t0", "0.81", "rampe de verrouillage : epaisseur au bout de la dent"),
-    ("sl_ramp_len", "6.59", "rampe : longueur jusqu'a pleine epaisseur (environ 18 deg)"),
-    ("sl_step_v0", "40.46", "guide au-dessus de l'ilot"), ("sl_step_u1", "11.16", ""),
-    ("sl_tab_u0", "-2.7", "languette : bords"), ("sl_tab_u1", "14.2", ""),
-    ("sl_tab_v1", "48.3", "languette : bout"),
-    ("sl_grip_v0", "46.31", "prise : debut (hors de la plaque)"), ("sl_grip_t", "1.7", "prise : surepaisseur"),
-    ("knurl_u0", "-2.7", "moletage : pied de la 1re dent"), ("knurl_pitch", "1.92", ""),
-    ("knurl_base", "1.5", "dent trapezoidale : pied"), ("knurl_top", "0.75", "dent : sommet"),
-    ("knurl_h", "0.66", ""),
-    ("sl_travel", "3.5", "course de la glissiere (vers u negatif)"),
-    ("cover_t", "2.4", "capot : epaisseur (affleure la face arriere de la piece 1)"),
+    ("glissiere_gauche", "-14.7", "glissiere : bout gauche"), ("glissiere_barre_bas", "41.25", "glissiere : bas de la barre"),
+    ("glissiere_dent_droite_bout", "18.25", "dent droite : bout (la dent va jusqu'a verrou_poche_droite)"),
+    ("glissiere_dent_gauche_bout", "-11.75", "dent gauche : bout"), ("glissiere_dent_gauche_pied", "-5.25", "dent gauche : pied"),
+    ("glissiere_rampe_epaisseur_bout", "0.81", "rampe de verrouillage : epaisseur au bout de la dent"),
+    ("glissiere_rampe_longueur", "6.59", "rampe : longueur jusqu'a pleine epaisseur (environ 18 deg)"),
+    ("glissiere_guide_bas", "40.46", "guide au-dessus de l'ilot"), ("glissiere_guide_droite", "11.16", ""),
+    ("glissiere_languette_gauche", "-2.7", "languette : bords"), ("glissiere_languette_droite", "14.2", ""),
+    ("glissiere_languette_haut", "48.3", "languette : bout"),
+    ("glissiere_prise_bas", "46.31", "prise : debut (hors de la plaque)"), ("glissiere_prise_surepaisseur", "1.7", "prise : surepaisseur"),
+    ("moletage_debut", "-2.7", "moletage : pied de la 1re dent"), ("moletage_pas", "1.92", ""),
+    ("moletage_dent_pied", "1.5", "dent trapezoidale : pied"), ("moletage_dent_sommet", "0.75", "dent : sommet"),
+    ("moletage_hauteur", "0.66", ""),
+    ("glissiere_course", "3.5", "course de la glissiere (vers u negatif)"),
+    ("capot_epaisseur", "2.4", "capot : epaisseur (affleure la face arriere de la piece 1)"),
 ]
 NAMES = {n for n, _, _ in PARAMS}
 _TOKEN = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*\b")
@@ -179,12 +215,21 @@ def neg(e):
     return f"-({e})"
 
 
-def param_values():
-    """Pure-Python evaluation of the table (same expressions as the sheet)."""
+def param_values(rng=None):
+    """Pure-Python evaluation of the table (same expressions as the sheet).
+    With rng, every literal parameter is scaled at random: a relation that holds
+    for both evaluations is structural, not a coincidence of the defaults."""
     vals = {}
     for n, e, _ in PARAMS:
         vals[n] = eval(e, {"__builtins__": {}}, dict(vals))
+        if rng and re.fullmatch(r"-?[\d.]+", e):
+            vals[n] *= rng.uniform(0.7, 1.3)
     return vals
+
+
+def paren(e):
+    e = str(e)
+    return e if re.fullmatch(r"-?[\w.]+", e) else f"({e})"
 
 
 # --- Sketch-based builder ---------------------------------------------------
@@ -192,79 +237,216 @@ def param_values():
 # offset = u), XZ (local u, w; normal -Y, so offset = -v).
 PLANES = {"XY": "XY_Plane", "YZ": "YZ_Plane", "XZ": "XZ_Plane"}
 DEG = math.pi / 180
+WARNINGS = []    # edges horizontal / vertical only by coincidence of the defaults
 
 
 class PD:
+    """Sketches dimensioned like a drawing: horizontal / vertical edges, widths,
+    heights, diameters, symmetry about the axes, positions measured from the axes.
+    Every dimension is a named constraint driven by the sheet."""
+
     def __init__(self, doc):
         self.doc = doc
         self.vals = param_values()
-        self.n = 0
-        self.k = {}
+        self.alt = param_values(random.Random(7))
+        self.labels = {}      # sketch name -> profile labels used
+        self.rects = {}       # sketch name -> rectangles drawn, to spot mirrored pairs
 
-    def ev(self, e):
+    def ev(self, e, vals=None):
         if isinstance(e, (int, float)):
             return float(e)
-        return float(eval(e, {"__builtins__": {}}, dict(self.vals)))
+        return float(eval(e, {"__builtins__": {}}, dict(vals or self.vals)))
 
-    def _name(self, label):
-        self.n += 1
-        return f"{label}_{self.n:03d}"
+    def same(self, a, b):
+        return all(abs(self.ev(a, d) - self.ev(b, d)) < 1e-9 for d in (self.vals, self.alt))
+
+    def mirror(self, a, b):
+        """a = -b for any parameter values (and not both zero)."""
+        return abs(self.ev(a)) > 1e-9 and all(abs(self.ev(a, d) + self.ev(b, d)) < 1e-9
+                                              for d in (self.vals, self.alt))
+
+    def diff(self, b, a):
+        """Expression of b - a, written as a drawing would read it."""
+        if self.mirror(a, b):
+            half = re.fullmatch(r"([\w.]+|\(.*\)) / 2", str(b))
+            return half.group(1) if half else f"2 * {paren(b)}"
+        if self.same(a, 0):
+            return str(b)
+        m = re.fullmatch(r"-\((.*)\)", str(a))
+        return f"{paren(b)} + {paren(m.group(1))}" if m else f"{paren(b)} - {paren(a)}"
 
     def body(self, label):
         return self.doc.addObject("PartDesign::Body", label)
 
-    # sketches ---------------------------------------------------------------
-    def sketch(self, body, label, plane, off):
-        sk = body.newObject("Sketcher::SketchObject", self._name("Esq_" + label))
-        support = [f for f in body.Origin.OriginFeatures if f.Role == PLANES[plane]][0]
-        sk.AttachmentSupport = [(support, "")]
-        sk.MapMode = "FlatFace"
-        o = f"-({off})" if plane == "XZ" else off
-        sk.AttachmentOffset = App.Placement(V(0, 0, self.ev(o)), App.Rotation())
-        if not (isinstance(off, (int, float)) and off == 0):
-            sk.setExpression(".AttachmentOffset.Base.z", X(o))
-        sk.Visibility = False
-        return sk
+    def _label(self, sk, label):
+        """Prefix of a profile's dimension names, unique in the sketch (none for the first unnamed one)."""
+        used = self.labels.setdefault(sk.Name, set())
+        name, k = label or "", 1
+        while name in used:
+            k += 1
+            name = f"{label or 'profil'}_{k}"
+        used.add(name)
+        return name + "_" if name else ""
 
-    def _datum(self, sk, cons, e):
-        self.k[sk.Name] = self.k.get(sk.Name, 0) + 1
+    def dim(self, sk, cons, e, name):
         c = sk.addConstraint(cons)
-        name = f"c{self.k[sk.Name]}"
         sk.renameConstraint(c, name)
         if not isinstance(e, (int, float)):
             sk.setExpression(f".Constraints.{name}", X(e))
 
-    def _fix(self, sk, geo, pos, x, y):
-        """Pin a sketch point to (x, y) expressions, measured from the origin."""
-        for kind, e, axis in (("DistanceX", x, -2), ("DistanceY", y, -1)):
-            if isinstance(e, (int, float)) and e == 0:
-                sk.addConstraint(Sketcher.Constraint("PointOnObject", geo, pos, axis))
-            else:
-                self._datum(sk, Sketcher.Constraint(kind, -1, 1, geo, pos, self.ev(e)), e)
+    def con(self, sk, *args):
+        sk.addConstraint(Sketcher.Constraint(*args))
 
-    def poly(self, sk, pts):
-        """Closed polygon, every vertex driven by its coordinates."""
+    def dist(self, sk, p, q, a, b, name, kind="DistanceX"):
+        """Distance along u (DistanceX) or v (DistanceY) between point p at a and point q at b."""
+        if self.ev(b) < self.ev(a):
+            p, q, a, b = q, p, b, a
+        self.dim(sk, Sketcher.Constraint(kind, *p, *q, self.ev(b) - self.ev(a)), self.diff(b, a), name)
+
+    def anchor(self, sk, p, e, axis, name):
+        """Place point p at coordinate e along u or v, measured from the axis."""
+        if self.same(e, 0):
+            self.con(sk, "PointOnObject", *p, -2 if axis == "u" else -1)
+        else:
+            kind = "DistanceX" if axis == "u" else "DistanceY"
+            self.dim(sk, Sketcher.Constraint(kind, -1, 1, *p, self.ev(e)), e, name)
+
+    def _simplest(self, exprs):
+        """Index of the coordinate a drawing would dimension: zero, then a bare name, then nearest the axis."""
+        return min(range(len(exprs)), key=lambda i: (not self.same(exprs[i], 0), len(str(exprs[i])),
+                                                     abs(self.ev(exprs[i]))))
+
+    def poly(self, sk, pts, label=None):
+        """Closed polygon: horizontal / vertical edges, one length per edge along u
+        and v (the closing one follows from the others), symmetry about an axis when
+        an edge is centred on it, otherwise one corner placed from the axes."""
+        label = self._label(sk, label)
         p = [V(self.ev(u), self.ev(v), 0) for u, v in pts]
         n, g0 = len(p), sk.GeometryCount
         for i in range(n):
             sk.addGeometry(Part.LineSegment(p[i], p[(i + 1) % n]))
         for i in range(n):
-            sk.addConstraint(Sketcher.Constraint("Coincident", g0 + i, 2, g0 + (i + 1) % n, 1))
-        for i, (u, v) in enumerate(pts):
-            self._fix(sk, g0 + i, 1, u, v)
+            self.con(sk, "Coincident", g0 + i, 2, g0 + (i + 1) % n, 1)
+        ends = [(pts[i], pts[(i + 1) % n]) for i in range(n)]
+        flat = [[abs(p[i][k] - p[(i + 1) % n][k]) < 1e-9 for i in range(n)] for k in (0, 1)]  # du = 0, dv = 0
+        for k in (0, 1):
+            for i in range(n):
+                if flat[k][i] and not self.same(ends[i][0][k], ends[i][1][k]):
+                    WARNINGS.append(f"{sk.Name}: edge {i + 1} {'vertical' if k == 0 else 'horizontal'} "
+                                         "only for the default values")
+        # an edge centred on an axis: symmetric about it (replaces H or V + one position)
+        sym = [next((i for i in range(n) if flat[1 - k][i] and self.mirror(ends[i][0][k], ends[i][1][k])), None)
+               for k in (0, 1)]
+        for i in range(n):
+            if flat[1][i] and i != sym[0]:
+                self.con(sk, "Horizontal", g0 + i)
+            if flat[0][i] and i != sym[1]:
+                self.con(sk, "Vertical", g0 + i)
+        for k, axis in ((0, -2), (1, -1)):
+            if sym[k] is not None:
+                self.con(sk, "Symmetric", g0 + sym[k], 1, g0 + sym[k], 2, axis)
+        for k, (kind, ax) in enumerate((("DistanceX", "u"), ("DistanceY", "v"))):
+            edges = [i for i in range(n) if not flat[k][i]]
+            skip = max((i for i in edges if i != sym[k]),
+                       key=lambda i: (len(str(ends[i][0][k])) + len(str(ends[i][1][k])), i))
+            for i in edges:
+                if i != skip:
+                    self.dist(sk, (g0 + i, 1), (g0 + i, 2), ends[i][0][k], ends[i][1][k],
+                              f"{label}{'largeur' if k == 0 else 'hauteur'}_{i + 1}", kind)
+            if sym[k] is None:
+                i = self._simplest([q[k] for q in pts])
+                self.anchor(sk, (g0 + i, 1), pts[i][k], ax, f"{label}position_{'xy'[k]}")
 
-    def rect(self, sk, u0, u1, v0, v1):
-        self.poly(sk, [(u0, v0), (u1, v0), (u1, v1), (u0, v1)])
+    def rect(self, sk, u0, u1, v0, v1, label=None):
+        """Rectangle: width, height, centred on an axis by symmetry or placed from it;
+        the mirror of a rectangle already in the sketch is tied to it (equal, symmetric)."""
+        label = self._label(sk, label)
+        c = [V(self.ev(u), self.ev(v), 0) for u, v in ((u0, v0), (u1, v0), (u1, v1), (u0, v1))]
+        g = sk.GeometryCount
+        for i in range(4):
+            sk.addGeometry(Part.LineSegment(c[i], c[(i + 1) % 4]))
+        for i in range(4):
+            self.con(sk, "Coincident", g + i, 2, g + (i + 1) % 4, 1)
+        bottom, right, top, left = g, g + 1, g + 2, g + 3
+        self.con(sk, "Horizontal", top)
+        self.con(sk, "Vertical", left)
+        twin = next((r for r in self.rects.get(sk.Name, []) if self.mirror(u0, r[1]) and self.mirror(u1, r[0])
+                     and self.same(v0, r[2]) and self.same(v1, r[3])), None)
+        self.rects.setdefault(sk.Name, []).append((u0, u1, v0, v1, g))
+        if twin:
+            self.con(sk, "Horizontal", bottom)
+            self.con(sk, "Vertical", right)
+            self.con(sk, "Equal", twin[4], bottom)
+            self.con(sk, "Equal", twin[4] + 1, right)
+            self.con(sk, "Symmetric", bottom, 1, twin[4], 2, -2)
+            return
+        self.dist(sk, (bottom, 1), (bottom, 2), u0, u1, f"{label}largeur")
+        self.dist(sk, (right, 1), (right, 2), v0, v1, f"{label}hauteur", "DistanceY")
+        if self.mirror(u0, u1):
+            self.con(sk, "Symmetric", bottom, 1, bottom, 2, -2)
+        else:
+            self.con(sk, "Horizontal", bottom)
+            i = self._simplest([u0, u1])
+            self.anchor(sk, ((bottom, 1), (bottom, 2))[i], (u0, u1)[i], "u", f"{label}position_x")
+        if self.mirror(v0, v1):
+            self.con(sk, "Symmetric", right, 1, right, 2, -1)
+        else:
+            self.con(sk, "Vertical", right)
+            i = self._simplest([v0, v1])
+            self.anchor(sk, ((bottom, 1), (top, 1))[i], (v0, v1)[i], "v", f"{label}position_y")
 
-    def circle(self, sk, u, v, r):
-        g = sk.addGeometry(Part.Circle(V(self.ev(u), self.ev(v), 0), V(0, 0, 1), self.ev(r)))
-        self._fix(sk, g, 3, u, v)
-        self._datum(sk, Sketcher.Constraint("Radius", g, self.ev(r)), r)
+    def rounded_rect(self, sk, u0, u1, v0, v1, r, label=None):
+        """Rectangle with its four corners rounded: width, height, one radius (the
+        other arcs equal), placed from the axes."""
+        label = self._label(sk, label)
+        g = self.outline(sk, [
+            ("L", (f"{u0} + {r}", v0), (f"{u1} - {r}", v0)), ("A", (f"{u1} - {r}", f"{v0} + {r}"), r, -90, 0),
+            ("L", (u1, f"{v0} + {r}"), (u1, f"{v1} - {r}")), ("A", (f"{u1} - {r}", f"{v1} - {r}"), r, 0, 90),
+            ("L", (f"{u1} - {r}", v1), (f"{u0} + {r}", v1)), ("A", (f"{u0} + {r}", f"{v1} - {r}"), r, 90, 180),
+            ("L", (u0, f"{v1} - {r}"), (u0, f"{v0} + {r}")), ("A", (f"{u0} + {r}", f"{v0} + {r}"), r, 180, 270)])
+        self.con(sk, "Horizontal", g)
+        self.con(sk, "Horizontal", g + 4)
+        self.con(sk, "Vertical", g + 2)
+        self.con(sk, "Vertical", g + 6)
+        self.dim(sk, Sketcher.Constraint("Radius", g + 1, self.ev(r)), r, f"{label}rayon")
+        for i in (3, 5, 7):
+            self.con(sk, "Equal", g + 1, g + i)
+        self.dist(sk, (g + 6, 1), (g + 2, 1), u0, u1, f"{label}largeur")
+        self.dist(sk, (g, 1), (g + 4, 1), v0, v1, f"{label}hauteur", "DistanceY")
+        i = self._simplest([u0, u1])
+        self.anchor(sk, ((g + 6, 1), (g + 2, 1))[i], (u0, u1)[i], "u", f"{label}position_x")
+        i = self._simplest([v0, v1])
+        self.anchor(sk, ((g, 1), (g + 4, 1))[i], (v0, v1)[i], "v", f"{label}position_y")
 
-    def profile(self, sk, items):
-        """Closed outline of lines and CCW arcs, joined in order.
-        ("L", (u0, v0), (u1, v1), "H" | "V" | None) ; ("A", (cu, cv), r, a0_deg, a1_deg).
-        Arcs: centre and radius driven; joins next to an arc are tangent."""
+    def circles(self, sk, pts, d, label=None):
+        """Circles of one diameter: the first dimensioned, the others equal to it, and
+        symmetric to an earlier one about an axis or the origin when they mirror it."""
+        label = self._label(sk, label)
+        done = []
+        for k, (u, v) in enumerate(pts):
+            g = sk.addGeometry(Part.Circle(V(self.ev(u), self.ev(v), 0), V(0, 0, 1), self.ev(d) / 2))
+            if done:
+                self.con(sk, "Equal", done[0][2], g)
+            else:
+                self.dim(sk, Sketcher.Constraint("Diameter", g, self.ev(d)), d, f"{label}diametre")
+            twin = next(((G, ax) for U, W, G in done for ax, ok in (
+                ((-2,), self.mirror(u, U) and self.same(v, W)), ((-1,), self.same(u, U) and self.mirror(v, W)),
+                ((-1, 1), self.mirror(u, U) and self.mirror(v, W))) if ok), None)
+            if twin:
+                self.con(sk, "Symmetric", twin[0], 3, g, 3, *twin[1])
+            else:
+                s = f"{k + 1}" if len(pts) > 1 else ""
+                self.anchor(sk, (g, 3), u, "u", f"{label}position_x{s}")
+                self.anchor(sk, (g, 3), v, "v", f"{label}position_y{s}")
+            done.append((u, v, g))
+
+    def circle(self, sk, u, v, d, label=None):
+        self.circles(sk, [(u, v)], d, label)
+
+    def outline(self, sk, items):
+        """Closed outline of lines ("L", a, b) and CCW arcs ("A", centre, r, a0_deg, a1_deg),
+        joined in order (tangent next to an arc). Returns the first geometry index;
+        the caller adds the dimensions."""
         g0, kinds = sk.GeometryCount, []
         for it in items:
             if it[0] == "L":
@@ -275,243 +457,514 @@ class PD:
                 circ = Part.Circle(c, V(0, 0, 1), self.ev(it[2]))
                 sk.addGeometry(Part.ArcOfCircle(circ, it[3] * DEG, it[4] * DEG))
             kinds.append(it[0])
-        n = len(items)
-        for i in range(n):
-            j = (i + 1) % n
-            kind = "Tangent" if "A" in (kinds[i], kinds[j]) else "Coincident"
-            sk.addConstraint(Sketcher.Constraint(kind, g0 + i, 2, g0 + j, 1))
-        for i, it in enumerate(items):
-            if it[0] == "L" and it[3]:
-                sk.addConstraint(Sketcher.Constraint("Horizontal" if it[3] == "H" else "Vertical", g0 + i))
-            elif it[0] == "A":
-                self._fix(sk, g0 + i, 3, *it[1])
-                self._datum(sk, Sketcher.Constraint("Radius", g0 + i, self.ev(it[2])), it[2])
+        for i in range(len(items)):
+            j = (i + 1) % len(items)
+            self.con(sk, "Tangent" if "A" in (kinds[i], kinds[j]) else "Coincident", g0 + i, 2, g0 + j, 1)
+        return g0
 
-    # features ---------------------------------------------------------------
-    def add(self, body, label, plane, a0, a1, draw, reverse_xz=False):
-        """Pad from a0 to a1 along the plane axis (w, u, or v for XZ)."""
-        if plane == "XZ":
-            sk = self.sketch(body, label, plane, a1)       # normal -v: pad from v=a1 down to a0
+    def slot(self, sk, along, c, w, label=None):
+        """Oblong centred on the origin, along u or v: centre distance 2c, width w."""
+        label = self._label(sk, label)
+        r = f"{w} / 2"
+        if along == "u":
+            g = self.outline(sk, [("L", (neg(c), neg(r)), (c, neg(r))), ("A", (c, 0), r, -90, 90),
+                                  ("L", (c, r), (neg(c), r)), ("A", (neg(c), 0), r, 90, 270)])
+            self.con(sk, "Horizontal", g)
         else:
-            sk = self.sketch(body, label, plane, a0)
-        draw(sk)
-        f = body.newObject("PartDesign::Pad", self._name(label))
-        f.Profile = sk
-        f.setExpression("Length", X(f"({a1}) - ({a0})"))
+            g = self.outline(sk, [("A", (0, neg(c)), r, 180, 360), ("L", (r, neg(c)), (r, c)),
+                                  ("A", (0, c), r, 0, 180), ("L", (neg(r), c), (neg(r), neg(c)))])
+            self.con(sk, "Vertical", g + 1)
+        a, b = (g + 1, g + 3) if along == "u" else (g, g + 2)
+        self.con(sk, "Equal", a, b)
+        self.con(sk, "Symmetric", a, 3, b, 3, -1, 1)
+        self.dim(sk, Sketcher.Constraint("Diameter", a, self.ev(w)), w, f"{label}largeur")
+        ca, cb, kind = (c, neg(c), "DistanceX") if along == "u" else (neg(c), c, "DistanceY")
+        self.dist(sk, (a, 3), (b, 3), ca, cb, f"{label}entraxe", kind)
+
+    # PartDesign workflow: named datum planes, sketches on them, pad / pocket /
+    # hole by real depths, symmetries and patterns ----------------------------
+    def origin(self, body, role):
+        return [f for f in body.Origin.OriginFeatures if f.Role == role][0]
+
+    def datum(self, body, label, w):
+        """Datum plane parallel to the mating face at depth w."""
+        p = body.newObject("PartDesign::Plane", label)
+        p.AttachmentSupport = [(self.origin(body, "XY_Plane"), "")]
+        p.MapMode = "FlatFace"
+        p.AttachmentOffset = App.Placement(V(0, 0, self.ev(w)), App.Rotation())
+        p.setExpression(".AttachmentOffset.Base.z", X(w))
+        p.Visibility = False
+        return p
+
+    def sk(self, body, label, support, draw, off=None):
+        """Sketch on an origin plane ("XY", "YZ", "XZ") or a datum plane; off moves
+        it along the plane normal (used for XZ, whose normal is -v)."""
+        s = body.newObject("Sketcher::SketchObject", "Esq_" + label)
+        s.Label = "Esquisse " + label.replace("_", " ")
+        s.AttachmentSupport = [(self.origin(body, PLANES[support]) if isinstance(support, str) else support, "")]
+        s.MapMode = "FlatFace"
+        if off is not None:
+            s.AttachmentOffset = App.Placement(V(0, 0, self.ev(off)), App.Rotation())
+            s.setExpression(".AttachmentOffset.Base.z", X(off))
+        s.Visibility = False
+        draw(s)
+        return s
+
+    def _feature(self, body, kind, label, s=None):
+        f = body.newObject(kind, label)
+        f.Label = label.replace("_", " ")
+        if s is not None:
+            f.Profile = s
         f.Refine = True
         return f
 
-    def cut(self, body, label, plane, a0, a1, draw, taper=None):
-        """Pocket from a1 back to a0 (from a0 up to a1 for XZ)."""
-        sk = self.sketch(body, label, plane, a0 if plane == "XZ" else a1)
-        draw(sk)
-        f = body.newObject("PartDesign::Pocket", self._name(label))
-        f.Profile = sk
-        f.setExpression("Length", X(f"({a1}) - ({a0})"))
-        if taper is not None:
-            f.TaperAngle = taper
+    def pad(self, body, label, s, length, symmetric=False, reverse=False):
+        f = self._feature(body, "PartDesign::Pad", label, s)
+        f.setExpression("Length", X(length))
+        f.SideType = "Symmetric" if symmetric else "One side"
+        f.Reversed = reverse
+        return f
+
+    def pocket(self, body, label, s, depth=None, symmetric=False, reverse=False):
+        """Pocket of a given depth, or through all when depth is None."""
+        f = self._feature(body, "PartDesign::Pocket", label, s)
+        if depth is None:
+            f.Type = "ThroughAll"
+        else:
+            f.setExpression("Length", X(depth))
+        f.SideType = "Symmetric" if symmetric else "One side"
+        f.Reversed = reverse
+        return f
+
+    def hole(self, body, label, s, d, depth, csk_d=None):
+        """Drilled holes at the sketch circles (through all when depth is None), flat
+        bottom, optional 90 deg countersink."""
+        f = self._feature(body, "PartDesign::Hole", label, s)
+        f.Threaded = False
+        f.setExpression("Diameter", X(d))
+        if depth is None:
+            self.doc.recompute()             # ThroughAll checks the base shape when set
+            f.DepthType = "ThroughAll"
+        else:
+            f.DepthType = "Dimension"
+            f.setExpression("Depth", X(depth))
+        f.DrillPoint = "Flat"
+        if csk_d:
+            f.HoleCutType = "Countersink"
+            f.HoleCutCustomValues = True
+            f.setExpression("HoleCutDiameter", X(csk_d))
+            f.HoleCutCountersinkAngle = 90
+        return f
+
+    def mirrored(self, body, label, feats, plane="YZ_Plane"):
+        f = self.doc.addObject("PartDesign::Mirrored", label)
+        f.Originals = feats
+        f.MirrorPlane = (self.origin(body, plane), [""])
+        return self._insert(body, f, label)
+
+    def linear(self, body, label, feats, axis, length, n, reverse=False):
+        """n copies spread over length (first to last) along an origin axis."""
+        f = self.doc.addObject("PartDesign::LinearPattern", label)
+        f.Originals = feats
+        f.Direction = (self.origin(body, axis), [""])
+        f.Mode = "Extent"
+        f.setExpression("Length", X(length))
+        f.Occurrences = n
+        f.Reversed = reverse
+        return self._insert(body, f, label)
+
+    def polar(self, body, label, feats, n, angle=360, axis="Z_Axis"):
+        """n copies around an origin axis, spread over angle (360: full turn)."""
+        f = self.doc.addObject("PartDesign::PolarPattern", label)
+        f.Originals = feats
+        f.Axis = (self.origin(body, axis), [""])
+        f.Angle = angle
+        f.Occurrences = n
+        return self._insert(body, f, label)
+
+    def frame(self, body, label, x=0, y=0, z=0, along_u=False):
+        """Coordinate system for an assembly joint, placed by expressions on the
+        origin: no edge or face reference, so it survives any change of dimension.
+        along_u turns its z axis along u (hinge axis, latch travel)."""
+        cs = body.newObject("PartDesign::CoordinateSystem", label)
+        cs.Label = label.replace("_", " ")
+        cs.AttachmentSupport = [(self.origin(body, "XY_Plane"), "")]
+        cs.MapMode = "FlatFace"
+        rot = App.Rotation(V(0, 1, 0), 90) if along_u else App.Rotation()
+        cs.AttachmentOffset = App.Placement(V(self.ev(x), self.ev(y), self.ev(z)), rot)
+        for axis, e in (("x", x), ("y", y), ("z", z)):
+            if not self.same(e, 0):
+                cs.setExpression(f".AttachmentOffset.Base.{axis}", X(e))
+        cs.Visibility = False
+        return cs
+
+    def suppressed_when(self, feats, cond):
+        """Variant: the features are suppressed while cond (an expression on the sheet) holds."""
+        for f in feats:
+            f.setExpression("Suppressed", X(cond))
+        return feats
+
+    def _insert(self, body, f, label):
+        """Transform features: created outside the body, then added, so that they
+        take their place in the chain (body.newObject leaves the tip behind)."""
+        f.Label = label.replace("_", " ")
         f.Refine = True
+        body.addObject(f)
         return f
 
 
 # --- Parts -----------------------------------------------------------------
-def footprint(pd, sk):
-    """Main plate + heel, rounded corners (rear view, CCW)."""
-    P, vb, vt, r, H, hv = "plate_u", "plate_v_bot", "plate_v_top", "corner_r", "heel_u", "heel_v"
-    pd.profile(sk, [
-        ("L", (f"-{P} + {r}", vb), (f"{P} - {r}", vb), None),
+def contour(pd, sk, tab):
+    """Outline of the plate and heel (and of the latch tab with its bevelled sides
+    for piece 1), corners rounded in the sketch: one radius, the other arcs equal.
+    (A Fillet feature loses its edges as soon as a dimension changes, FreeCAD 1.1.)"""
+    P, vb, vt, r, H, hv = "plaque_demi_largeur", "plaque_bord_bas", "plaque_bord_haut", "rayon_coins", "talon_bord_droit", "talon_demi_hauteur"
+    tc, tu, tv = "languette_demi_largeur_pied", "languette_demi_largeur", "languette_bord_haut"
+    if tab:
+        top = [("L", (f"{P} - {r}", vt), (tc, vt)), ("L", (tc, vt), (tu, tv)), ("L", (tu, tv), (neg(tu), tv)),
+               ("L", (neg(tu), tv), (neg(tc), vt)), ("L", (neg(tc), vt), (f"-{P} + {r}", vt))]
+    else:
+        top = [("L", (f"{P} - {r}", vt), (f"-{P} + {r}", vt))]
+    g0 = pd.outline(sk, [
+        ("L", (f"-{P} + {r}", vb), (f"{P} - {r}", vb)),
         ("A", (f"{P} - {r}", f"{vb} + {r}"), r, -90, 0),
-        ("L", (P, f"{vb} + {r}"), (P, f"-{hv}"), "V"),
-        ("L", (P, f"-{hv}"), (f"{H} - {r}", f"-{hv}"), "H"),
+        ("L", (P, f"{vb} + {r}"), (P, f"-{hv}")),
+        ("L", (P, f"-{hv}"), (f"{H} - {r}", f"-{hv}")),
         ("A", (f"{H} - {r}", f"-{hv} + {r}"), r, -90, 0),
-        ("L", (H, f"-{hv} + {r}"), (H, f"{hv} - {r}"), None),
+        ("L", (H, f"-{hv} + {r}"), (H, f"{hv} - {r}")),
         ("A", (f"{H} - {r}", f"{hv} - {r}"), r, 0, 90),
-        ("L", (f"{H} - {r}", hv), (P, hv), "H"),
-        ("L", (P, hv), (P, f"{vt} - {r}"), "V"),
+        ("L", (f"{H} - {r}", hv), (P, hv)),
+        ("L", (P, hv), (P, f"{vt} - {r}")),
         ("A", (f"{P} - {r}", f"{vt} - {r}"), r, 0, 90),
-        ("L", (f"{P} - {r}", vt), (f"-{P} + {r}", vt), None),
+    ] + top + [
         ("A", (f"-{P} + {r}", f"{vt} - {r}"), r, 90, 180),
-        ("L", (f"-{P}", f"{vt} - {r}"), (f"-{P}", f"{vb} + {r}"), None),
+        ("L", (f"-{P}", f"{vt} - {r}"), (f"-{P}", f"{vb} + {r}")),
         ("A", (f"-{P} + {r}", f"{vb} + {r}"), r, 180, 270),
     ])
+    g = lambda i: g0 + i  # noqa: E731
+    k = len(top) - 1                                                  # extra lines of the tab
+    left, arcs = g(12 + k), (1, 4, 6, 9, 11 + k, 13 + k)
+    for i in (3, 7, 10) + ((14,) if tab else ()):
+        pd.con(sk, "Horizontal", g(i))
+    for i in (g(2), g(5), g(8), left):
+        pd.con(sk, "Vertical", i)
+    pd.dim(sk, Sketcher.Constraint("Radius", g(1), pd.ev(r)), r, "rayon_coins")
+    for i in arcs[1:]:
+        pd.con(sk, "Equal", g(1), g(i))
+    pd.con(sk, "Symmetric", g(0), 1, g(0), 2, -2)                     # plate centred on the v axis
+    pd.dist(sk, (left, 2), (g(2), 1), neg(P), P, "largeur_plaque")
+    pd.dist(sk, (g(0), 1), (g(10), 1), vb, vt, "hauteur_plaque", "DistanceY")
+    pd.anchor(sk, (g(10), 1), vt, "v", "bord_haut")
+    pd.dist(sk, (g(2), 2), (g(5), 1), P, H, "saillie_talon")
+    pd.con(sk, "Symmetric", g(3), 1, g(7), 2, -1)                     # heel centred on the u axis
+    pd.dist(sk, (g(3), 1), (g(7), 2), f"-{hv}", hv, "hauteur_talon", "DistanceY")
+    if tab:
+        pd.con(sk, "Symmetric", g(12), 1, g(12), 2, -2)               # tab top centred on the v axis
+        pd.con(sk, "Symmetric", g(11), 1, g(13), 2, -2)               # tab foot centred too
+        pd.dist(sk, (g(12), 2), (g(12), 1), neg(tu), tu, "largeur_languette")
+        pd.dist(sk, (g(11), 1), (g(11), 2), vt, tv, "hauteur_languette", "DistanceY")
+        pd.dist(sk, (g(11), 2), (g(11), 1), tu, tc, "pan_languette")
 
 
 def screw_points():
-    return [(su, sv) for su in ("screw_u", neg("screw_u")) for sv in ("screw_v_top", "screw_v_bot")]
+    """M3 countersunk screws holding piece 2 on piece 1: the corners are left to the magnets."""
+    return [("vis_bas_x", "vis_bas_y"), (neg("vis_bas_x"), "vis_bas_y"), ("vis_haut_x", "vis_haut_y"),
+            ("vis_talon_x", "vis_talon_y")]
+
+
+def magnet_points():
+    """Two magnets, in the corners opposite the hinge."""
+    return [("aimant_x", "aimant_y"), (neg("aimant_x"), "aimant_y")]
+
+
+def square_rings(pd, s, axes, width):
+    """Concentric square rings centred on the image, one per axis (half side), of a given width."""
+    for i, a in enumerate(axes, start=1):
+        o, n = f"{a} + {width} / 2", f"{a} - {width} / 2"
+        pd.rect(s, neg(o), o, neg(o), o, f"anneau{i}_exterieur")
+        pd.rect(s, neg(n), n, neg(n), n, f"anneau{i}_interieur")
 
 
 def build_piece1(pd):
+    """Interface piece, modelled as by hand: the outline (rounded corners)
+    padded; hinge and clip stops added; then the
+    mating face and the rear face machined (pockets, drilled holes), symmetric
+    features mirrored and repeated ones patterned."""
     b = pd.body("Piece1_Interface")
-    pd.add(b, "Plaque", "XY", 0, "t1", lambda s: footprint(pd, s))
-    pd.add(b, "Languette", "XY", 0, "t1", lambda s: pd.poly(s, [
-        (neg("tab_chamfer_u"), "tab_v0"), ("tab_chamfer_u", "tab_v0"), ("tab_chamfer_u", "plate_v_top"),
-        ("tab_u", "tab_v"), (neg("tab_u"), "tab_v"), (neg("tab_chamfer_u"), "plate_v_top")]))
-    pd.add(b, "Bossage_charniere", "XY", "hinge_w - knuckle_r", "lid_w1",
-           lambda s: pd.rect(s, neg("boss_u"), "boss_u", "hinge_v", "boss_v_top"))
-    pd.add(b, "Noeud_charniere", "YZ", neg("boss_u"), "boss_u",
-           lambda s: pd.circle(s, "hinge_v", "hinge_w", "knuckle_r"))
-    pd.add(b, "Gousset_45", "YZ", neg("boss_u"), "boss_u", lambda s: pd.poly(s, [
-        ("plate_v_bot + 0.01", "gusset_w0"), ("plate_v_bot + 0.01", "hinge_w - knuckle_r"),
-        ("plate_v_bot - gusset_drop", "hinge_w - knuckle_r")]))
-    for c in ("clipA", "clipB"):
-        pd.add(b, f"Arret_{c}", "XZ", f"{c}_v0", f"{c}_v1", lambda s: pd.poly(s, [
-            ("heel_u - 0.01", "bump_w0"), ("heel_u + bump", "bump_w0"), ("heel_u + bump", "bump_w1"),
-            ("heel_u - 0.01", "ramp_w")]))
-    # mating face
-    pd.cut(b, "Gorge_levre_boitier", "XY", -1, "seal_depth", lambda s: pd.poly(s, [
-        (neg("seal_in"), neg("seal_out")), ("seal_out", neg("seal_out")), ("seal_out", "seal_out"),
-        (neg("seal_in"), "seal_out"), (neg("seal_in"), "seal_in"), ("seal_in", "seal_in"),
-        ("seal_in", neg("seal_in")), (neg("seal_in"), neg("seal_in"))]))
-    pd.cut(b, "Gorge_levre_gauche", "XY", -1, "seal_depth_left",
-           lambda s: pd.rect(s, neg("seal_out"), neg("seal_in"), neg("seal_out"), "seal_out"))
-    pd.cut(b, "Poches_ergots", "XY", -1, "pin_pocket_depth", lambda s: (
-        pd.rect(s, "pocketA_u0", "pocketA_u1", "pocketA_v0", "pocketA_v1"),
-        pd.rect(s, "pocketB_u0", "pocketB_u1", "pocketB_v0", "pocketB_v1")))
-    pd.cut(b, "Fenetres_griffes", "XY", -1, "latch_skin", lambda s: (
-        pd.rect(s, neg("latch_win_u1"), neg("latch_win_u0"), "latch_win_v0", "latch_win_v1"),
-        pd.rect(s, "latch_win_u0", "latch_win_u1", "latch_win_v0", "latch_win_v1")))
-    f = "latch_fit"
-    pd.cut(b, "Poche_glissiere", "XY", "latch_skin", "latch_depth", lambda s: pd.poly(s, [
-        (f"latch_u0 - {f}", f"latch_v0 - {f}"), (f"latch_block_u0 + {f}", f"latch_v0 - {f}"),
-        (f"latch_block_u0 + {f}", f"latch_block_v1 - {f}"), (f"latch_block_u1 - {f}", f"latch_block_v1 - {f}"),
-        (f"latch_block_u1 - {f}", f"latch_v0 - {f}"), (f"latch_u1 + {f}", f"latch_v0 - {f}"),
-        (f"latch_u1 + {f}", f"latch_v1 + {f}"), (f"latch_u0 - {f}", f"latch_v1 + {f}")]))
-    pd.cut(b, "Poche_capot", "XY", "latch_depth", "t1 + 1", lambda s: pd.rect(
-        s, f"cover_u0 - {f}", f"cover_u1 + {f}", f"latch_v0 - {f}", f"latch_v1 + {f}"))
-    pd.cut(b, "Passage_languette", "XY", "latch_skin", "t1 + 1", lambda s: pd.rect(
-        s, f"tabopen_u0 - {f}", f"tabopen_u1 + {f}", "latch_v1 - 0.3", "tab_v + 1.2"))
-    pd.cut(b, "Encoches_crochets", "XY", "hook_lip", "t1 + 1", lambda s: (
-        pd.rect(s, neg("hook_u1"), neg("hook_u0"), "plate_v_bot - 1", "plate_v_bot + hook_depth"),
-        pd.rect(s, "hook_u0", "hook_u1", "plate_v_bot - 1", "plate_v_bot + hook_depth")))
-    pd.cut(b, "Ouverture_image", "XY", -1, "skin + 0.01", lambda s: pd.rect(
-        s, "-skin_aperture / 2", "skin_aperture / 2", "-skin_aperture / 2", "skin_aperture / 2"))
-    pd.cut(b, "Poche_cadre", "XY", "skin", "t1 + 5", lambda s: pd.rect(
-        s, "-plate_u - 1", "pocket_u_max", neg("pocket_v"), "pocket_v"))
-    pd.cut(b, "Gorge_velours", "XY", "skin - felt_depth", "skin + 0.01",
-           lambda s: pd.rect(s, "felt_u0", "felt_u1", neg("slot_half"), "slot_half"))
-    pd.cut(b, "Gorge_chicane_collerette", "XY", "t1 - trap_d", "t1 + 1", lambda s: pd.poly(s, [("trap_u_left", "trap_c + trap_w / 2"), ("trap_c + trap_w / 2", "trap_c + trap_w / 2"), ("trap_c + trap_w / 2", "-(trap_c + trap_w / 2)"), ("trap_u_left", "-(trap_c + trap_w / 2)"), ("trap_u_left", "-(trap_c - trap_w / 2)"), ("trap_c - trap_w / 2", "-(trap_c - trap_w / 2)"), ("trap_c - trap_w / 2", "trap_c - trap_w / 2"), ("trap_u_left", "trap_c - trap_w / 2")]))
-    pd.cut(b, "Gorge_chicane_rails", "XY", "skin - rail_trap_d", "skin + 0.01", lambda s: pd.poly(s, [("-plate_u - 1", "rail_trap_c + rail_trap_w / 2"), ("rail_trap_u + rail_trap_w / 2", "rail_trap_c + rail_trap_w / 2"), ("rail_trap_u + rail_trap_w / 2", "-(rail_trap_c + rail_trap_w / 2)"), ("-plate_u - 1", "-(rail_trap_c + rail_trap_w / 2)"), ("-plate_u - 1", "-(rail_trap_c - rail_trap_w / 2)"), ("rail_trap_u - rail_trap_w / 2", "-(rail_trap_c - rail_trap_w / 2)"), ("rail_trap_u - rail_trap_w / 2", "rail_trap_c - rail_trap_w / 2"), ("-plate_u - 1", "rail_trap_c - rail_trap_w / 2")]))
-    pd.cut(b, "Trou_axe", "YZ", "-boss_u - 1", "boss_u + 1", lambda s: pd.circle(s, "hinge_v", "hinge_w", "pin_d / 2"))
-    pd.cut(b, "Avant_trous_vis", "XY", "t1 - pilot_depth", "t1 + 1",
-           lambda s: [pd.circle(s, u, v, "pilot_d / 2") for u, v in screw_points()])
+    rear = pd.datum(b, "Plan_face_arriere", "piece1_epaisseur")
+    floor = pd.datum(b, "Plan_fond_poche_cadre", "peau_epaisseur")
+    P, f = "plaque_demi_largeur", "verrou_jeu"
+    # the plate
+    pd.pad(b, "Plaque", pd.sk(b, "Contour", "XY", lambda s: contour(pd, s, tab=True)), "piece1_epaisseur")
+    # hinge: side profiles padded symmetrically about the v axis
+    L = "2 * bossage_demi_longueur"
+    pd.pad(b, "Bossage_charniere", pd.sk(b, "Bossage_charniere", "YZ", lambda s: pd.rect(
+        s, "charniere_axe_y", "bossage_haut", "charniere_axe_z - noeud_rayon", "charniere_axe_z + noeud_rayon")),
+        L, symmetric=True)
+    pd.pad(b, "Noeud_charniere", pd.sk(b, "Noeud_charniere", "YZ", lambda s: pd.circle(
+        s, "charniere_axe_y", "charniere_axe_z", "2 * noeud_rayon")), L, symmetric=True)
+    pd.pad(b, "Gousset_45", pd.sk(b, "Gousset_45", "YZ", lambda s: pd.poly(s, [
+        ("plaque_bord_bas", "gousset_depart_z"), ("plaque_bord_bas", "charniere_axe_z - noeud_rayon"),
+        ("plaque_bord_bas - gousset_hauteur", "charniere_axe_z - noeud_rayon")])), L, symmetric=True)
+    pd.pocket(b, "Trou_axe", pd.sk(b, "Trou_axe", "YZ", lambda s: pd.circle(s, "charniere_axe_y", "charniere_axe_z", "axe_trou_diametre")),
+              symmetric=True)
+    # clip stops on the heel: one profile, repeated
+    stop = pd.pad(b, "Arret_clip", pd.sk(b, "Arret_clip", "XZ", lambda s: pd.poly(s, [
+        ("talon_bord_droit", "clip_arret_debut_z"), ("talon_bord_droit + clip_arret_saillie", "clip_arret_debut_z"), ("talon_bord_droit + clip_arret_saillie", "clip_arret_fin_z"), ("talon_bord_droit", "clip_rampe_fin_z")]),
+        off=neg("clip1_haut")), "clip_longueur")
+    pd.suppressed_when([stop, pd.linear(b, "Arrets_clips", [stop], "Y_Axis", "clip1_bas - clip2_bas", 2, reverse=True)],
+                       "fermeture_aimants == 1")
+    # mating face (sketches on the XY plane, pockets towards the rear)
+    gi, ge = "gorge_cote_interieur / 2", "gorge_cote_interieur / 2 + gorge_largeur"
+    pd.pocket(b, "Gorge_levre_boitier", pd.sk(b, "Gorge_levre_boitier", "XY", lambda s: (
+        pd.rect(s, neg(ge), ge, neg(ge), ge, "exterieur"), pd.rect(s, neg(gi), gi, neg(gi), gi, "interieur"))),
+        "gorge_profondeur", reverse=True)
+    pd.pocket(b, "Poches_ergots", pd.sk(b, "Poches_ergots", "XY", lambda s: (
+        pd.rect(s, "ergot1_gauche", "ergot1_droite", "ergot1_bas", "ergot1_haut", "ergot_haut"),
+        pd.rect(s, "ergot2_gauche", "ergot2_droite", "ergot2_bas", "ergot2_haut", "ergot_bas"))),
+        "ergots_profondeur", reverse=True)
+    win = pd.pocket(b, "Fenetre_griffe", pd.sk(b, "Fenetre_griffe", "XY", lambda s: pd.rect(
+        s, "fenetre_griffe_gauche", "fenetre_griffe_droite", "fenetre_griffe_bas", "fenetre_griffe_haut")), "verrou_paroi", reverse=True)
+    pd.mirrored(b, "Fenetres_griffes_symetrie", [win])
+    pd.pocket(b, "Ouverture_image", pd.sk(b, "Ouverture_image", "XY", lambda s: pd.rect(
+        s, "-peau_ouverture / 2", "peau_ouverture / 2", "-peau_ouverture / 2", "peau_ouverture / 2")), reverse=True)
+    # rear face (sketches on the rear plane, pockets towards the mating face)
+    pd.pocket(b, "Poche_cadre", pd.sk(b, "Poche_cadre", rear, lambda s: pd.rect(
+        s, f"-{P} - 1", "poche_cadre_droite", neg("poche_cadre_demi_hauteur"), "poche_cadre_demi_hauteur")), "piece1_epaisseur - peau_epaisseur")
+    pd.pocket(b, "Poche_capot", pd.sk(b, "Poche_capot", rear, lambda s: pd.rect(
+        s, f"capot_gauche - {f}", f"capot_droite + {f}", f"verrou_poche_bas - {f}", f"verrou_poche_haut + {f}")), "piece1_epaisseur - verrou_poche_fond")
+    pd.pocket(b, "Poche_glissiere", pd.sk(b, "Poche_glissiere", rear, lambda s: pd.poly(s, [
+        (f"verrou_poche_gauche - {f}", f"verrou_poche_bas - {f}"), (f"verrou_ilot_gauche + {f}", f"verrou_poche_bas - {f}"),
+        (f"verrou_ilot_gauche + {f}", f"verrou_ilot_haut - {f}"), (f"verrou_ilot_droite - {f}", f"verrou_ilot_haut - {f}"),
+        (f"verrou_ilot_droite - {f}", f"verrou_poche_bas - {f}"), (f"verrou_poche_droite + {f}", f"verrou_poche_bas - {f}"),
+        (f"verrou_poche_droite + {f}", f"verrou_poche_haut + {f}"), (f"verrou_poche_gauche - {f}", f"verrou_poche_haut + {f}")])), "piece1_epaisseur - verrou_paroi")
+    pd.pocket(b, "Passage_languette", pd.sk(b, "Passage_languette", rear, lambda s: pd.rect(
+        s, f"passage_languette_gauche - {f}", f"passage_languette_droite + {f}", "verrou_poche_haut - 0.3", "languette_bord_haut + 1.2")), "piece1_epaisseur - verrou_paroi")
+    hook = pd.pocket(b, "Encoche_crochet", pd.sk(b, "Encoche_crochet", rear, lambda s: pd.rect(
+        s, "encoche_crochet_gauche", "encoche_crochet_droite", "plaque_bord_bas - 1", "plaque_bord_bas + encoche_crochet_hauteur")), "piece1_epaisseur - encoche_crochet_levre")
+    pd.mirrored(b, "Encoches_crochets_symetrie", [hook])
+    tw = ("chicane_axe + chicane_gorge_largeur / 2", "chicane_axe - chicane_gorge_largeur / 2")
+    pd.pocket(b, "Gorge_chicane_collerette", pd.sk(b, "Gorge_chicane_collerette", rear, lambda s: pd.poly(s, [
+        ("chicane_bout_gauche", tw[0]), (tw[0], tw[0]), (tw[0], neg(tw[0])), ("chicane_bout_gauche", neg(tw[0])),
+        ("chicane_bout_gauche", neg(tw[1])), (tw[1], neg(tw[1])), (tw[1], tw[1]), ("chicane_bout_gauche", tw[1])])), "chicane_gorge_profondeur")
+    pd.hole(b, "Avant_trous_vis", pd.sk(b, "Avant_trous_vis", rear, lambda s: pd.circles(
+        s, screw_points(), "avant_trou_diametre")), "avant_trou_diametre", "avant_trou_profondeur")
+    # floor of the frame pocket (dark slide side)
+    pd.pocket(b, "Gorge_velours", pd.sk(b, "Gorge_velours", floor, lambda s: pd.rect(
+        s, "velours_gauche", "velours_droite", neg("fente_demi_hauteur"), "fente_demi_hauteur")), "velours_profondeur")
+    rw = ("chicane_rails_axe + chicane_rails_gorge_largeur / 2", "chicane_rails_axe - chicane_rails_gorge_largeur / 2")
+    ru = ("chicane_rails_axe_droit + chicane_rails_gorge_largeur / 2", "chicane_rails_axe_droit - chicane_rails_gorge_largeur / 2")
+    pd.pocket(b, "Gorge_chicane_rails", pd.sk(b, "Gorge_chicane_rails", floor, lambda s: pd.poly(s, [
+        (f"-{P} - 1", rw[0]), (ru[0], rw[0]), (ru[0], neg(rw[0])), (f"-{P} - 1", neg(rw[0])),
+        (f"-{P} - 1", neg(rw[1])), (ru[1], neg(rw[1])), (ru[1], rw[1]), (f"-{P} - 1", rw[1])])), "chicane_rails_gorge_profondeur")
     return b
 
 
 def build_piece2(pd):
+    """Glass frame: the flange (outline) padded on the rear face of piece 1, the
+    insert and the dark slide rails padded forwards; then the glass seat, the
+    grooves, the clearances and the countersunk screw holes."""
     b = pd.body("Piece2_CadreVerre")
-    ui1, vi, sh = "pocket_u_max - fit", "pocket_v - fit", "slot_half"
-    pd.add(b, "Insert", "XY", "ledge_w", "t1 + 0.01", lambda s: pd.rect(s, neg("plate_u"), ui1, neg(vi), vi))
-    pd.add(b, "Collerette", "XY", "t1", "flange_w1", lambda s: footprint(pd, s))
-    pd.add(b, "Rails_volet", "XY", "skin", "ledge_w + 0.01", lambda s: pd.poly(s, [
-        (neg("plate_u"), neg(vi)), (ui1, neg(vi)), (ui1, vi), (neg("plate_u"), vi), (neg("plate_u"), sh),
-        ("slot_end", sh), ("slot_end", neg(sh)), (neg("plate_u"), neg(sh))]))
-    pd.add(b, "Nervure_chicane_collerette", "XY", "t1 - trap_h", "t1 + 0.01", lambda s: pd.poly(s, [("trap_u_left", "trap_c + trap_rib / 2"), ("trap_c + trap_rib / 2", "trap_c + trap_rib / 2"), ("trap_c + trap_rib / 2", "-(trap_c + trap_rib / 2)"), ("trap_u_left", "-(trap_c + trap_rib / 2)"), ("trap_u_left", "-(trap_c - trap_rib / 2)"), ("trap_c - trap_rib / 2", "-(trap_c - trap_rib / 2)"), ("trap_c - trap_rib / 2", "trap_c - trap_rib / 2"), ("trap_u_left", "trap_c - trap_rib / 2")]))
-    pd.add(b, "Nervure_chicane_rails", "XY", "skin - rail_trap_h", "skin + 0.01", lambda s: pd.poly(s, [(neg("plate_u"), "rail_trap_c + rail_trap_rib / 2"), ("rail_trap_u + rail_trap_rib / 2", "rail_trap_c + rail_trap_rib / 2"), ("rail_trap_u + rail_trap_rib / 2", "-(rail_trap_c + rail_trap_rib / 2)"), (neg("plate_u"), "-(rail_trap_c + rail_trap_rib / 2)"), (neg("plate_u"), "-(rail_trap_c - rail_trap_rib / 2)"), ("rail_trap_u - rail_trap_rib / 2", "-(rail_trap_c - rail_trap_rib / 2)"), ("rail_trap_u - rail_trap_rib / 2", "rail_trap_c - rail_trap_rib / 2"), (neg("plate_u"), "rail_trap_c - rail_trap_rib / 2")]))
-    g = "glass / 2 + glass_gap"
-    pd.cut(b, "Ouverture_butee", "XY", 0, "film + 0.01",
-           lambda s: pd.rect(s, "-aperture / 2", "aperture / 2", "-aperture / 2", "aperture / 2"))
-    pd.cut(b, "Logement_verre", "XY", "film", "flange_w1 + 1", lambda s: pd.rect(s, neg(g), g, neg(g), g))
-    pd.cut(b, "Gorge_velours", "XY", "ledge_w - 0.01", "ledge_w + felt_depth",
-           lambda s: pd.rect(s, "felt_u0", "felt_u1", neg(sh), sh))
-    co, ci = "lid_seal_c + lid_seal_w / 2", "lid_seal_c - lid_seal_w / 2"
-    pd.cut(b, "Gorge_couvercle", "XY", "flange_w1 - lid_seal_d", "flange_w1 + 1", lambda s: (
-        pd.rect(s, neg(co), co, neg(co), co), pd.rect(s, neg(ci), ci, neg(ci), ci)))
-    pd.cut(b, "Degagement_charniere", "XY", "t1 - 0.01", "flange_w1 + 1", lambda s: pd.rect(
-        s, "-boss_u - 0.3", "boss_u + 0.3", "plate_v_bot - 1", "boss_v_top + 0.3"))
-    cr = "claw_relief"
-    pd.cut(b, "Degagement_griffes", "XY", "t1 - 0.01", "flange_w1 + 1", lambda s: (
-        pd.rect(s, f"-latch_win_u1 - {cr}", f"-latch_win_u0 + {cr}", f"latch_win_v0 - {cr}", f"latch_win_v1 + {cr}"),
-        pd.rect(s, f"latch_win_u0 - {cr}", f"latch_win_u1 + {cr}", f"latch_win_v0 - {cr}", f"latch_win_v1 + {cr}")))
-    pd.cut(b, "Passages_vis", "XY", "t1 - 1", "flange_w1 + 1",
-           lambda s: [pd.circle(s, u, v, "clear_d / 2") for u, v in screw_points()])
-    pd.cut(b, "Fraisures", "XY", "flange_w1 - (csk_d - clear_d) / 2", "flange_w1",
-           lambda s: [pd.circle(s, u, v, "csk_d / 2") for u, v in screw_points()], taper=-45)
+    p1 = pd.datum(b, "Plan_face_arriere_piece1", "piece1_epaisseur")
+    skin = pd.datum(b, "Plan_avant_rails", "peau_epaisseur")
+    ledge = pd.datum(b, "Plan_avant_insert", "butee_face_avant")
+    rear = pd.datum(b, "Plan_face_arriere", "collerette_face_arriere")
+    P, ui1, vi, sh = "plaque_demi_largeur", "poche_cadre_droite - cadre_jeu", "poche_cadre_demi_hauteur - cadre_jeu", "fente_demi_hauteur"
+    pd.pad(b, "Collerette", pd.sk(b, "Collerette", p1, lambda s: contour(pd, s, tab=False)), "collerette_epaisseur")
+    pd.pad(b, "Insert", pd.sk(b, "Insert", p1, lambda s: pd.rect(s, neg(P), ui1, neg(vi), vi)),
+           "piece1_epaisseur - butee_face_avant", reverse=True)
+    pd.pad(b, "Rails_volet", pd.sk(b, "Rails_volet", skin, lambda s: pd.poly(s, [
+        (neg(P), neg(vi)), (ui1, neg(vi)), (ui1, vi), (neg(P), vi), (neg(P), sh),
+        ("fente_fond", sh), ("fente_fond", neg(sh)), (neg(P), neg(sh))])), "fente_epaisseur")
+    tw = ("chicane_axe + chicane_nervure_largeur / 2", "chicane_axe - chicane_nervure_largeur / 2")
+    pd.pad(b, "Nervure_chicane_collerette", pd.sk(b, "Nervure_chicane_collerette", p1, lambda s: pd.poly(s, [
+        ("chicane_bout_gauche", tw[0]), (tw[0], tw[0]), (tw[0], neg(tw[0])), ("chicane_bout_gauche", neg(tw[0])),
+        ("chicane_bout_gauche", neg(tw[1])), (tw[1], neg(tw[1])), (tw[1], tw[1]), ("chicane_bout_gauche", tw[1])])),
+        "chicane_nervure_hauteur", reverse=True)
+    rw = ("chicane_rails_axe + chicane_rails_nervure_largeur / 2", "chicane_rails_axe - chicane_rails_nervure_largeur / 2")
+    ru = ("chicane_rails_axe_droit + chicane_rails_nervure_largeur / 2", "chicane_rails_axe_droit - chicane_rails_nervure_largeur / 2")
+    pd.pad(b, "Nervure_chicane_rails", pd.sk(b, "Nervure_chicane_rails", skin, lambda s: pd.poly(s, [
+        (neg(P), rw[0]), (ru[0], rw[0]), (ru[0], neg(rw[0])), (neg(P), neg(rw[0])),
+        (neg(P), neg(rw[1])), (ru[1], neg(rw[1])), (ru[1], rw[1]), (neg(P), rw[1])])),
+        "chicane_rails_nervure_hauteur", reverse=True)
+    g = "verre_cote / 2 + verre_jeu"
+    pd.pocket(b, "Ouverture_butee", pd.sk(b, "Ouverture_butee", "XY", lambda s: pd.rect(
+        s, "-butee_ouverture / 2", "butee_ouverture / 2", "-butee_ouverture / 2", "butee_ouverture / 2")), reverse=True)
+    pd.pocket(b, "Logement_verre", pd.sk(b, "Logement_verre", rear, lambda s: pd.rect(s, neg(g), g, neg(g), g)),
+              "collerette_face_arriere - plan_film")
+    pd.pocket(b, "Gorge_velours", pd.sk(b, "Gorge_velours", ledge, lambda s: pd.rect(
+        s, "velours_gauche", "velours_droite", neg(sh), sh)), "velours_profondeur", reverse=True)
+    pd.pocket(b, "Gorges_couvercle", pd.sk(b, "Gorges_couvercle", rear, lambda s: square_rings(
+        pd, s, ("couvercle_gorge_axe", "couvercle_gorge2_axe"), "couvercle_gorge_largeur")), "couvercle_gorge_profondeur")
+    magnets = magnet_points()
+    pd.suppressed_when([pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", rear, lambda s: pd.circles(
+        s, magnets, "aimant_diametre + aimant_jeu_colle")), "aimant_epaisseur")], "fermeture_aimants == 0")
+    cr = "griffes_degagement"
+    claw = pd.pocket(b, "Degagement_griffe", pd.sk(b, "Degagement_griffe", rear, lambda s: pd.rect(
+        s, f"fenetre_griffe_gauche - {cr}", f"fenetre_griffe_droite + {cr}", f"fenetre_griffe_bas - {cr}",
+        f"fenetre_griffe_haut + {cr}")))
+    pd.mirrored(b, "Degagements_griffes_symetrie", [claw])
+    pd.hole(b, "Trous_vis_fraises", pd.sk(b, "Trous_vis_fraises", rear, lambda s: pd.circles(
+        s, screw_points(), "vis_passage_diametre")), "vis_passage_diametre", None, csk_d="vis_fraisure_diametre")
     return b
 
 
 def build_piece3(pd):
+    """Hinged lid shaped as a box: a rounded block hollowed from the inside, its
+    skirt reaching down to the body on the top and right, and down to just above
+    the dark slide slot on the left (the lid opens with the slide in); on the
+    hinge side a wall above the hinge line closes it down to piece 2. A frame
+    bears on piece 2 and carries two light-seal ribs; the post presses the
+    spring. Notch for the latch tab. The clips are tongues cut in the right
+    skirt (one drawn, repeated), or, with fermeture_aimants = 1, two posts in
+    the corners opposite the hinge hold magnets touching those of piece 2. One
+    hinge knuckle mirrored."""
     b = pd.body("Piece3_Couvercle")
-    k0, k1 = "boss_u + knuckle_gap", "lid_knuckle_u1"
-    pd.add(b, "Couvercle", "XY", "flange_w1", "lid_w1", lambda s: footprint(pd, s))
-    co, ci = "lid_seal_c + rib_w / 2", "lid_seal_c - rib_w / 2"
-    pd.add(b, "Nervure", "XY", "flange_w1 - rib_h", "flange_w1 + 0.01", lambda s: (
-        pd.rect(s, neg(co), co, neg(co), co), pd.rect(s, neg(ci), ci, neg(ci), ci)))
-    pd.add(b, "Tenon", "XY", "post_end", "flange_w1 + 0.01", lambda s: pd.circle(s, 0, 0, "post_d / 2"))
-    pd.add(b, "Pion", "XY", "post_end - pin_post_l", "post_end + 0.01", lambda s: pd.circle(s, 0, 0, "pin_post_d / 2"))
-    for c in ("clipA", "clipB"):
-        v0, v1 = f"{c}_v0", f"{c}_v1"
-        pd.add(b, f"Racine_{c}", "XY", "flange_w1", "lid_w1",
-               lambda s: pd.rect(s, "heel_u - 1", "finger_u1", v0, v1))
-        pd.add(b, f"Doigt_{c}", "XY", "lip_w0", "lid_w1 - 0.01",
-               lambda s: pd.rect(s, "finger_u0", "finger_u1", v0, v1))
-        pd.add(b, f"Bec_{c}", "XZ", v0, v1, lambda s: pd.poly(s, [
-            ("finger_u0 + 0.01", "lip_w0"), ("finger_u0 + 0.01", "bump_w0 - 0.1"), ("heel_u + 0.2", "bump_w0 - 0.1")]))
-        pd.add(b, f"Tirette_{c}", "XY", "lid_w1 - 1.5", "lid_w1",
-               lambda s: pd.rect(s, "finger_u1 - 0.01", "finger_u1 + 2", f"{v0} + 3", f"{v1} - 3"))
-    for side, (a, c) in (("gauche", (neg(k1), neg(k0))), ("droit", (k0, k1))):
-        pd.add(b, f"Patte_noeud_{side}", "YZ", a, c,
-               lambda s: pd.rect(s, "hinge_v", "plate_v_bot + 0.5", "hinge_w", "lid_w1"))
-        pd.add(b, f"Noeud_{side}", "YZ", a, c, lambda s: pd.circle(s, "hinge_v", "hinge_w", "knuckle_r"))
-    pd.cut(b, "Degagement_bossage", "XY", "hinge_w - knuckle_r - 1", "lid_w1 + 1", lambda s: pd.rect(
-        s, "-boss_u - 0.3", "boss_u + 0.3", "hinge_v - knuckle_r - 2", "boss_v_top + boss_lid_gap"))
-    pd.cut(b, "Trou_axe", "YZ", f"-({k1}) - 1", f"({k1}) + 1", lambda s: pd.circle(s, "hinge_v", "hinge_w", "pin_d / 2"))
+    bottom = pd.datum(b, "Plan_bas_jupe", "jupe_bas_z")
+    seat = pd.datum(b, "Plan_appui_piece2", "collerette_face_arriere")
+    inner = pd.datum(b, "Plan_face_interieure", "couvercle_face_interieure")
+    post = pd.datum(b, "Plan_bout_tenon", "ressort_face_arriere")
+    # the box
+    pd.pad(b, "Boite", pd.sk(b, "Boite", bottom, lambda s: pd.rounded_rect(
+        s, "boite_gauche", "boite_droite", "plaque_bord_bas", "boite_haut", "rayon_coins")),
+        "couvercle_face_exterieure - jupe_bas_z")
+    pd.pocket(b, "Interieur", pd.sk(b, "Interieur", inner, lambda s: pd.rect(
+        s, "-(plaque_demi_largeur + jupe_jeu)", "clip_doigt_gauche", "plaque_bord_bas - 1",
+        "languette_bord_haut + jupe_jeu")))
+    # bearing on piece 2: frame, two light-seal ribs, post and pin
+    fo = "couvercle_gorge_axe + couvercle_gorge_largeur / 2 + cadre_appui_debord"
+    fi = "couvercle_gorge2_axe - couvercle_gorge_largeur / 2 - cadre_appui_debord"
+    pd.pad(b, "Cadre_appui", pd.sk(b, "Cadre_appui", inner, lambda s: (
+        pd.rect(s, neg(fo), fo, neg(fo), fo, "exterieur"), pd.rect(s, neg(fi), fi, neg(fi), fi, "interieur"))),
+        "couvercle_recul", reverse=True)
+    pd.pad(b, "Nervures", pd.sk(b, "Nervures", seat, lambda s: square_rings(
+        pd, s, ("couvercle_gorge_axe", "couvercle_gorge2_axe"), "couvercle_nervure_largeur")),
+        "couvercle_nervure_hauteur", reverse=True)
+    # wall closing the hinge side: down to piece 2, and lower under the heel on the right
+    wb = "plaque_bord_bas + paroi_charniere_retrait"
+    pd.pad(b, "Paroi_charniere", pd.sk(b, "Paroi_charniere", inner, lambda s: pd.rect(
+        s, "-(plaque_demi_largeur + jupe_jeu)", "clip_doigt_gauche", wb, f"{wb} + jupe_epaisseur")),
+        "couvercle_recul", reverse=True)
+    pd.pad(b, "Paroi_charniere_coin", pd.sk(b, "Paroi_charniere_coin", inner, lambda s: pd.rect(
+        s, "plaque_demi_largeur + jupe_jeu", "clip_doigt_gauche", wb, f"{wb} + jupe_epaisseur")),
+        "couvercle_face_interieure - paroi_charniere_coin_bas_z", reverse=True)
+    pd.pad(b, "Tenon", pd.sk(b, "Tenon", inner, lambda s: pd.circle(s, 0, 0, "tenon_diametre")),
+           "couvercle_face_interieure - ressort_face_arriere", reverse=True)
+    pd.pad(b, "Pion", pd.sk(b, "Pion", post, lambda s: pd.circle(s, 0, 0, "pion_diametre")), "pion_longueur", reverse=True)
+    # openings in the skirt
+    pd.pocket(b, "Jupe_gauche_relevee", pd.sk(b, "Jupe_gauche_relevee", bottom, lambda s: pd.rect(
+        s, "boite_gauche - 1", "-plaque_demi_largeur", "plaque_bord_bas - 1", "boite_haut + 1")),
+        "jupe_gauche_bas_z - jupe_bas_z", reverse=True)
+    pd.pocket(b, "Encoche_verrou", pd.sk(b, "Encoche_verrou", "XZ", lambda s: pd.rect(
+        s, "encoche_verrou_gauche", "encoche_verrou_droite", "jupe_bas_z - 1", "encoche_verrou_haut_z"),
+        off=neg("languette_bord_haut + jupe_jeu")), "jupe_epaisseur + jupe_jeu")
+    # one clip: two slits free a tongue of the right skirt; hook inside, pull tab outside
+    v0, v1, fw = "clip1_bas", "clip1_haut", "clip_fente_largeur"
+    clip = [
+        pd.pocket(b, "Fentes_clip", pd.sk(b, "Fentes_clip", "YZ", lambda s: (
+            pd.rect(s, f"{v0} - {fw}", v0, "jupe_bas_z - 1", "clip_fente_haut_z", "fente_bas"),
+            pd.rect(s, v1, f"{v1} + {fw}", "jupe_bas_z - 1", "clip_fente_haut_z", "fente_haut")), off="boite_droite"),
+            "clip_doigt_epaisseur + jupe_jeu"),
+        pd.pad(b, "Bec_clip", pd.sk(b, "Bec_clip", "XZ", lambda s: pd.poly(s, [
+            ("clip_doigt_gauche", "clip_bec_debut_z"), ("clip_doigt_gauche", "clip_arret_debut_z - 0.1"),
+            ("talon_bord_droit + 0.2", "clip_arret_debut_z - 0.1")]), off=neg(v1)), "clip_longueur"),
+        pd.pad(b, "Tirette_clip", pd.sk(b, "Tirette_clip", bottom, lambda s: pd.rect(
+            s, "boite_droite", "boite_droite + clip_tirette_saillie", f"{v0} + clip_tirette_retrait",
+            f"{v1} - clip_tirette_retrait")), "clip_tirette_hauteur"),
+    ]
+    clip.append(pd.linear(b, "Clips", clip, "Y_Axis", "clip1_bas - clip2_bas", 2, reverse=True))
+    pd.suppressed_when(clip, "fermeture_aimants == 1")
+    # or magnets: two posts in the corners opposite the hinge reach down to piece 2; their
+    # magnets, flush, touch those of piece 2 when the lid is closed
+    magnets = magnet_points()
+    pd.suppressed_when([
+        pd.pad(b, "Plots_aimants", pd.sk(b, "Plots_aimants", inner, lambda s: pd.circles(
+            s, magnets, "plot_aimant_diametre")), "couvercle_recul", reverse=True),
+        pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", seat, lambda s: pd.circles(
+            s, magnets, "aimant_diametre + aimant_jeu_colle")), "aimant_epaisseur", reverse=True),
+    ], "fermeture_aimants == 0")
+    # hinge: right knuckle (lug + barrel), mirrored to the left
+    k0 = "bossage_demi_longueur + noeuds_jeu"
+    knuckle = [
+        pd.pad(b, "Patte_noeud", pd.sk(b, "Patte_noeud", "YZ", lambda s: pd.rect(
+            s, "charniere_axe_y", "plaque_bord_bas + 0.5", "charniere_axe_z", "couvercle_face_exterieure"), off=k0),
+            f"couvercle_noeuds_bout - ({k0})"),
+        pd.pad(b, "Noeud", pd.sk(b, "Noeud", "YZ", lambda s: pd.circle(
+            s, "charniere_axe_y", "charniere_axe_z", "2 * noeud_rayon"), off=k0), f"couvercle_noeuds_bout - ({k0})"),
+    ]
+    pd.mirrored(b, "Noeuds_symetrie", knuckle)
+    pd.pocket(b, "Trou_axe", pd.sk(b, "Trou_axe", "YZ", lambda s: pd.circle(
+        s, "charniere_axe_y", "charniere_axe_z", "axe_trou_diametre")), symmetric=True)
     return b
 
 
 def build_spring(pd):
+    """Cross spring: hub, one arm with its two feet, turned a quarter."""
     b = pd.body("Ressort_Croix")
-    a, aw, r = "spring_arm", "spring_arm_w / 2", "spring_foot_r"
-    c = f"{a} - {aw}"
-    pd.add(b, "Moyeu", "XY", "arm_front", "post_end", lambda s: pd.circle(s, 0, 0, "spring_hub_d / 2"))
-    pd.add(b, "Bras_u", "XY", "arm_front", "post_end", lambda s: pd.profile(s, [
-        ("L", (neg(c), neg(aw)), (c, neg(aw)), None), ("A", (c, 0), aw, -90, 90),
-        ("L", (c, aw), (neg(c), aw), None), ("A", (neg(c), 0), aw, 90, 270)]))
-    pd.add(b, "Bras_v", "XY", "arm_front", "post_end", lambda s: pd.profile(s, [
-        ("A", (0, neg(c)), aw, 180, 360), ("L", (aw, neg(c)), (aw, c), None),
-        ("A", (0, c), aw, 0, 180), ("L", (neg(aw), c), (neg(aw), neg(c)), None)]))
-    pd.add(b, "Pieds", "XY", "foot_tip", "arm_front + 0.01", lambda s: [
-        pd.circle(s, u, v, "spring_foot_d / 2") for u, v in ((r, 0), (neg(r), 0), (0, r), (0, neg(r)))])
-    pd.cut(b, "Trou_pion", "XY", "arm_front - 1", "post_end + 1", lambda s: pd.circle(s, 0, 0, "spring_hole_d / 2"))
+    front = pd.datum(b, "Plan_face_avant", "ressort_face_avant")
+    r, c = "ressort_pied_rayon", "ressort_bras_longueur - ressort_bras_largeur / 2"
+    pd.pad(b, "Moyeu", pd.sk(b, "Moyeu", front, lambda s: pd.circle(s, 0, 0, "ressort_moyeu_diametre")), "ressort_epaisseur")
+    arm = [
+        pd.pad(b, "Bras", pd.sk(b, "Bras", front, lambda s: pd.slot(s, "u", c, "ressort_bras_largeur", "bras")),
+               "ressort_epaisseur"),
+        pd.pad(b, "Pieds", pd.sk(b, "Pieds", front, lambda s: pd.circles(s, ((r, 0), (neg(r), 0)), "ressort_pied_diametre")),
+               "ressort_face_avant - ressort_pied_bout_z", reverse=True),
+    ]
+    pd.polar(b, "Bras_croix", arm, 2, angle=90)
+    pd.pocket(b, "Trou_pion", pd.sk(b, "Trou_pion", front, lambda s: pd.circle(s, 0, 0, "ressort_trou_diametre")),
+              reverse=True)
     return b
 
 
 def build_slider(pd):
     """Rayfor latch slider, remodelled from its STL (rest position)."""
     b = pd.body("Glissiere_Verrou")
-    pd.add(b, "Glissiere", "XY", "latch_skin", "latch_skin + slider_t", lambda s: pd.poly(s, [
-        ("latch_u1", "latch_v1"), ("sl_tab_u1", "latch_v1"), ("sl_tab_u1", "sl_tab_v1"), ("sl_tab_u0", "sl_tab_v1"),
-        ("sl_tab_u0", "latch_v1"), ("sl_u0", "latch_v1"), ("sl_u0", "sl_bar_v0"), ("sl_toothB_u1", "sl_bar_v0"),
-        ("sl_toothB_u1", "sl_step_v0"), ("sl_step_u1", "sl_step_v0"), ("sl_step_u1", "sl_bar_v0"),
-        ("latch_u1", "sl_bar_v0")]))
+    front = pd.datum(b, "Plan_avant_glissiere", "verrou_paroi")
+    back = pd.datum(b, "Plan_arriere_glissiere", "verrou_paroi + glissiere_epaisseur")
+    pd.pad(b, "Glissiere", pd.sk(b, "Glissiere", front, lambda s: pd.poly(s, [
+        ("verrou_poche_droite", "verrou_poche_haut"), ("glissiere_languette_droite", "verrou_poche_haut"),
+        ("glissiere_languette_droite", "glissiere_languette_haut"), ("glissiere_languette_gauche", "glissiere_languette_haut"),
+        ("glissiere_languette_gauche", "verrou_poche_haut"), ("glissiere_gauche", "verrou_poche_haut"),
+        ("glissiere_gauche", "glissiere_barre_bas"), ("glissiere_dent_gauche_pied", "glissiere_barre_bas"),
+        ("glissiere_dent_gauche_pied", "glissiere_guide_bas"), ("glissiere_guide_droite", "glissiere_guide_bas"),
+        ("glissiere_guide_droite", "glissiere_barre_bas"), ("verrou_poche_droite", "glissiere_barre_bas")])),
+        "glissiere_epaisseur")
     # teeth: their back is the locking ramp the body claws ride on (thin at the tip, full at the root)
-    s0, slope = "latch_skin", "(slider_t - sl_ramp_t0) / sl_ramp_len"
-    pd.add(b, "Dent_rampe_droite", "XZ", "latch_v0", "sl_bar_v0 + 0.01", lambda s: pd.poly(s, [
-        ("sl_toothA_u0", s0), ("latch_u1", s0), ("latch_u1", f"{s0} + slider_t"),
-        ("sl_toothA_u0 + sl_ramp_len", f"{s0} + slider_t"), ("sl_toothA_u0", f"{s0} + sl_ramp_t0")]))
-    pd.add(b, "Dent_rampe_gauche", "XZ", "latch_v0", "sl_bar_v0 + 0.01", lambda s: pd.poly(s, [
-        ("sl_toothB_u0", s0), ("sl_toothB_u1", s0),
-        ("sl_toothB_u1", f"{s0} + sl_ramp_t0 + (sl_toothB_u1 - sl_toothB_u0) * {slope}"),
-        ("sl_toothB_u0", f"{s0} + sl_ramp_t0")]))
-    pd.add(b, "Prise", "XY", "latch_skin + slider_t - 0.01", "latch_skin + slider_t + sl_grip_t",
-           lambda s: pd.rect(s, "sl_tab_u0", "sl_tab_u1", "sl_grip_v0", "sl_tab_v1"))
-    def knurl(s):
-        for k in range(9):
-            x0, f = f"knurl_u0 + {k} * knurl_pitch", "(knurl_base - knurl_top) / 2"
-            pd.poly(s, [(x0, "sl_tab_v1 - 0.01"), (f"{x0} + knurl_base", "sl_tab_v1 - 0.01"),
-                        (f"{x0} + knurl_base - {f}", "sl_tab_v1 + knurl_h"), (f"{x0} + {f}", "sl_tab_v1 + knurl_h")])
-    pd.add(b, "Moletage", "XY", "latch_skin", "latch_skin + slider_t + sl_grip_t", knurl)
+    s0, slope = "verrou_paroi", "(glissiere_epaisseur - glissiere_rampe_epaisseur_bout) / glissiere_rampe_longueur"
+    tooth = "glissiere_barre_bas - verrou_poche_bas"
+    pd.pad(b, "Dent_rampe_droite", pd.sk(b, "Dent_rampe_droite", "XZ", lambda s: pd.poly(s, [
+        ("glissiere_dent_droite_bout", s0), ("verrou_poche_droite", s0), ("verrou_poche_droite", f"{s0} + glissiere_epaisseur"),
+        ("glissiere_dent_droite_bout + glissiere_rampe_longueur", f"{s0} + glissiere_epaisseur"),
+        ("glissiere_dent_droite_bout", f"{s0} + glissiere_rampe_epaisseur_bout")]), off=neg("glissiere_barre_bas")), tooth)
+    pd.pad(b, "Dent_rampe_gauche", pd.sk(b, "Dent_rampe_gauche", "XZ", lambda s: pd.poly(s, [
+        ("glissiere_dent_gauche_bout", s0), ("glissiere_dent_gauche_pied", s0),
+        ("glissiere_dent_gauche_pied",
+         f"{s0} + glissiere_rampe_epaisseur_bout + (glissiere_dent_gauche_pied - glissiere_dent_gauche_bout) * {slope}"),
+        ("glissiere_dent_gauche_bout", f"{s0} + glissiere_rampe_epaisseur_bout")]), off=neg("glissiere_barre_bas")), tooth)
+    pd.pad(b, "Prise", pd.sk(b, "Prise", back, lambda s: pd.rect(
+        s, "glissiere_languette_gauche", "glissiere_languette_droite", "glissiere_prise_bas", "glissiere_languette_haut")),
+        "glissiere_prise_surepaisseur")
+    f, top = "(moletage_dent_pied - moletage_dent_sommet) / 2", "glissiere_languette_haut"
+    knurl = pd.pad(b, "Dent_moletage", pd.sk(b, "Dent_moletage", front, lambda s: pd.poly(s, [
+        ("moletage_debut", top), ("moletage_debut + moletage_dent_pied", top),
+        (f"moletage_debut + moletage_dent_pied - {f}", f"{top} + moletage_hauteur"),
+        (f"moletage_debut + {f}", f"{top} + moletage_hauteur")])), "glissiere_epaisseur + glissiere_prise_surepaisseur")
+    pd.linear(b, "Moletage", [knurl], "X_Axis", "8 * moletage_pas", 9)
     return b
 
 
 def build_cover(pd):
     """Rayfor latch cover, remodelled; flush with the rear face of piece 1."""
     b = pd.body("Capot_Verrou")
-    pd.add(b, "Capot", "XY", "t1 - cover_t", "t1", lambda s: pd.poly(s, [
-        ("cover_u0", "latch_v0"), ("cover_u1", "latch_v0"), ("cover_u1", "latch_v1"), ("tabopen_u1", "latch_v1"),
-        ("tabopen_u1", "tab_v"), ("tabopen_u0", "tab_v"), ("tabopen_u0", "latch_v1"), ("cover_u0", "latch_v1")]))
-    pd.cut(b, "Fenetres_griffes", "XY", "t1 - cover_t - 1", "t1 + 1", lambda s: (
-        pd.rect(s, neg("latch_win_u1"), neg("latch_win_u0"), "latch_win_v0", "latch_win_v1"),
-        pd.rect(s, "latch_win_u0", "latch_win_u1", "latch_win_v0", "latch_win_v1")))
+    rear = pd.datum(b, "Plan_face_arriere", "piece1_epaisseur")
+    pd.pad(b, "Capot", pd.sk(b, "Capot", rear, lambda s: pd.poly(s, [
+        ("capot_gauche", "verrou_poche_bas"), ("capot_droite", "verrou_poche_bas"), ("capot_droite", "verrou_poche_haut"),
+        ("passage_languette_droite", "verrou_poche_haut"), ("passage_languette_droite", "languette_bord_haut"),
+        ("passage_languette_gauche", "languette_bord_haut"), ("passage_languette_gauche", "verrou_poche_haut"),
+        ("capot_gauche", "verrou_poche_haut")])), "capot_epaisseur", reverse=True)
+    win = pd.pocket(b, "Fenetre_griffe", pd.sk(b, "Fenetre_griffe", rear, lambda s: pd.rect(
+        s, "fenetre_griffe_gauche", "fenetre_griffe_droite", "fenetre_griffe_bas", "fenetre_griffe_haut")))
+    pd.mirrored(b, "Fenetres_griffes_symetrie", [win])
     return b
 
 
@@ -526,6 +979,8 @@ def ref_box(doc, name, u0, u1, v0, v1, w0, w1):
 
 
 def build(doc):
+    # same feature names in several bodies (Contour, Trou axe...): keep the labels as written
+    App.ParamGet("User parameter:BaseApp/Preferences/Document").SetBool("DuplicateLabels", True)
     sheet = doc.addObject("Spreadsheet::Sheet", SHEET)
     sheet.set("A1", "parametre"); sheet.set("B1", "valeur (mm)"); sheet.set("C1", "note")
     for i, (n, _, note) in enumerate(PARAMS, start=2):     # aliases first
@@ -542,13 +997,115 @@ def build(doc):
               "piece3_couvercle": build_piece3(pd), "ressort_croix": build_spring(pd),
               "glissiere_verrou": build_slider(pd), "capot_verrou": build_cover(pd)}
     refs = {
-        "Verre_57x57": ref_box(doc, "Verre_57x57", "-glass / 2", "glass / 2", "-glass / 2", "glass / 2",
-                               "film", "glass_back"),
-        "Volet": ref_box(doc, "Volet", "-plate_u - 15", "slot_end - 0.4", "-slide_w / 2", "slide_w / 2",
-                         "skin + (slot - slide_t) / 2", "skin + (slot + slide_t) / 2"),
+        "Verre_57x57": ref_box(doc, "Verre_57x57", "-verre_cote / 2", "verre_cote / 2", "-verre_cote / 2", "verre_cote / 2",
+                               "plan_film", "verre_face_arriere"),
+        "Volet": ref_box(doc, "Volet", "-plaque_demi_largeur - 15", "fente_fond - 0.4", "-volet_largeur / 2", "volet_largeur / 2",
+                         "peau_epaisseur + (fente_epaisseur - volet_epaisseur) / 2", "peau_epaisseur + (fente_epaisseur + volet_epaisseur) / 2"),
     }
     doc.recompute()
-    return pieces, refs
+    asm, magnets = assemble(doc, pd, pieces)
+    return pieces, refs, asm, magnets
+
+
+def assemble(doc, pd, pieces):
+    """FreeCAD assembly: piece 1 grounded, piece 2 and the latch cover fixed on it,
+    the lid on a revolute joint (hinge, limited to couvercle_ouverture_max), the
+    spring fixed to the lid, the latch slider on a slider joint (its travel), and
+    the magnets fixed in their seats. Joints use coordinate systems placed by
+    expressions, never edges or faces, so they survive any change of dimension."""
+    asm = doc.addObject("Assembly::AssemblyObject", "Cassette")
+    for body in pieces.values():
+        asm.addObject(body)
+    joints = asm.newObject("Assembly::JointGroup", "Liaisons")
+    p1, p2, p3 = pieces["piece1_interface"], pieces["piece2_cadre_verre"], pieces["piece3_couvercle"]
+    spring, slider, cover = pieces["ressort_croix"], pieces["glissiere_verrou"], pieces["capot_verrou"]
+    origin = {b.Name: pd.frame(b, "Repere_origine") for b in (p1, p2, p3, spring, cover)}
+    hinge = [pd.frame(b, "Repere_charniere", 0, "charniere_axe_y", "charniere_axe_z", along_u=True) for b in (p1, p3)]
+    latch = [pd.frame(b, "Repere_verrou", along_u=True) for b in (p1, slider)]
+    seats = {}
+    for b, z in ((p2, "collerette_face_arriere - aimant_epaisseur"), (p3, "collerette_face_arriere")):
+        for side, x in (("droite", "aimant_x"), ("gauche", neg("aimant_x"))):
+            seats[(b.Name, side)] = pd.frame(b, f"Repere_aimant_{side}", x, "aimant_y", z)
+    magnets = {}
+    for b, where in ((p2, "piece2"), (p3, "couvercle")):
+        for side in ("droite", "gauche"):
+            m = asm.newObject("Part::Cylinder", f"Aimant_{where}_{side}")
+            m.Label = f"Aimant {where} {side}"
+            m.setExpression("Radius", X("aimant_diametre / 2"))
+            m.setExpression("Height", X("aimant_epaisseur"))
+            m.setExpression("Visibility", X("fermeture_aimants == 1"))
+            magnets[m.Name] = (m, b, seats[(b.Name, side)])
+    doc.recompute()
+
+    def joint(label, kind, a, fa, b, fb):
+        j = joints.newObject("App::FeaturePython", label)
+        JointObject.Joint(j, JointObject.JointTypes.index(kind))
+        j.Label = label.replace("_", " ")
+        refb = [b, ["", ""]] if fb is None else [b, [f"{fb.Name}.", f"{fb.Name}."]]
+        j.Proxy.setJointConnectors(j, [[a, [f"{fa.Name}.", f"{fa.Name}."]], refb])
+        return j
+
+    ground = joints.newObject("App::FeaturePython", "Piece1_fixe")
+    JointObject.GroundedJoint(ground, p1)
+    ground.Label = "Piece 1 fixe"
+    joint("Piece2_vissee", "Fixed", p1, origin[p1.Name], p2, origin[p2.Name])
+    joint("Capot_verrou", "Fixed", p1, origin[p1.Name], cover, origin[cover.Name])
+    h = joint("Charniere", "Revolute", p1, hinge[0], p3, hinge[1])
+    h.EnableAngleMin, h.AngleMin, h.EnableAngleMax = True, 0, True
+    h.setExpression("AngleMax", X("couvercle_ouverture_max"))
+    joint("Ressort_colle", "Fixed", p3, origin[p3.Name], spring, origin[spring.Name])
+    sl = joint("Glissiere_verrou", "Slider", p1, latch[0], slider, latch[1])
+    sl.EnableLengthMin, sl.EnableLengthMax, sl.LengthMax = True, True, 0
+    sl.setExpression("LengthMin", X("-glissiere_course"))
+    for m, b, seat in magnets.values():
+        joint(f"{m.Name}_colle", "Fixed", b, seat, m, None)
+    doc.recompute()
+    asm.solve()
+    add_simulations(doc, asm)
+    return asm, {k: v[0] for k, v in magnets.items()}
+
+
+def simulation_module():
+    """FreeCAD's simulation module derives a Qt class at import, which fails
+    without a GUI: load it with Qt supplied (its Simulation and Motion classes
+    keep their module name, so the GUI finds them in the saved file)."""
+    if App.GuiUp or "CommandCreateSimulation" in sys.modules:
+        import CommandCreateSimulation
+        return CommandCreateSimulation
+    import types
+    from PySide import QtCore, QtGui, QtWidgets
+    src = os.path.join(os.path.dirname(JointObject.__file__), "CommandCreateSimulation.py")
+    mod = types.ModuleType("CommandCreateSimulation")
+    mod.__file__ = src
+    mod.__dict__.update(QtCore=QtCore, QtGui=QtGui, QtWidgets=QtWidgets)
+    sys.modules["CommandCreateSimulation"] = mod
+    exec(compile(open(src).read(), src, "exec"), mod.__dict__)
+    return mod
+
+
+def add_simulations(doc, asm):
+    """Two ready-made animations of the assembly (Assembly > Simulation): the lid
+    opening to its stop and closing, the latch locking and unlocking. The
+    formulas are the solver's own (radians, mm, time in s), set from the table."""
+    sim_mod, vals = simulation_module(), param_values()
+    group = asm.newObject("Assembly::SimulationGroup", "Simulations")
+    joint = {o.Label: o for o in doc.getObject("Liaisons").Group}
+    sims = []
+    for name, label, kind, jlabel, amplitude in (
+            ("Ouverture_couvercle", "Ouvrir et fermer le couvercle", "Angular", "Charniere",
+             math.radians(vals["couvercle_ouverture_max"])),
+            ("Verrouillage", "Verrouiller et deverrouiller", "Linear", "Glissiere verrou",
+             -vals["glissiere_course"])):
+        sim = group.newObject("App::FeaturePython", name)
+        sim_mod.Simulation(sim)
+        sim.Label, sim.bTimeEnd = label, 4.0
+        motion = asm.newObject("App::FeaturePython", "Mouvement_" + name)
+        sim_mod.Motion(motion, kind, joint[jlabel], f"{amplitude / 2:.6g}*(1 - cos(pi*time/2))")
+        motion.Label = f"{jlabel} : aller-retour en 4 s"
+        sim.Group = sim.Group + [motion]
+        sims.append(sim)
+    doc.recompute()
+    return sims
 
 
 COLORS = {
@@ -557,6 +1114,7 @@ COLORS = {
     "Verre_57x57": (0.60, 0.80, 0.90), "Volet": (0.78, 0.79, 0.80),
     "glissiere_verrou": (0.75, 0.20, 0.20), "capot_verrou": (0.75, 0.40, 0.40),
     "Rayfor_glissiere": (0.75, 0.20, 0.20), "Rayfor_capot": (0.75, 0.40, 0.40),
+    "Aimant": (0.72, 0.72, 0.74),
 }
 
 
@@ -570,13 +1128,11 @@ def rayfor_part(name):
     return Part.Solid(Part.Shell(s.Faces))
 
 
-def finish(doc, pieces, refs):
+def finish(doc, pieces, refs, magnets):
     """Containers, visibility (bodies show their tip only), colour map for the GUI file."""
-    asm = doc.addObject("App::Part", "Cassette")
     ref = doc.addObject("App::Part", "References")
-    colors = {}
+    colors = {m.Name: (COLORS["Aimant"], 0) for m in magnets.values()}
     for key, body in pieces.items():
-        asm.addObject(body)
         for f in body.Group:
             f.Visibility = f is body.Tip
             if f.isDerivedFrom("PartDesign::Feature"):
@@ -609,7 +1165,7 @@ def _appearance(rgb, transparency):
 
 
 def write_gui_document(path, doc, colors):
-    """GuiDocument.xml written without a GUI: visibility and colours.
+    """GuiDocument.xml written without a GUI: visibility, colours, joint view providers.
 
     FreeCAD hides every object of a file whose GuiDocument.xml lacks
     HasExpansion="1" + <Expand />, and stops reading at a missing <Camera>."""
@@ -619,6 +1175,12 @@ def write_gui_document(path, doc, colors):
     vps, files = [], {}
     for o in doc.Objects:
         props = [("Visibility", "App::PropertyBool", f'<Bool value="{"true" if o.Visibility else "false"}"/>')]
+        proxy = type(getattr(o, "Proxy", None)).__name__
+        module = {"Joint": "JointObject", "GroundedJoint": "JointObject",
+                  "Simulation": "CommandCreateSimulation", "Motion": "CommandCreateSimulation"}.get(proxy)
+        if module:                                         # joint markers, icons, simulation panel in the GUI
+            props.append(("Proxy", "App::PropertyPythonObject",
+                          f'<Python value="bnVsbA==" encoded="yes" module="{module}" class="ViewProvider{proxy}"/>'))
         if o.Name in colors:
             rgb, tr = colors[o.Name]
             fname = f"ShapeAppearance_{o.Name}"
@@ -656,13 +1218,13 @@ def invalid_objects(doc):
 
 
 def underconstrained(doc):
-    """Sketches with remaining degrees of freedom."""
+    """Sketches with remaining degrees of freedom, or redundant / conflicting constraints."""
     out = []
     for o in doc.Objects:
         if o.TypeId == "Sketcher::SketchObject":
-            o.solve()
-            if not o.FullyConstrained:
-                out.append(o.Name)
+            err = o.solve()
+            if err or not o.FullyConstrained:
+                out.append(f"{o.Name}({err})" if err else o.Name)
     return out
 
 
@@ -679,16 +1241,111 @@ def export(shape, name):
     shape.exportStep(os.path.join(OUT, name + ".step"))
 
 
-def lid_rotated(shape, deg, hv, hw):
-    pl = App.Placement(V(0, 0, 0), App.Rotation(V(1, 0, 0), deg), V(0, hv, hw))
-    return shape.transformGeometry(pl.toMatrix())
-
-
 def build_document():
     doc = App.newDocument("cassette")
-    pieces, refs = build(doc)
-    colors = finish(doc, pieces, refs)
+    pieces, refs, asm, magnets = build(doc)
+    colors = finish(doc, pieces, refs, magnets)
     return doc, pieces, refs, colors
+
+
+def solid_overlap(a, b):
+    """Volume of a common to a and b, leaving out slivers (touching faces, < 0.05 mm thick)."""
+    if not a.BoundBox.intersect(b.BoundBox):
+        return 0.0, None
+    c = a.common(b)
+    real = [s for s in c.Solids if s.Area > 0 and 2 * s.Volume / s.Area > 0.05]
+    return sum(s.Volume for s in real), (Part.makeCompound(real).BoundBox if real else None)
+
+
+def motion_check(doc, pieces, refs, say, top=None):
+    """Open and close the lid, dark slide in place.
+    1. The joints are the mechanism: moved anywhere and solved, the lid must
+       end up turned about the modelled hinge axis only (the revolute joint is
+       the hinge), the spring and the lid magnets with it, and the latch slider
+       along u only. (The solver leaves a free joint at an angle of its own
+       choice and applies the limits only when dragging in FreeCAD.)
+    2. Degree by degree up to the stop, the lid and what it carries must not
+       enter what stays. With the clips, their hooks snapping over the stops in
+       the first degrees are expected."""
+    sheet, asm = doc.getObject(SHEET), doc.getObject("Cassette")
+    get = lambda n: float(sheet.get(n))  # noqa: E731
+    lid, spring = pieces["piece3_couvercle"], pieces["ressort_croix"]
+    magnets_on = get("fermeture_aimants") == 1
+    mags = [o for o in asm.Group if o.TypeId == "Part::Cylinder"] if magnets_on else []
+    moving = {"couvercle": lid, "ressort": spring}
+    moving.update({m.Label: m for m in mags if "couvercle" in m.Name})
+    fixed = {"piece 1": pieces["piece1_interface"], "piece 2": pieces["piece2_cadre_verre"],
+             "glissiere": pieces["glissiere_verrou"], "capot": pieces["capot_verrou"], "volet": refs["Volet"]}
+    fixed.update({m.Label: m for m in mags if "piece2" in m.Name})
+    rest = {k: o.Placement for k, o in moving.items()}
+    center = V(0, get("charniere_axe_y"), get("charniere_axe_z"))
+    ok, problems = True, []
+    for a in (10, 60, 110):
+        lid.Placement = App.Placement(V(5, 3, -2), App.Rotation(V(0, 0, 1), 7) * App.Rotation(V(1, 0, 0), a))
+        asm.solve()
+        pl = lid.Placement
+        axis_ok = abs(abs(pl.Rotation.Axis.x) - 1) < 1e-6 or pl.Rotation.Angle < 1e-9
+        hinge_ok = axis_ok and (pl.multVec(center) - center).Length < 1e-4
+        follow_ok = all(o.Placement.isSame(pl.multiply(rest[k]), 1e-6) for k, o in moving.items())
+        if not (hinge_ok and follow_ok):
+            ok = False
+            problems.append(f"lid thrown at {a} deg and solved: "
+                            + ("off the hinge axis" if not hinge_ok else "spring or magnets left behind"))
+    slider = pieces["glissiere_verrou"]
+    slider.Placement = App.Placement(V(-2, 1, 1), App.Rotation(V(0, 0, 1), 3))
+    asm.solve()
+    pl = slider.Placement
+    if abs(pl.Base.y) > 1e-6 or abs(pl.Base.z) > 1e-6 or pl.Rotation.Angle > 1e-9:
+        ok = False
+        problems.append("latch slider not kept on its travel along u")
+    slider.Placement = App.Placement()
+    top = get("couvercle_ouverture_max") if top is None else top
+    angles = list(range(0, 31)) + list(range(32, int(top), 2)) + [top]
+    fixed_shapes = {k: o.Shape for k, o in fixed.items()}
+    snaps = []
+    for a in angles:
+        turn = App.Placement(V(), App.Rotation(V(1, 0, 0), a), center)
+        for k, o in moving.items():
+            o.Placement = turn.multiply(rest[k])
+        for k, o in moving.items():
+            for f, fs in fixed_shapes.items():
+                if k == "ressort" and f.startswith("Aimant"):
+                    continue
+                v, bb = solid_overlap(o.Shape, fs)
+                if v < 0.01:
+                    continue
+                if not magnets_on and k == "couvercle" and f == "piece 1" and a <= 5 \
+                        and bb.XMin >= get("talon_bord_droit") - 0.5:
+                    snaps.append(a)
+                else:
+                    ok = False
+                    problems.append(f"{a} deg: {k} enters {f} ({v:.2f} mm3)")
+    for k, o in moving.items():                 # closed again (not solved: the hinge angle is free)
+        o.Placement = rest[k]
+    # the ready-made animations play: half way, the lid at its stop and the latch locked
+    parts = {o.Name: o.Placement for o in asm.Group if hasattr(o, "Placement")}
+    for sim in [o for g in asm.Group if g.TypeId == "Assembly::SimulationGroup" for o in g.Group]:
+        asm.generateSimulation(sim)
+        asm.updateForFrame(asm.numberOfFrames() // 2)
+        if sim.Name == "Ouverture_couvercle":
+            got, want = math.degrees(lid.Placement.Rotation.Angle), top
+            good = abs(got - want) < 0.5 and (lid.Placement.multVec(center) - center).Length < 1e-3
+        else:
+            got, want = pieces["glissiere_verrou"].Placement.Base.x, -get("glissiere_course")
+            good = abs(got - want) < 0.01
+        ok &= good
+        say(f"  animation '{sim.Label}': half way {got:.2f} (expected {want:.2f})" + ("" if good else "  <-- !"))
+    for o in asm.Group:
+        if o.Name in parts:
+            o.Placement = parts[o.Name]
+    say(f"  joints: lid on the hinge axis, spring and magnets following, latch on its travel: "
+        f"{'yes' if not any('solved' in p or 'slider' in p for p in problems) else 'NO'}")
+    say(f"  {len(angles)} positions from 0 to {top:g} deg: "
+        f"{'no collision' if not problems else str(len(problems)) + ' problems'}"
+        + (f"; clip hooks snapping over their stops up to {max(snaps)} deg (expected)" if snaps else ""))
+    for p in problems[:12]:
+        say(f"    {p}  <-- !")
+    return ok
 
 
 def run_checks(doc, pieces, refs, verbose=True):
@@ -706,15 +1363,17 @@ def run_checks(doc, pieces, refs, verbose=True):
                                           "piece3_couvercle", "ressort_croix"))
     gl, ds = refs["Verre_57x57"].Shape, refs["Volet"].Shape
     latch, cover = shapes["glissiere_verrou"], shapes["capot_verrou"]
-    travel = App.Placement(V(-param_values()["sl_travel"], 0, 0), App.Rotation())
+    travel = App.Placement(V(-param_values()["glissiere_course"], 0, 0), App.Rotation())
     latch_on = latch.transformGeometry(travel.toMatrix())
     pairs = [("p1-p2", p1, p2), ("p1-p3", p1, p3), ("p2-p3", p2, p3),
              ("glass-p1", gl, p1), ("glass-p2", gl, p2), ("glass-p3", gl, p3),
-             ("slide-p1", ds, p1), ("slide-p2", ds, p2),
+             ("slide-p1", ds, p1), ("slide-p2", ds, p2), ("slide-p3", ds, p3),
+             ("latch-p3", latch, p3), ("cover-p3", cover, p3),
              ("spring-p1", sp, p1), ("spring-p2", sp, p2),
              ("latch-p1", latch, p1), ("cover-p1", cover, p1), ("cover-p2", cover, p2),
              ("latch-p2", latch, p2), ("latch-cover", latch, cover),
-             ("latch_locked-p1", latch_on, p1), ("latch_locked-cover", latch_on, cover)]
+             ("latch_locked-p1", latch_on, p1), ("latch_locked-cover", latch_on, cover),
+             ("latch_locked-p3", latch_on, p3)]
     say("\nInterferences (mm3, expected 0):")
     for name, a, b in pairs:
         c = a.common(b)
@@ -725,25 +1384,22 @@ def run_checks(doc, pieces, refs, verbose=True):
         note = "  (contact)" if c.Volume > 0.01 and v < 0.01 else ""
         say(f"  {name:12s} {v:8.3f}{'' if v < 0.01 else '  <-- !'}{note}")
     say(f"  spring-glass {sp.common(gl).Volume:8.3f}  (preload: expected > 0, feet only)")
-    shift = {"glissiere_verrou": param_values()["latch_skin"] - 1.0, "capot_verrou": 0.0}
+    shift = {"glissiere_verrou": param_values()["verrou_paroi"] - 1.0, "capot_verrou": 0.0}
     for key, ref in (("glissiere_verrou", "Rayfor_glissiere"), ("capot_verrou", "Rayfor_capot")):
         r = doc.getObject(ref).Shape.transformGeometry(
             App.Placement(V(0, 0, shift[key]), App.Rotation()).toMatrix())
         say(f"  {key}: volume {shapes[key].Volume:.1f} vs Rayfor STL {r.Volume:.1f} mm3, "
             f"difference {shapes[key].cut(r).Volume + r.cut(shapes[key]).Volume:.1f} mm3")
-    vals = param_values()
-    say("\nLid opening sweep (common volume with pieces 1+2):")
-    p12 = p1.fuse(p2)
-    for deg in (5, 15, 30, 60, 90, 120):
-        v = lid_rotated(p3, deg, vals["hinge_v"], vals["hinge_w"]).common(p12).Volume
-        ok &= v < 0.01
-        say(f"  {deg:4d} deg  {v:8.3f}")
+    say("\nOpening and closing the lid, dark slide in:")
+    ok &= motion_check(doc, pieces, refs, say)
     return ok, shapes
 
 
 def main():
     os.makedirs(OUT, exist_ok=True)
     doc, pieces, refs, colors = build_document()
+    for w in WARNINGS:
+        print("warning:", w, flush=True)
     bad = invalid_objects(doc) + check_sheet(doc)
     if bad:
         print("INVALID or sheet mismatch:", bad, flush=True)
@@ -755,6 +1411,22 @@ def main():
     ok &= not loose
     for name, s in shapes.items():
         export(s, name)
+    # the other closure: clips instead of magnets (pieces 1, 2 and 3 change)
+    sheet = doc.getObject(SHEET)
+    cell, default = sheet.getCellFromAlias("fermeture_aimants"), param_values()["fermeture_aimants"]
+    sheet.set(cell, "0" if default else "1")
+    doc.recompute()
+    other = "clips" if default else "aimants"
+    print(f"\n--- variant fermeture_aimants = {0 if default else 1} ({other}) ---", flush=True)
+    bad = invalid_objects(doc)
+    if bad:
+        print("INVALID:", bad, flush=True)
+    ok_other, shapes_other = run_checks(doc, pieces, refs)
+    ok &= ok_other and not bad
+    for name in ("piece1_interface", "piece2_cadre_verre", "piece3_couvercle"):
+        export(shapes_other[name], f"{name}_{other}")
+    sheet.set(cell, str(int(default)))
+    doc.recompute()
     doc.saveAs(FCSTD)
     write_gui_document(FCSTD, doc, colors)
     App.closeDocument(doc.Name)
@@ -763,7 +1435,7 @@ def main():
             os.remove(os.path.join(OUT, f))
     write_csv()
     vals = param_values()
-    print(f"\nEmulsion plane at w = {vals['film']} ; dark slide gap w {vals['skin']}..{vals['ledge_w']:.2f}")
+    print(f"\nEmulsion plane at w = {vals['plan_film']} ; dark slide gap w {vals['peau_epaisseur']}..{vals['butee_face_avant']:.2f}")
     print("ALL CHECKS OK" if ok else "CHECKS FAILED", flush=True)
     return ok
 
