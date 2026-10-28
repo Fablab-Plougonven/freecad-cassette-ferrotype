@@ -72,19 +72,25 @@ aimant_diametre,6,mm,"aimants : diametre (7 au plus : bande de 8,75 entre la gor
 aimant_epaisseur,2,mm,aimants : epaisseur (la collerette de la piece 2 suit)
 aimant_jeu,0.2,mm,logements des aimants : jeu au diametre et en profondeur
 aimant_peau,0.4,mm,aimants incrustes : peau entre l'aimant et le joint (pause d'impression pour les poser)
-aimant_couverture,0.8,mm,matiere au-dessus de la cavite de l'aimant dans la piece 2
-collerette_epaisseur,aimant_peau + aimant_epaisseur + aimant_jeu + aimant_couverture,mm,collerette de la piece 2 : epaisseur (porte les aimants incrustes)
-collerette_face_arriere,piece1_epaisseur + collerette_epaisseur,mm,face arriere de la piece 2
+aimant_couverture,0.8,mm,matiere au-dessus de la cavite de l'aimant dans la piece 2 (au moins)
+ressort_bras_longueur,27,mm,bras : longueur depuis le centre (longs et fins : souples sur toute la course)
+ressort_bras_largeur,6,mm,
+ressort_epaisseur,1,mm,bras : epaisseur
+ressort_moyeu_diametre,14,mm,
+ressort_pied_diametre,5,mm,
+ressort_pied_rayon,ressort_bras_longueur - ressort_bras_largeur / 2,mm,pieds au bout des bras
+ressort_precharge,1.5,mm,ecrasement avec le verre le plus fin (le plus epais ajoute la difference)
+ressort_jeu_verre,0.3,mm,jeu entre le moyeu et le verre le plus epais
+ressort_pied_bout_z,plan_film + verre_epaisseur_min - ressort_precharge,mm,"bout des pieds, couvercle ferme, ressort non ecrase"
+ressort_face_avant,plan_film + verre_epaisseur_max + ressort_jeu_verre,mm,moyeu et bras au-dessus du verre le plus epais
+ressort_face_arriere,ressort_face_avant + ressort_epaisseur,mm,dos des bras
+ressort_course,plan_film + verre_epaisseur_max - ressort_pied_bout_z,mm,"ecrasement sur le verre le plus epais : sans couvercle, le ressort remonte d'autant"
+couvercle_jeu_ressort,0.3,mm,bras du ressort detendu (verre le plus epais) sous le plan de glissement du couvercle
+collerette_face_arriere,max(piece1_epaisseur + aimant_peau + aimant_epaisseur + aimant_jeu + aimant_couverture; ressort_face_arriere + ressort_course + couvercle_jeu_ressort),mm,face arriere de la piece 2 = plan de glissement du couvercle : les bras du ressort detendu restent dessous
+collerette_epaisseur,collerette_face_arriere - piece1_epaisseur,mm,collerette de la piece 2 : epaisseur (porte les aimants incrustes et les queues d'aronde)
 velours_gauche,-41.2,mm,gorges du velours a l'entree de la fente
 velours_droite,-38.2,mm,
 velours_profondeur,0.6,mm,
-couvercle_gorge_axe,33.5,mm,gorges du couvercle (piece 2) : axe de la gorge exterieure
-couvercle_gorges_entraxe,2.8,mm,deux gorges et deux nervures : entraxe
-couvercle_gorge2_axe,couvercle_gorge_axe - couvercle_gorges_entraxe,mm,axe de la gorge interieure
-couvercle_gorge_largeur,1.6,mm,
-couvercle_gorge_profondeur,1,mm,
-couvercle_nervure_largeur,1,mm,nervures du couvercle
-couvercle_nervure_hauteur,0.8,mm,
 chicane_axe,36.1,mm,"chicane collerette : axe (haut, bas, droite)"
 chicane_bout_gauche,-40.2,mm,chicane collerette : bout gauche
 chicane_gorge_largeur,1,mm,chicane collerette : largeur de la gorge
@@ -104,46 +110,27 @@ vis_haut_x,-28,mm,"vis du haut, a gauche du verrou : x"
 vis_haut_y,39,mm,
 vis_talon_x,44,mm,vis du talon droit : x
 vis_talon_y,28,mm,
-avant_trou_diametre,2.5,mm,avant-trou piece 1 (vis M3 x 8 fraisees)
+avant_trou_diametre,2.5,mm,avant-trou piece 1 (vis M3 x 10 fraisees)
 avant_trou_profondeur,5.5,mm,
 vis_passage_diametre,3.4,mm,passage piece 2
 vis_fraisure_diametre,6.2,mm,fraisure 90 deg
-couvercle_hauteur,7.4,mm,"couvercle plein, dans le prolongement de la piece 2 : hauteur (prise ; matiere contre la transparence du PETG)"
+couvercle_hauteur,6,mm,couvercle plein au-dessus de la piece 2 (matiere contre la transparence du PETG)
 couvercle_face_exterieure,collerette_face_arriere + couvercle_hauteur,mm,face exterieure du couvercle
-noeud_rayon,2.4,mm,
-axe_trou_diametre,2.1,mm,trou de l'axe (axe 2)
-charniere_jeu_bord,0.4,mm,jeu entre noeuds et bord bas
-charniere_axe_y,plaque_bord_bas - noeud_rayon - charniere_jeu_bord,mm,axe de la charniere : v
-charniere_axe_z,collerette_face_arriere,mm,axe de la charniere : w
-bossage_demi_longueur,14,mm,noeud central (piece 1) : demi-longueur
-bossage_haut,plaque_bord_bas - charniere_jeu_bord,mm,"haut du bloc de charniere : hors de la cassette, sous la piece 2 (tenu par le gousset)"
-noeuds_jeu,0.4,mm,
-couvercle_noeuds_bout,22,mm,noeuds du couvercle : bout
-gousset_depart_z,1.1,mm,depart du gousset a 45 deg
-gousset_hauteur,charniere_axe_z - noeud_rayon - gousset_depart_z,mm,
-aimant_paroi,1,mm,paroi entre le logement d'un aimant et la fraisure de la vis du haut
-aimant_x,-vis_haut_x + vis_fraisure_diametre / 2 + aimant_paroi + (aimant_diametre + aimant_jeu) / 2,mm,"deux aimants, dans les coins opposes a la charniere, au plus loin du bord lateral (3,9) que permet la vis du haut"
-aimant_y,(plaque_bord_haut + couvercle_gorge_axe + couvercle_gorge_largeur / 2) / 2,mm,au milieu de la bande entre la gorge exterieure et le bord haut
-couvercle_ouverture_max,140,mm,"charniere : butee de la liaison pivot (le couvercle touche le gousset de la piece 1 vers 168 deg avec des aimants de 2, 151 deg avec 3)"
-ressort_bras_longueur,27,mm,bras : longueur depuis le centre (longs et fins : souples sur toute la course)
-ressort_bras_largeur,6,mm,
-ressort_epaisseur,1,mm,bras : epaisseur
-ressort_moyeu_diametre,14,mm,
-ressort_pied_diametre,5,mm,
-ressort_pied_rayon,ressort_bras_longueur - ressort_bras_largeur / 2,mm,pieds au bout des bras
-ressort_precharge,1.5,mm,ecrasement avec le verre le plus fin (le plus epais ajoute la difference)
-ressort_jeu_verre,0.3,mm,jeu entre le moyeu et le verre le plus epais
-ressort_pied_bout_z,plan_film + verre_epaisseur_min - ressort_precharge,mm,"bout des pieds, ressort libre"
-ressort_face_avant,plan_film + verre_epaisseur_max + ressort_jeu_verre,mm,moyeu et bras au-dessus du verre le plus epais
-ressort_face_arriere,ressort_face_avant + ressort_epaisseur,mm,
-tenon_diametre,8,mm,tenon du couvercle
-pion_diametre,3,mm,
-pion_longueur,1,mm,
-ressort_trou_diametre,pion_diametre + 0.5,mm,trou du ressort (Ø3.2 trop serre a l'essai)
-ressort_course,plan_film + verre_epaisseur_max - ressort_pied_bout_z,mm,ecrasement sur le verre le plus epais : les bras montent d'autant
-chambre_ressort_rayon,ressort_bras_longueur + 0.5,mm,chambre du ressort dans le couvercle
-chambre_ressort_haut_z,max(ressort_face_arriere + ressort_course + 0.5; collerette_face_arriere + 0.5),mm,"plafond de la chambre : bras souleves + 0,5, au moins 0,5 au-dessus de la piece 2"
-charniere_degagement_largeur,2.5,mm,degagement du couvercle au-dessus du noeud central de la piece 1
+couvercle_jeu,0.2,mm,"jeu de la glissiere (par cote, et sur les queues d'aronde)"
+couvercle_jupe_epaisseur,1.6,mm,"jupes du couvercle, en haut et en bas"
+queue_aronde_dessus,1.2,mm,matiere de la piece 2 entre la queue d'aronde et sa face arriere
+queue_aronde_profondeur,1.4,mm,queue d'aronde : profondeur dans les bords haut et bas de la piece 2 (45 deg)
+queue_aronde_butee,3,mm,queues d'aronde fermees a gauche : butee du couvercle ferme (depuis le bord gauche)
+couvercle_jupe_bas,collerette_face_arriere - queue_aronde_dessus - queue_aronde_profondeur,mm,bas des jupes du couvercle
+couvercle_course,plaque_demi_largeur + verre_cote / 2 + verre_jeu + 1,mm,course pour degager le logement du verre (le couvercle sort ensuite des glissieres)
+couvercle_rampe_hauteur,ressort_course + 0.3,mm,rampe d'entree : le moyeu du ressort detendu passe dessous
+couvercle_rampe_longueur,8.5,mm,rampe d'entree : longueur depuis le bout gauche du couvercle
+couvercle_rampe_demi_largeur,ressort_moyeu_diametre / 2 + 1,mm,
+couvercle_velours_gauche,-33,mm,"velours sous le couvercle, cote gauche : bord gauche"
+couvercle_velours_droite,31,mm,"velours sous le couvercle, cote droit : bord gauche"
+velours_largeur,3,mm,bandes de velours du couvercle : largeur
+aimant_x,-37.5,mm,"deux aimants a gauche, hors du velours"
+aimant_y,20,mm,"en haut et en bas, hors de la rampe"
 glissiere_gauche,-14.7,mm,glissiere : bout gauche
 glissiere_barre_bas,41.25,mm,glissiere : bas de la barre
 glissiere_dent_droite_bout,18.25,mm,dent droite : bout (la dent va jusqu'a verrou_poche_droite)
