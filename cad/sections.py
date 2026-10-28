@@ -19,7 +19,7 @@ shapes = {"Pièce 1 interface": (pieces["piece1_interface"].Shape, "#26262b"),
           "Verre 57×57×1": (refs["Verre_57x57"].Shape, "#5ab4e0"),
           "Volet": (refs["Volet"].Shape, "#b0b4b8"),
           "Glissière": (pieces["glissiere_verrou"].Shape, "#c03030"),
-          "Ressort croix": (pieces["ressort_croix"].Shape, "#d07a1a")}
+          "Ressort à lames": (pieces["ressort_lames"].Shape, "#d07a1a")}
 
 def section(ax, normal, offset, axes, title, xlim, ylim):
     for label, (s, col) in shapes.items():
@@ -36,7 +36,7 @@ def section(ax, normal, offset, axes, title, xlim, ylim):
 fig, axs = plt.subplots(3, 1, figsize=(14, 17))
 section(axs[0], V(0, 1, 0), 0.0, (0, 2), "Coupe v = 0 (horizontale) : u →, w ↑ (w = 0 : face d'appui côté boîtier)", (-60, 56), (-1, 17))
 section(axs[1], V(1, 0, 0), 0.0, (1, 2), "Coupe u = 0 (verticale) : v →, w ↑", (-52, 52), (-1, 17))
-section(axs[2], V(1, 0, 0), 15.0, (1, 2), "Coupe u = 15 (fenêtre du verrou, charnière)", (-52, 52), (-1, 17))
+section(axs[2], V(1, 0, 0), 15.0, (1, 2), "Coupe u = 15 (fenêtre du verrou)", (-52, 52), (-1, 17))
 for ax in axs:
     ax.axhline(3.55, color="#c00", lw=0.6, ls="--"); ax.text(ax.get_xlim()[0] + 1, 3.65, "plan film 3,55", color="#c00", fontsize=8)
 h, l = axs[0].get_legend_handles_labels()

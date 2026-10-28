@@ -40,9 +40,9 @@ try:
     # exploded in assembly order, from the body side (w = 0) to the lid; dark slide pulled out to the left
     offsets = {"Piece1_Interface": (0, 0), "Glissiere_Verrou": (0, 12), "Capot_Verrou": (0, 22),
                "Volet": (-60, 30), "Piece2_CadreVerre": (0, 36), "Verre_57x57": (0, 50),
-               "Ressort_Croix": (0, 60), "Piece3_Couvercle": (0, 72),
-               "Aimant_piece2_droite": (0, 36), "Aimant_piece2_gauche": (0, 36),
-               "Aimant_couvercle_droite": (0, 72), "Aimant_couvercle_gauche": (0, 72)}
+               "Ressort_Lames": (0, 60), "Piece3_Couvercle": (0, 72),
+               "Aimant_piece2_haut": (0, 36), "Aimant_piece2_bas": (0, 36),
+               "Aimant_couvercle_haut": (0, 72), "Aimant_couvercle_bas": (0, 72)}
     for name, (du, dw) in offsets.items():
         o = doc.getObject(name)
         move = App.Placement(V(du, 0, dw), App.Rotation())

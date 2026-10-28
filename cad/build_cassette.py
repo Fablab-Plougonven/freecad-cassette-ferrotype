@@ -57,6 +57,9 @@ PARAMS = [
     ("gorge_cote_interieur", "70.7", "gorge de la face d'appui (recoit la levre du boitier) : cote interieur du carre"),
     ("gorge_largeur", "1.5", "gorge : largeur"),
     ("gorge_profondeur", "0.5", "gorge : profondeur"),
+    ("gorge_interieure_cote_interieur", "59", "deuxieme gorge de la face d'appui (recoit la levre interieure du boitier) : cote interieur du carre"),
+    ("gorge_interieure_largeur", "1", "deuxieme gorge : largeur (carre exterieur 61)"),
+    ("gorge_interieure_profondeur", "1", "deuxieme gorge : profondeur"),
     ("ergots_profondeur", "5.9", "poches des ergots du boitier"),
     ("ergot1_gauche", "39", ""), ("ergot1_droite", "42", ""),
     ("ergot1_bas", "2.76", ""), ("ergot1_haut", "19.76", ""),
@@ -70,7 +73,7 @@ PARAMS = [
     ("verrou_poche_fond", "verrou_paroi + glissiere_epaisseur + 0.2", "fond de la poche du verrou"),
     ("verrou_poche_gauche", "-18.2", "poche de la glissiere Rayfor"), ("verrou_poche_droite", "26.2", ""),
     ("verrou_poche_bas", "37.25", ""), ("verrou_poche_haut", "44.3", ""),
-    ("verrou_ilot_gauche", "2.75", "ilot de guidage dans la poche"), ("verrou_ilot_droite", "11.75", ""),
+    ("verrou_ilot_droite", "11.75", "ilot de guidage dans la poche (taquet du ressort) : bord droit"),
     ("verrou_ilot_haut", "40.25", ""),
     ("capot_gauche", "-24.2", "poche du capot Rayfor"), ("capot_droite", "32.2", ""),
     ("verrou_jeu", "0.2", "jeu par cote de la glissiere et du capot Rayfor"),
@@ -95,12 +98,12 @@ PARAMS = [
     ("verre_face_arriere", "plan_film + verre_epaisseur", "dos du verre"),
     ("butee_appui", "1", "appui du verre sur la butee, par cote"),
     ("butee_ouverture", "verre_cote - 2 * butee_appui", "ouverture de la butee = image"),
-    ("peau_ouverture", "61.9", "ouverture de la peau avant : laisse entrer la levre interieure du boitier (fenetre Rayfor 61.5 + jeu)"),
+    ("peau_ouverture", "55", "ouverture de la peau avant, comme la butee de la piece 2 (la levre interieure du boitier entre dans la deuxieme gorge)"),
     # Insert pocket (piece 1) / insert (piece 2)
     ("poche_cadre_droite", "34", "poche de la piece 2 : bord droit"),
     ("poche_cadre_demi_hauteur", "34.8", "poche de la piece 2 : demi-hauteur (reste a l'interieur de la gorge)"),
     ("cadre_jeu", "0.2", "jeu insert / poche"),
-    ("aimant_diametre", "6", "aimants : diametre (7 au plus : bande de 8,75 entre la gorge et le bord haut)"),
+    ("aimant_diametre", "6", "aimants : diametre (dans la bande entre le rail du couvercle et le bord)"),
     ("aimant_epaisseur", "2", "aimants : epaisseur (la collerette de la piece 2 suit)"),
     ("aimant_jeu", "0.2", "logements des aimants : jeu au diametre et en profondeur"),
     ("aimant_peau", "0.4", "aimants incrustes : peau entre l'aimant et le joint (pause d'impression pour les poser)"),
@@ -109,12 +112,6 @@ PARAMS = [
     ("collerette_face_arriere", "piece1_epaisseur + collerette_epaisseur", "face arriere de la piece 2"),
     ("velours_gauche", "-41.2", "gorges du velours a l'entree de la fente"), ("velours_droite", "-38.2", ""),
     ("velours_profondeur", "0.6", ""),
-    ("couvercle_gorge_axe", "33.5", "gorges du couvercle (piece 2) : axe de la gorge exterieure"),
-    ("couvercle_gorges_entraxe", "2.8", "deux gorges et deux nervures : entraxe"),
-    ("couvercle_gorge2_axe", "couvercle_gorge_axe - couvercle_gorges_entraxe", "axe de la gorge interieure"),
-    ("couvercle_gorge_largeur", "1.6", ""),
-    ("couvercle_gorge_profondeur", "1", ""),
-    ("couvercle_nervure_largeur", "1", "nervures du couvercle"), ("couvercle_nervure_hauteur", "0.8", ""),
     # Light traps between piece 1 and piece 2
     ("chicane_axe", "36.1", "chicane collerette : axe (haut, bas, droite)"),
     ("chicane_bout_gauche", "-40.2", "chicane collerette : bout gauche"),
@@ -128,43 +125,64 @@ PARAMS = [
     # Screws M3 x 6 countersunk
     ("vis_bas_x", "38", "vis du bas, dans les coins, paire symetrique : x"), ("vis_bas_y", "-39", "y (0,9 de paroi entre la fraisure et le bord)"),
     ("vis_haut_x", "-28", "vis du haut, a gauche du verrou : x"), ("vis_haut_y", "39", ""),
-    ("vis_talon_x", "44", "vis du talon droit : x"), ("vis_talon_y", "28", ""),
+    ("vis_haut_droite_x", "37", "vis du haut a droite du verrou, hors du capot : x (l'ancienne vis du talon tombait dans le couloir)"),
     ("avant_trou_diametre", "2.5", "avant-trou piece 1 (vis M3 x 8 fraisees)"), ("avant_trou_profondeur", "5.5", ""),
     ("vis_passage_diametre", "3.4", "passage piece 2"), ("vis_fraisure_diametre", "6.2", "fraisure 90 deg"),
     # Lid
     ("couvercle_hauteur", "7.4", "couvercle plein, dans le prolongement de la piece 2 : hauteur (prise ; matiere contre la transparence du PETG)"),
     ("couvercle_face_exterieure", "collerette_face_arriere + couvercle_hauteur", "face exterieure du couvercle"),
-    # Hinge (pin 2 mm, along u)
-    ("noeud_rayon", "2.4", ""), ("axe_trou_diametre", "2.1", "trou de l'axe (axe 2)"),
-    ("charniere_jeu_bord", "0.4", "jeu entre noeuds et bord bas"),
-    ("charniere_axe_y", "plaque_bord_bas - noeud_rayon - charniere_jeu_bord", "axe de la charniere : v"),
-    ("charniere_axe_z", "collerette_face_arriere", "axe de la charniere : w"),
-    ("bossage_demi_longueur", "14", "noeud central (piece 1) : demi-longueur"),
-    ("bossage_haut", "plaque_bord_bas - charniere_jeu_bord", "haut du bloc de charniere : hors de la cassette, sous la piece 2 (tenu par le gousset)"),
-    ("noeuds_jeu", "0.4", ""), ("couvercle_noeuds_bout", "22", "noeuds du couvercle : bout"),
-    ("gousset_depart_z", "1.1", "depart du gousset a 45 deg"),
-    ("gousset_hauteur", "charniere_axe_z - noeud_rayon - gousset_depart_z", ""),
+    # Sliding lid: dovetail rails in piece 2 (top and bottom), closed on the left and
+    # open on the right; the lid sole slides in a channel over the glass
+    ("couvercle_jeu", "0.2", "jeu du couvercle coulissant (rails, couloir, butees)"),
+    ("couloir_demi_hauteur", "verre_cote / 2 + verre_jeu + couvercle_jeu", "couloir de la piece 2 ou glisse la semelle du couvercle : demi-hauteur"),
+    ("couloir_gauche", "-(verre_cote / 2 + verre_jeu + couvercle_jeu)", "couloir : bord gauche (ferme) ; il sort par la droite"),
+    ("couloir_fond", "piece1_epaisseur + 0.6", "couloir : fond (0,6 de collerette sur la piece 1)"),
+    ("semelle_dessous", "couloir_fond + couvercle_jeu", "dessous de la semelle du couvercle (au-dessus du verre le plus epais)"),
+    ("rail_axe", "32.1", "rails du couvercle (haut et bas) : axe ; ils sortent par la face droite du talon"),
+    ("levre_gauche_largeur", "1.5", "levre du bord gauche de la piece 2 (chicane), coiffee par une feuillure du couvercle : largeur"),
+    ("levre_gauche_hauteur", "1.2", "levre gauche : hauteur au-dessus de la face arriere de la piece 2"),
+    ("rail_gauche", "-plaque_demi_largeur + levre_gauche_largeur", "rails : bout gauche, ferme, au pied de la levre gauche"),
+    ("rail_gorge_largeur", "1.6", "rails : gorge (chicane de la languette) : largeur"),
+    ("rail_gorge_hauteur", "0.8", "rails : gorge : hauteur"),
+    ("rail_queue_hauteur", "1.4", "rails : queue d'aronde a 45 deg sous la gorge : hauteur"),
+    ("rail_fond", "collerette_face_arriere - rail_gorge_hauteur - rail_queue_hauteur", "fond des rails"),
+    ("rail_queue_demi_largeur", "rail_gorge_largeur / 2 + rail_queue_hauteur", "rails : demi-largeur au fond"),
+    ("languette_rail_demi_largeur", "rail_gorge_largeur / 2 - couvercle_jeu", "languette continue du couvercle dans la gorge du rail : demi-largeur"),
+    ("languette_rail_bas", "collerette_face_arriere - rail_gorge_hauteur - couvercle_jeu", "languette : bas"),
+    ("tete_longueur", "12", "queues d'aronde du couvercle, a son bout gauche : longueur"),
+    ("tete_bas", "rail_fond + couvercle_jeu", "queue d'aronde : bas"),
+    ("tete_jeu", "0.1", "jeu des queues d'aronde sur leurs pans (en horizontal) : le bord gauche du couvercle ne monte que d'autant sous la poussee des lames"),
+    ("tete_demi_largeur", "rail_queue_demi_largeur - couvercle_jeu - tete_jeu", "queue d'aronde : demi-largeur en bas"),
+    ("tete_epaule", "tete_bas + tete_demi_largeur - languette_rail_demi_largeur", "queue d'aronde : haut du pan a 45 deg"),
+    ("couvercle_degagement", "1.5", "couvercle ouvert : son bord gauche depasse le logement du verre de"),
+    ("couvercle_course", "plaque_demi_largeur + verre_cote / 2 + verre_jeu + couvercle_degagement", "course du couvercle vers la droite"),
+    ("goupille_diametre", "2", "goupilles de butee : bouts de tige"),
+    ("goupille_trou_diametre", "goupille_diametre + 0.1", ""),
+    ("goupille_x", "rail_gauche + couvercle_jeu + tete_longueur + couvercle_course + couvercle_jeu + goupille_diametre / 2", "goupilles : position (elles arretent les queues d'aronde en fin de course)"),
+    ("goupille_enfoncement", "2.5", "goupille : profondeur dans la piece 1"),
+    ("goupille_haut", "languette_rail_bas - couvercle_jeu", "haut des goupilles (la languette passe au-dessus)"),
+    ("goupille_longueur", "goupille_haut - piece1_epaisseur + goupille_enfoncement", "goupille : longueur"),
+    ("fente_couvercle_profondeur", "1.7", "fente dans la paroi gauche du couloir (chicane) : profondeur"),
+    ("languette_gauche_longueur", "1.5", "languette du bout de la semelle, dans la fente"),
+    ("languette_gauche_epaisseur", "0.8", ""),
+    ("languette_gauche_bas", "semelle_dessous + 0.9", ""),
+    ("levre_epaisseur", "1.5", "levre du bout droit du couvercle (butee de fermeture, chicane) : epaisseur"),
+    ("levre_bas", "5", "levre : bas, devant la face droite du talon de la piece 1"),
     # Magnetic closure
-    ("aimant_paroi", "1", "paroi entre le logement d'un aimant et la fraisure de la vis du haut"),
-    ("aimant_x", "-vis_haut_x + vis_fraisure_diametre / 2 + aimant_paroi + (aimant_diametre + aimant_jeu) / 2", "deux aimants, dans les coins opposes a la charniere, au plus loin du bord lateral (3,9) que permet la vis du haut"),
-    ("aimant_y", "(plaque_bord_haut + couvercle_gorge_axe + couvercle_gorge_largeur / 2) / 2", "au milieu de la bande entre la gorge exterieure et le bord haut"),
-    ("couvercle_ouverture_max", "140", "charniere : butee de la liaison pivot (le couvercle touche le gousset de la piece 1 vers 168 deg avec des aimants de 2, 151 deg avec 3)"),
-    # Cross spring
-    ("ressort_bras_longueur", "27", "bras : longueur depuis le centre (longs et fins : souples sur toute la course)"),
-    ("ressort_bras_largeur", "6", ""),
-    ("ressort_epaisseur", "1", "bras : epaisseur"), ("ressort_moyeu_diametre", "14", ""),
-    ("ressort_pied_diametre", "5", ""), ("ressort_pied_rayon", "ressort_bras_longueur - ressort_bras_largeur / 2", "pieds au bout des bras"),
-    ("ressort_precharge", "1.5", "ecrasement avec le verre le plus fin (le plus epais ajoute la difference)"),
-    ("ressort_jeu_verre", "0.3", "jeu entre le moyeu et le verre le plus epais"),
-    ("ressort_pied_bout_z", "plan_film + verre_epaisseur_min - ressort_precharge", "bout des pieds, ressort libre"),
-    ("ressort_face_avant", "plan_film + verre_epaisseur_max + ressort_jeu_verre", "moyeu et bras au-dessus du verre le plus epais"),
-    ("ressort_face_arriere", "ressort_face_avant + ressort_epaisseur", ""),
-    ("tenon_diametre", "8", "tenon du couvercle"), ("pion_diametre", "3", ""), ("pion_longueur", "1", ""),
-    ("ressort_trou_diametre", "pion_diametre + 0.5", "trou du ressort (Ø3.2 trop serre a l'essai)"),
-    ("ressort_course", "plan_film + verre_epaisseur_max - ressort_pied_bout_z", "ecrasement sur le verre le plus epais : les bras montent d'autant"),
-    ("chambre_ressort_rayon", "ressort_bras_longueur + 0.5", "chambre du ressort dans le couvercle"),
-    ("chambre_ressort_haut_z", "max(ressort_face_arriere + ressort_course + 0.5; collerette_face_arriere + 0.5)", "plafond de la chambre : bras souleves + 0,5, au moins 0,5 au-dessus de la piece 2"),
-    ("charniere_degagement_largeur", "2.5", "degagement du couvercle au-dessus du noeud central de la piece 1"),
+    ("aimant_x", "28", "aimants : x (en haut et en bas, vers le bout droit du couvercle)"),
+    ("aimant_y", "(plaque_bord_haut + rail_axe + rail_queue_demi_largeur) / 2", "au milieu de la bande entre le rail et le bord"),
+    # Leaf spring (separate printed part glued under the lid sole): presses the glass
+    ("lames_epaisseur", "1.2", "ressort a lames : epaisseur"), ("lames_largeur", "8", "lames : largeur"),
+    ("lames_axe", "15", "lames : axe (paire symetrique)"),
+    ("lames_racine_largeur", "4", "barre de racine (collee dans le couvercle) : largeur"),
+    ("lames_racine_droite", "-19", "racine : bord droit, depart des lames"),
+    ("lames_longueur", "24", "lames : longueur, de la racine au milieu du patin"),
+    ("lames_precharge", "1.5", "ecrasement sur le verre le plus fin (le plus epais ajoute la difference)"),
+    ("patin_largeur_bas", "1", "patins : plat d'appui"),
+    ("patin_bas", "plan_film + verre_epaisseur_min - lames_precharge", "bas des patins, lames libres"),
+    ("patin_hauteur", "semelle_dessous - patin_bas", "patins : hauteur (chanfreins a 45 deg des deux cotes : ils montent les marches)"),
+    ("patin_x", "lames_racine_droite + lames_longueur", "milieu des patins"),
+    ("chambre_lames_haut", "semelle_dessous + lames_epaisseur + couloir_fond - patin_bas + 0.5", "plafond de la chambre des lames : lames soulevees sur le fond du couloir + 0,5"),
     # Latch slider and cover (Rayfor, remodelled; slider at rest)
     ("glissiere_gauche", "-14.7", "glissiere : bout gauche"), ("glissiere_barre_bas", "41.25", "glissiere : bas de la barre"),
     ("glissiere_dent_droite_bout", "18.25", "dent droite : bout (la dent va jusqu'a verrou_poche_droite)"),
@@ -180,6 +198,16 @@ PARAMS = [
     ("moletage_hauteur", "0.66", ""),
     ("glissiere_course", "3.5", "course de la glissiere (vers u negatif)"),
     ("capot_epaisseur", "2.4", "capot : epaisseur (affleure la face arriere de la piece 1)"),
+    # Latch spring (compression, bought), in the pocket between the left tooth of
+    # the slider and the island: pushes the slider towards locked
+    ("ressort_verrou_diametre", "2", "ressort du verrou : diametre exterieur"),
+    ("ressort_verrou_longueur_libre", "10", "ressort du verrou : longueur libre"),
+    ("ressort_verrou_precharge", "1", "ressort du verrou : ecrasement glissiere verrouillee (il pousse encore)"),
+    ("ressort_verrou_longueur_ferme", "ressort_verrou_longueur_libre - ressort_verrou_precharge", "longueur du ressort, glissiere verrouillee"),
+    ("ressort_verrou_longueur_ouvert", "ressort_verrou_longueur_ferme - glissiere_course", "longueur du ressort, glissiere poussee a droite (deverrouillee)"),
+    ("verrou_ilot_gauche", "glissiere_dent_gauche_pied - glissiere_course + ressort_verrou_longueur_ferme - verrou_jeu", "ilot (taquet du ressort) : bord gauche, a la longueur du ressort verrouille de la dent gauche"),
+    ("ressort_verrou_y", "(verrou_poche_bas + glissiere_guide_bas) / 2", "axe du ressort : entre le fond de la poche et le guide de la glissiere"),
+    ("ressort_verrou_z", "verrou_paroi + glissiere_epaisseur / 2", "axe du ressort : milieu de la glissiere"),
 ]
 NAMES = {n for n, _, _ in PARAMS}
 _TOKEN = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*\b")
@@ -644,20 +672,26 @@ def contour(pd, sk, tab):
 def screw_points():
     """M3 countersunk screws holding piece 2 on piece 1: the corners are left to the magnets."""
     return [("vis_bas_x", "vis_bas_y"), (neg("vis_bas_x"), "vis_bas_y"), ("vis_haut_x", "vis_haut_y"),
-            ("vis_talon_x", "vis_talon_y")]
+            ("vis_haut_droite_x", "vis_haut_y")]
 
 
 def magnet_points():
-    """Two magnets, in the corners opposite the hinge."""
-    return [("aimant_x", "aimant_y"), (neg("aimant_x"), "aimant_y")]
+    """Two magnets, in the top and bottom bands, towards the right end of the lid."""
+    return [("aimant_x", "aimant_y"), ("aimant_x", neg("aimant_y"))]
 
 
-def square_rings(pd, s, axes, width):
-    """Concentric square rings centred on the image, one per axis (half side), of a given width."""
-    for i, a in enumerate(axes, start=1):
-        o, n = f"{a} + {width} / 2", f"{a} - {width} / 2"
-        pd.rect(s, neg(o), o, neg(o), o, f"anneau{i}_exterieur")
-        pd.rect(s, neg(n), n, neg(n), n, f"anneau{i}_interieur")
+def pin_points():
+    """Stop pins of the lid, at the right end of the two rails."""
+    return [("goupille_x", "rail_axe"), ("goupille_x", neg("rail_axe"))]
+
+
+def rail_profile(pd, s):
+    """Dovetail rail of piece 2 seen along u (v, w): a groove for the lid tongue,
+    widening at 45 deg below it; drawn above the rear face so that it opens there."""
+    a, n, q = "rail_axe", "rail_gorge_largeur / 2", "rail_queue_demi_largeur"
+    top, neck = "collerette_face_arriere + 1", "collerette_face_arriere - rail_gorge_hauteur"
+    pd.poly(s, [(f"{a} - {n}", top), (f"{a} + {n}", top), (f"{a} + {n}", neck), (f"{a} + {q}", "rail_fond"),
+                (f"{a} - {q}", "rail_fond"), (f"{a} - {n}", neck)])
 
 
 def build_piece1(pd):
@@ -671,23 +705,15 @@ def build_piece1(pd):
     P, f = "plaque_demi_largeur", "verrou_jeu"
     # the plate
     pd.pad(b, "Plaque", pd.sk(b, "Contour", "XY", lambda s: contour(pd, s, tab=True)), "piece1_epaisseur")
-    # hinge: side profiles padded symmetrically about the v axis
-    L = "2 * bossage_demi_longueur"
-    pd.pad(b, "Bossage_charniere", pd.sk(b, "Bossage_charniere", "YZ", lambda s: pd.rect(
-        s, "charniere_axe_y", "bossage_haut", "charniere_axe_z - noeud_rayon", "charniere_axe_z + noeud_rayon")),
-        L, symmetric=True)
-    pd.pad(b, "Noeud_charniere", pd.sk(b, "Noeud_charniere", "YZ", lambda s: pd.circle(
-        s, "charniere_axe_y", "charniere_axe_z", "2 * noeud_rayon")), L, symmetric=True)
-    pd.pad(b, "Gousset_45", pd.sk(b, "Gousset_45", "YZ", lambda s: pd.poly(s, [
-        ("plaque_bord_bas", "gousset_depart_z"), ("plaque_bord_bas", "charniere_axe_z - noeud_rayon"),
-        ("plaque_bord_bas - gousset_hauteur", "charniere_axe_z - noeud_rayon")])), L, symmetric=True)
-    pd.pocket(b, "Trou_axe", pd.sk(b, "Trou_axe", "YZ", lambda s: pd.circle(s, "charniere_axe_y", "charniere_axe_z", "axe_trou_diametre")),
-              symmetric=True)
     # mating face (sketches on the XY plane, pockets towards the rear)
     gi, ge = "gorge_cote_interieur / 2", "gorge_cote_interieur / 2 + gorge_largeur"
     pd.pocket(b, "Gorge_levre_boitier", pd.sk(b, "Gorge_levre_boitier", "XY", lambda s: (
         pd.rect(s, neg(ge), ge, neg(ge), ge, "exterieur"), pd.rect(s, neg(gi), gi, neg(gi), gi, "interieur"))),
         "gorge_profondeur", reverse=True)
+    gi, ge = "gorge_interieure_cote_interieur / 2", "gorge_interieure_cote_interieur / 2 + gorge_interieure_largeur"
+    pd.pocket(b, "Gorge_levre_interieure", pd.sk(b, "Gorge_levre_interieure", "XY", lambda s: (
+        pd.rect(s, neg(ge), ge, neg(ge), ge, "exterieur"), pd.rect(s, neg(gi), gi, neg(gi), gi, "interieur"))),
+        "gorge_interieure_profondeur", reverse=True)
     pd.pocket(b, "Poches_ergots", pd.sk(b, "Poches_ergots", "XY", lambda s: (
         pd.rect(s, "ergot1_gauche", "ergot1_droite", "ergot1_bas", "ergot1_haut", "ergot_haut"),
         pd.rect(s, "ergot2_gauche", "ergot2_droite", "ergot2_bas", "ergot2_haut", "ergot_bas"))),
@@ -718,6 +744,8 @@ def build_piece1(pd):
         ("chicane_bout_gauche", neg(tw[1])), (tw[1], neg(tw[1])), (tw[1], tw[1]), ("chicane_bout_gauche", tw[1])])), "chicane_gorge_profondeur")
     pd.hole(b, "Avant_trous_vis", pd.sk(b, "Avant_trous_vis", rear, lambda s: pd.circles(
         s, screw_points(), "avant_trou_diametre")), "avant_trou_diametre", "avant_trou_profondeur")
+    pd.pocket(b, "Trous_goupilles", pd.sk(b, "Trous_goupilles", rear, lambda s: pd.circles(
+        s, pin_points(), "goupille_trou_diametre")), "goupille_enfoncement")
     # floor of the frame pocket (dark slide side)
     pd.pocket(b, "Gorge_velours", pd.sk(b, "Gorge_velours", floor, lambda s: pd.rect(
         s, "velours_gauche", "velours_droite", neg("fente_demi_hauteur"), "fente_demi_hauteur")), "velours_profondeur")
@@ -763,8 +791,25 @@ def build_piece2(pd):
               "collerette_face_arriere - plan_film")
     pd.pocket(b, "Gorge_velours", pd.sk(b, "Gorge_velours", ledge, lambda s: pd.rect(
         s, "velours_gauche", "velours_droite", neg(sh), sh)), "velours_profondeur", reverse=True)
-    pd.pocket(b, "Gorges_couvercle", pd.sk(b, "Gorges_couvercle", rear, lambda s: square_rings(
-        pd, s, ("couvercle_gorge_axe", "couvercle_gorge2_axe"), "couvercle_gorge_largeur")), "couvercle_gorge_profondeur")
+    # sliding lid: the channel of its sole (closed on the left, open on the right), the
+    # slot of its left tongue, the two dovetail rails and the holes of the stop pins
+    pd.pocket(b, "Couloir_couvercle", pd.sk(b, "Couloir_couvercle", rear, lambda s: pd.rect(
+        s, "couloir_gauche", "talon_bord_droit + 1", neg("couloir_demi_hauteur"), "couloir_demi_hauteur")),
+        "collerette_face_arriere - couloir_fond")
+    t0, t1 = "languette_gauche_bas - couvercle_jeu", "languette_gauche_bas + languette_gauche_epaisseur + couvercle_jeu"
+    pd.pocket(b, "Fente_languette", pd.sk(b, "Fente_languette", "YZ", lambda s: pd.rect(
+        s, "-couloir_demi_hauteur + 1", "couloir_demi_hauteur - 1", t0, t1), off="couloir_gauche"), "fente_couvercle_profondeur")
+    rail = pd.pocket(b, "Rail_haut", pd.sk(b, "Rail_haut", "YZ", lambda s: rail_profile(pd, s), off="talon_bord_droit + 1"),
+                     "talon_bord_droit + 1 - rail_gauche")
+    pd.mirrored(b, "Rails_symetrie", [rail], "XZ_Plane")
+    # light trap of the left edge: a lip from rail to rail (the rails run up to it), capped by a
+    # rebate under the left edge of the lid
+    pd.pad(b, "Levre_gauche", pd.sk(b, "Levre_gauche", rear, lambda s: pd.rect(
+        s, neg(P), f"-{P} + levre_gauche_largeur", "-rail_axe - rail_queue_demi_largeur", "rail_axe + rail_queue_demi_largeur")),
+        "levre_gauche_hauteur")
+    pins = pd.datum(b, "Plan_fond_rails", "rail_fond")
+    pd.pocket(b, "Trous_goupilles", pd.sk(b, "Trous_goupilles", pins, lambda s: pd.circles(
+        s, pin_points(), "goupille_trou_diametre")), "rail_fond - piece1_epaisseur")
     # magnets embedded under a skin on the joint side (printed rear face down: pause to drop them in)
     under_skin = pd.datum(b, "Plan_peau_aimants", "collerette_face_arriere - aimant_peau")
     pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", under_skin, lambda s: pd.circles(
@@ -780,67 +825,80 @@ def build_piece2(pd):
 
 
 def build_piece3(pd):
-    """Solid hinged lid in line with the pieces: the outline of piece 2 (plate and
-    heel) raised from its rear face, as much material as possible against the
-    translucency of PETG. It bears flat on piece 2 and is hollowed only for what
-    needs room: the chamber of the spring (its arms lift on a thick glass), the
-    two light-seal ribs below it, the embedded magnet seats in the corners
-    opposite the hinge, and a clearance over the central knuckle of piece 1 so that it turns.
-    One hinge knuckle mirrored."""
+    """Solid lid sliding to the right, in line with the pieces: the outline of
+    piece 2 raised from its rear face, as much material as possible against the
+    translucency of PETG. Underneath: the sole that slides in the channel of
+    piece 2 over the glass, with a tongue at its left end that enters the slot of
+    the channel wall; the tongue and the dovetail heads of the two rails; the
+    chamber of the leaf spring and the pocket of its root; the magnet seats. At
+    the right end, a lip down the face of the heel: closing stop and light trap."""
     b = pd.body("Piece3_Couvercle")
     seat = pd.datum(b, "Plan_appui_piece2", "collerette_face_arriere")
-    ceiling = pd.datum(b, "Plan_plafond_chambre", "chambre_ressort_haut_z")
-    post = pd.datum(b, "Plan_bout_tenon", "ressort_face_arriere")
-    vb = "plaque_bord_bas"
+    sole = pd.datum(b, "Plan_dessous_semelle", "semelle_dessous")
+    lip = pd.datum(b, "Plan_bas_levre", "levre_bas")
+    j = "couvercle_jeu"
     pd.pad(b, "Couvercle", pd.sk(b, "Contour", seat, lambda s: contour(pd, s, tab=False)), "couvercle_hauteur")
-    pd.pocket(b, "Chambre_ressort", pd.sk(b, "Chambre_ressort", seat, lambda s: pd.circle(
-        s, 0, 0, "2 * chambre_ressort_rayon")), "chambre_ressort_haut_z - collerette_face_arriere", reverse=True)
-    pd.pad(b, "Tenon", pd.sk(b, "Tenon", ceiling, lambda s: pd.circle(s, 0, 0, "tenon_diametre")),
-           "chambre_ressort_haut_z - ressort_face_arriere", reverse=True)
-    pd.pad(b, "Pion", pd.sk(b, "Pion", post, lambda s: pd.circle(s, 0, 0, "pion_diametre")), "pion_longueur", reverse=True)
-    pd.pad(b, "Nervures", pd.sk(b, "Nervures", seat, lambda s: square_rings(
-        pd, s, ("couvercle_gorge_axe", "couvercle_gorge2_axe"), "couvercle_nervure_largeur")),
-        "couvercle_nervure_hauteur", reverse=True)
-    # closure: magnets embedded in the corners opposite the hinge, facing those of piece 2
+    pd.pad(b, "Semelle", pd.sk(b, "Semelle", seat, lambda s: pd.rect(
+        s, f"couloir_gauche + {j}", "talon_bord_droit", f"-couloir_demi_hauteur + {j}", f"couloir_demi_hauteur - {j}")),
+        "collerette_face_arriere - semelle_dessous", reverse=True)
+    pd.pad(b, "Languette_gauche", pd.sk(b, "Languette_gauche", "YZ", lambda s: pd.rect(
+        s, f"-couloir_demi_hauteur + 1 + {j}", f"couloir_demi_hauteur - 1 - {j}", "languette_gauche_bas",
+        "languette_gauche_bas + languette_gauche_epaisseur"), off=f"couloir_gauche + {j}"),
+        "languette_gauche_longueur", reverse=True)
+    pd.pad(b, "Levre_droite", pd.sk(b, "Levre_droite", lip, lambda s: pd.rect(
+        s, "talon_bord_droit", "talon_bord_droit + levre_epaisseur", "-talon_demi_hauteur + rayon_coins",
+        "talon_demi_hauteur - rayon_coins")), "couvercle_face_exterieure - levre_bas")
+    pd.pocket(b, "Feuillure_gauche", pd.sk(b, "Feuillure_gauche", seat, lambda s: pd.rect(
+        s, "-plaque_demi_largeur - 1", f"-plaque_demi_largeur + levre_gauche_largeur + {j}",
+        f"-rail_axe - rail_queue_demi_largeur - {j}", f"rail_axe + rail_queue_demi_largeur + {j}")),
+        f"levre_gauche_hauteur + {j}", reverse=True)
+    # rails: a tongue all along (light trap in the groove), the dovetail heads at the left end only
+    a, lw, tw, top = "rail_axe", "languette_rail_demi_largeur", "tete_demi_largeur", "collerette_face_arriere"
+    start = f"rail_gauche + {j}"
+    rail = [
+        pd.pad(b, "Languette_rail", pd.sk(b, "Languette_rail", "YZ", lambda s: pd.rect(
+            s, f"{a} - {lw}", f"{a} + {lw}", "languette_rail_bas", top), off=start), f"talon_bord_droit - ({start})"),
+        pd.pad(b, "Queue_aronde", pd.sk(b, "Queue_aronde", "YZ", lambda s: pd.poly(s, [
+            (f"{a} - {lw}", top), (f"{a} + {lw}", top), (f"{a} + {lw}", "tete_epaule"), (f"{a} + {tw}", "tete_bas"),
+            (f"{a} - {tw}", "tete_bas"), (f"{a} - {lw}", "tete_epaule")]), off=start), "tete_longueur"),
+    ]
+    pd.mirrored(b, "Rails_symetrie", rail, "XZ_Plane")
+    # leaf spring: its root glued in a pocket, the leaves free to lift into a chamber
+    w = "lames_axe + lames_largeur / 2"
+    pd.pocket(b, "Logement_racine_lames", pd.sk(b, "Logement_racine_lames", sole, lambda s: pd.rect(
+        s, "lames_racine_droite - lames_racine_largeur - 0.1", "lames_racine_droite", f"-({w}) - 0.1", f"{w} + 0.1")),
+        "lames_epaisseur", reverse=True)
+    pd.pocket(b, "Chambre_lames", pd.sk(b, "Chambre_lames", sole, lambda s: pd.rect(
+        s, "lames_racine_droite", "patin_x + patin_hauteur + patin_largeur_bas / 2 + 0.5", f"-({w}) - 0.5", f"{w} + 0.5")),
+        "chambre_lames_haut - semelle_dessous", reverse=True)
+    # closure: magnets embedded towards the right end, facing those of piece 2
     # through two skins (printed outer face down: pause to drop them in)
     above_skin = pd.datum(b, "Plan_peau_aimants", "collerette_face_arriere + aimant_peau")
     pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", above_skin, lambda s: pd.circles(
         s, magnet_points(), "aimant_diametre + aimant_jeu")), "aimant_epaisseur + aimant_jeu", reverse=True)
-    # hinge: clearance over the central knuckle of piece 1, from piece 2 up
-    pd.pocket(b, "Degagement_noeud_central", pd.sk(b, "Degagement_noeud_central", seat, lambda s: pd.rect(
-        s, "-bossage_demi_longueur - noeuds_jeu", "bossage_demi_longueur + noeuds_jeu", f"{vb} - 1",
-        f"{vb} + charniere_degagement_largeur")), "noeud_rayon + 0.4", reverse=True)
-    # hinge: right knuckle (lug + barrel), mirrored to the left
-    k0 = "bossage_demi_longueur + noeuds_jeu"
-    knuckle = [
-        pd.pad(b, "Patte_noeud", pd.sk(b, "Patte_noeud", "YZ", lambda s: pd.rect(
-            s, "charniere_axe_y", f"{vb} + 0.5", "charniere_axe_z", "couvercle_face_exterieure"), off=k0),
-            f"couvercle_noeuds_bout - ({k0})"),
-        pd.pad(b, "Noeud", pd.sk(b, "Noeud", "YZ", lambda s: pd.circle(
-            s, "charniere_axe_y", "charniere_axe_z", "2 * noeud_rayon"), off=k0), f"couvercle_noeuds_bout - ({k0})"),
-    ]
-    pd.mirrored(b, "Noeuds_symetrie", knuckle)
-    pd.pocket(b, "Trou_axe", pd.sk(b, "Trou_axe", "YZ", lambda s: pd.circle(
-        s, "charniere_axe_y", "charniere_axe_z", "axe_trou_diametre")), symmetric=True)
     return b
 
 
-def build_spring(pd):
-    """Cross spring: hub, one arm with its two feet, turned a quarter."""
-    b = pd.body("Ressort_Croix")
-    front = pd.datum(b, "Plan_face_avant", "ressort_face_avant")
-    tips = pd.datum(b, "Plan_bout_pieds", "ressort_pied_bout_z")
-    r, c = "ressort_pied_rayon", "ressort_bras_longueur - ressort_bras_largeur / 2"
-    pd.pad(b, "Moyeu", pd.sk(b, "Moyeu", front, lambda s: pd.circle(s, 0, 0, "ressort_moyeu_diametre")), "ressort_epaisseur")
-    arm = [
-        pd.pad(b, "Bras", pd.sk(b, "Bras", front, lambda s: pd.slot(s, "u", c, "ressort_bras_largeur", "bras")),
-               "ressort_epaisseur"),
-        pd.pad(b, "Pieds", pd.sk(b, "Pieds", tips, lambda s: pd.circles(s, ((r, 0), (neg(r), 0)), "ressort_pied_diametre")),
-               "ressort_face_avant - ressort_pied_bout_z"),
+def build_leaf_spring(pd):
+    """Leaf spring, printed flat (pads up), its root bar glued under the lid sole:
+    two leaves along u, each ending in a pad chamfered at 45 deg on both sides, so
+    that it climbs the steps (edge of the glass seat, entrance of the channel)
+    whichever way the lid slides. Drawn free: the pads go into the thinnest glass
+    by the preload."""
+    b = pd.body("Ressort_Lames")
+    sole = pd.datum(b, "Plan_dessous_semelle", "semelle_dessous")
+    w, h = "lames_axe + lames_largeur / 2", "patin_hauteur + patin_largeur_bas / 2"
+    pd.pad(b, "Racine", pd.sk(b, "Racine", sole, lambda s: pd.rect(
+        s, "lames_racine_droite - lames_racine_largeur", "lames_racine_droite", neg(w), w)), "lames_epaisseur")
+    leaf = [
+        pd.pad(b, "Lame", pd.sk(b, "Lame", sole, lambda s: pd.rect(
+            s, "lames_racine_droite", f"patin_x + {h}", "lames_axe - lames_largeur / 2", w)), "lames_epaisseur"),
+        pd.pad(b, "Patin", pd.sk(b, "Patin", "XZ", lambda s: pd.poly(s, [
+            ("patin_x - patin_largeur_bas / 2", "patin_bas"), ("patin_x + patin_largeur_bas / 2", "patin_bas"),
+            (f"patin_x + {h}", "semelle_dessous"), (f"patin_x - ({h})", "semelle_dessous")]), off=neg("lames_axe")),
+            "lames_largeur", symmetric=True),
     ]
-    pd.polar(b, "Bras_croix", arm, 2, angle=90)
-    pd.pocket(b, "Trou_pion", pd.sk(b, "Trou_pion", front, lambda s: pd.circle(s, 0, 0, "ressort_trou_diametre")),
-              reverse=True)
+    pd.mirrored(b, "Lames_symetrie", leaf, "XZ_Plane")
     return b
 
 
@@ -906,6 +964,20 @@ def ref_box(doc, name, u0, u1, v0, v1, w0, w1):
     return o
 
 
+def ref_latch_spring(doc):
+    """Latch spring as a plain cylinder along u, from the left tooth of the
+    slider to the island, latch open (shortest)."""
+    o = doc.addObject("Part::Cylinder", "Ressort_verrou")
+    o.Label = "Ressort verrou"
+    o.Placement = App.Placement(V(), App.Rotation(V(0, 1, 0), 90))
+    o.setExpression("Radius", X("ressort_verrou_diametre / 2"))
+    o.setExpression("Height", X("ressort_verrou_longueur_ouvert"))
+    for axis, e in (("x", "glissiere_dent_gauche_pied"), ("y", "ressort_verrou_y"),
+                    ("z", "ressort_verrou_z")):
+        o.setExpression(f".Placement.Base.{axis}", X(e))
+    return o
+
+
 def build(doc):
     # same feature names in several bodies (Contour, Trou axe...): keep the labels as written
     App.ParamGet("User parameter:BaseApp/Preferences/Document").SetBool("DuplicateLabels", True)
@@ -922,14 +994,23 @@ def build(doc):
     doc.recompute()
     pd = PD(doc)
     pieces = {"piece1_interface": build_piece1(pd), "piece2_cadre_verre": build_piece2(pd),
-              "piece3_couvercle": build_piece3(pd), "ressort_croix": build_spring(pd),
+              "piece3_couvercle": build_piece3(pd), "ressort_lames": build_leaf_spring(pd),
               "glissiere_verrou": build_slider(pd), "capot_verrou": build_cover(pd)}
     refs = {
         "Verre_57x57": ref_box(doc, "Verre_57x57", "-verre_cote / 2", "verre_cote / 2", "-verre_cote / 2", "verre_cote / 2",
                                "plan_film", "verre_face_arriere"),
         "Volet": ref_box(doc, "Volet", "-plaque_demi_largeur - 15", "fente_fond - 0.4", "-volet_largeur / 2", "volet_largeur / 2",
                          "peau_epaisseur + (fente_epaisseur - volet_epaisseur) / 2", "peau_epaisseur + (fente_epaisseur + volet_epaisseur) / 2"),
+        "Ressort_verrou": ref_latch_spring(doc),
     }
+    for (x, y), side in zip(pin_points(), ("haut", "bas")):
+        o = doc.addObject("Part::Cylinder", f"Goupille_{side}")
+        o.Label = f"Goupille butee {side}"
+        o.setExpression("Radius", X("goupille_diametre / 2"))
+        o.setExpression("Height", X("goupille_longueur"))
+        for axis, e in (("x", x), ("y", y), ("z", "piece1_epaisseur - goupille_enfoncement")):
+            o.setExpression(f".Placement.Base.{axis}", X(e))
+        refs[o.Name] = o
     doc.recompute()
     asm, magnets = assemble(doc, pd, pieces)
     return pieces, refs, asm, magnets
@@ -937,7 +1018,7 @@ def build(doc):
 
 def assemble(doc, pd, pieces):
     """FreeCAD assembly: piece 1 grounded, piece 2 and the latch cover fixed on it,
-    the lid on a revolute joint (hinge, limited to couvercle_ouverture_max), the
+    the lid on a slider joint along u (its travel, couvercle_course), the leaf
     spring fixed to the lid, the latch slider on a slider joint (its travel), and
     the magnets fixed in their seats. Joints use coordinate systems placed by
     expressions, never edges or faces, so they survive any change of dimension."""
@@ -946,18 +1027,18 @@ def assemble(doc, pd, pieces):
         asm.addObject(body)
     joints = asm.newObject("Assembly::JointGroup", "Liaisons")
     p1, p2, p3 = pieces["piece1_interface"], pieces["piece2_cadre_verre"], pieces["piece3_couvercle"]
-    spring, slider, cover = pieces["ressort_croix"], pieces["glissiere_verrou"], pieces["capot_verrou"]
+    spring, slider, cover = pieces["ressort_lames"], pieces["glissiere_verrou"], pieces["capot_verrou"]
     origin = {b.Name: pd.frame(b, "Repere_origine") for b in (p1, p2, p3, spring, cover)}
-    hinge = [pd.frame(b, "Repere_charniere", 0, "charniere_axe_y", "charniere_axe_z", along_u=True) for b in (p1, p3)]
+    sliding = [pd.frame(b, "Repere_glissiere_couvercle", along_u=True) for b in (p1, p3)]
     latch = [pd.frame(b, "Repere_verrou", along_u=True) for b in (p1, slider)]
     seats = {}
     for b, z in ((p2, "collerette_face_arriere - aimant_peau - aimant_epaisseur"),
                  (p3, "collerette_face_arriere + aimant_peau + aimant_jeu")):
-        for side, x in (("droite", "aimant_x"), ("gauche", neg("aimant_x"))):
-            seats[(b.Name, side)] = pd.frame(b, f"Repere_aimant_{side}", x, "aimant_y", z)
+        for side, (x, y) in zip(("haut", "bas"), magnet_points()):
+            seats[(b.Name, side)] = pd.frame(b, f"Repere_aimant_{side}", x, y, z)
     magnets = {}
     for b, where in ((p2, "piece2"), (p3, "couvercle")):
-        for side in ("droite", "gauche"):
+        for side in ("haut", "bas"):
             m = asm.newObject("Part::Cylinder", f"Aimant_{where}_{side}")
             m.Label = f"Aimant {where} {side}"
             m.setExpression("Radius", X("aimant_diametre / 2"))
@@ -978,9 +1059,9 @@ def assemble(doc, pd, pieces):
     ground.Label = "Piece 1 fixe"
     joint("Piece2_vissee", "Fixed", p1, origin[p1.Name], p2, origin[p2.Name])
     joint("Capot_verrou", "Fixed", p1, origin[p1.Name], cover, origin[cover.Name])
-    h = joint("Charniere", "Revolute", p1, hinge[0], p3, hinge[1])
-    h.EnableAngleMin, h.AngleMin, h.EnableAngleMax = True, 0, True
-    h.setExpression("AngleMax", X("couvercle_ouverture_max"))
+    h = joint("Glissiere_couvercle", "Slider", p1, sliding[0], p3, sliding[1])
+    h.EnableLengthMin, h.LengthMin, h.EnableLengthMax = True, 0, True
+    h.setExpression("LengthMax", X("couvercle_course"))
     joint("Ressort_colle", "Fixed", p3, origin[p3.Name], spring, origin[spring.Name])
     sl = joint("Glissiere_verrou", "Slider", p1, latch[0], slider, latch[1])
     sl.EnableLengthMin, sl.EnableLengthMax, sl.LengthMax = True, True, 0
@@ -1020,8 +1101,8 @@ def add_simulations(doc, asm):
     joint = {o.Label: o for o in doc.getObject("Liaisons").Group}
     sims = []
     for name, label, kind, jlabel, amplitude in (
-            ("Ouverture_couvercle", "Ouvrir et fermer le couvercle", "Angular", "Charniere",
-             math.radians(vals["couvercle_ouverture_max"])),
+            ("Ouverture_couvercle", "Ouvrir et fermer le couvercle", "Linear", "Glissiere couvercle",
+             vals["couvercle_course"]),
             ("Verrouillage", "Verrouiller et deverrouiller", "Linear", "Glissiere verrou",
              -vals["glissiere_course"])):
         sim = group.newObject("App::FeaturePython", name)
@@ -1038,8 +1119,9 @@ def add_simulations(doc, asm):
 
 COLORS = {
     "piece1_interface": (0.15, 0.15, 0.17), "piece2_cadre_verre": (0.35, 0.35, 0.38),
-    "piece3_couvercle": (0.22, 0.24, 0.30), "ressort_croix": (0.80, 0.45, 0.10),
-    "Verre_57x57": (0.60, 0.80, 0.90), "Volet": (0.78, 0.79, 0.80),
+    "piece3_couvercle": (0.22, 0.24, 0.30), "ressort_lames": (0.80, 0.45, 0.10),
+    "Goupille_haut": (0.72, 0.72, 0.74), "Goupille_bas": (0.72, 0.72, 0.74),
+    "Verre_57x57": (0.60, 0.80, 0.90), "Volet": (0.78, 0.79, 0.80), "Ressort_verrou": (0.72, 0.72, 0.74),
     "glissiere_verrou": (0.75, 0.20, 0.20), "capot_verrou": (0.75, 0.40, 0.40),
     "Rayfor_glissiere": (0.75, 0.20, 0.20), "Rayfor_capot": (0.75, 0.40, 0.40),
     "Aimant": (0.72, 0.72, 0.74),
@@ -1185,38 +1267,105 @@ def solid_overlap(a, b):
     return sum(s.Volume for s in real), (Part.makeCompound(real).BoundBox if real else None)
 
 
-def motion_check(doc, pieces, refs, say, top=None):
-    """Open and close the lid, dark slide in place.
-    1. The joints are the mechanism: moved anywhere and solved, the lid must
-       end up turned about the modelled hinge axis only (the revolute joint is
-       the hinge), the spring and the lid magnets with it, and the latch slider
-       along u only. (The solver leaves a free joint at an angle of its own
-       choice and applies the limits only when dragging in FreeCAD.)
-    2. Degree by degree up to the stop, the lid and what it carries must not
-       enter what stays."""
+def section_tops(shapes, v, us, zmax):
+    """Top of the material below zmax along vertical lines (u, v), from the sections
+    of the shapes in the plane v (zmax must be in the open, as under the lid sole)."""
+    segs = []
+    for sh in shapes:
+        for w in sh.slice(V(0, 1, 0), v):
+            pts = [(q.x, q.z) for q in w.discretize(Deflection=0.005)]
+            segs += list(zip(pts, pts[1:]))
+    tops = []
+    for u in us:
+        best = -math.inf
+        for (x0, z0), (x1, z1) in segs:
+            if min(x0, x1) <= u <= max(x0, x1) and x0 != x1:
+                z = z0 + (z1 - z0) * (u - x0) / (x1 - x0)
+                if z < zmax and z > best:
+                    best = z
+            elif x0 == x1 == u:
+                for z in (z0, z1):
+                    if z < zmax and z > best:
+                        best = z
+        tops.append(best)
+    return tops
+
+
+def pad_path(doc, pieces, refs, vals, say):
+    """The pads of the leaf spring along their path, for no glass and for the
+    thinnest and thickest glass: every step they meet (edge of the glass seat,
+    entrance of the channel) stays under the height of their 45 deg chamfers, and
+    the lift stays in the chamber of the lid. Returns (ok, max lift)."""
+    pb, wb, h = vals["patin_bas"], vals["patin_largeur_bas"], vals["patin_hauteur"]
+    room = vals["chambre_lames_haut"] - vals["semelle_dessous"] - vals["lames_epaisseur"]
+    half = wb / 2 + h
+    step = 0.25
+    us = [vals["patin_x"] - half + i * step for i in range(int((vals["couvercle_course"] + 2 * half) / step) + 1)]
+    base = [pieces["piece1_interface"].Shape, pieces["piece2_cadre_verre"].Shape, refs["Volet"].Shape]
+    ok, worst = True, 0.0
+    for label, t in (("no glass", None), ("glass min", vals["verre_epaisseur_min"]), ("glass max", vals["verre_epaisseur_max"])):
+        shapes = list(base)
+        if t is not None:
+            c = vals["verre_cote"]
+            shapes.append(Part.makeBox(c, c, t, V(-c / 2, -c / 2, vals["plan_film"])))
+        lifts = []
+        for v in (vals["lames_axe"] - vals["lames_largeur"] / 2 + 0.3, vals["lames_axe"],
+                  vals["lames_axe"] + vals["lames_largeur"] / 2 - 0.3):
+            for sv in (1, -1):
+                tops = section_tops(shapes, sv * v, us, vals["semelle_dessous"] - 0.01)
+                for k in range(int(vals["couvercle_course"] / 0.5) + 1):
+                    pc = vals["patin_x"] + k * 0.5
+                    lift = 0.0
+                    for u, z in zip(us, tops):
+                        if abs(u - pc) <= half and z > -math.inf:
+                            lift = max(lift, z - (pb + max(0.0, abs(u - pc) - wb / 2)))
+                    lifts.append(lift)
+        top = max(lifts)
+        worst = max(worst, top)
+        good = top <= h - 0.15 and top <= room - 0.2
+        ok &= good
+        say(f"  leaf pads along the travel, {label}: lifted up to {top:.2f} mm "
+            f"(chamfers {h:.2f}, chamber {room:.2f})" + ("" if good else "  <-- !"))
+    return ok, worst
+
+
+def motion_check(doc, pieces, refs, say):
+    """Slide the lid open and closed, dark slide in place.
+    1. The joints are the mechanism: thrown anywhere and solved, the lid must end
+       up moved along u only (the slider joint is the rails), its spring and
+       magnets with it, and the latch slider along u only. (The solver leaves a
+       free joint where it likes and applies the limits only when dragging.)
+    2. Millimetre by millimetre over the travel, the lid and its magnets must not
+       enter what stays; past the end the stop pins hold it (captive), and below
+       0 the lip stops it.
+    3. The pads of the leaf spring climb every step on their way (pad_path)."""
     sheet, asm = doc.getObject(SHEET), doc.getObject("Cassette")
     get = lambda n: float(sheet.get(n))  # noqa: E731
-    lid, spring = pieces["piece3_couvercle"], pieces["ressort_croix"]
+    vals = param_values()
+    lid, spring = pieces["piece3_couvercle"], pieces["ressort_lames"]
     mags = [o for o in asm.Group if o.TypeId == "Part::Cylinder"]
     moving = {"couvercle": lid, "ressort": spring}
     moving.update({m.Label: m for m in mags if "couvercle" in m.Name})
+    pins = {o.Label: o for k, o in refs.items() if k.startswith("Goupille")}
     fixed = {"piece 1": pieces["piece1_interface"], "piece 2": pieces["piece2_cadre_verre"],
-             "glissiere": pieces["glissiere_verrou"], "capot": pieces["capot_verrou"], "volet": refs["Volet"]}
+             "glissiere": pieces["glissiere_verrou"], "capot": pieces["capot_verrou"], "volet": refs["Volet"],
+             "verre": refs["Verre_57x57"]}
     fixed.update({m.Label: m for m in mags if "piece2" in m.Name})
+    fixed.update(pins)
     rest = {k: o.Placement for k, o in moving.items()}
-    center = V(0, get("charniere_axe_y"), get("charniere_axe_z"))
     ok, problems = True, []
-    for a in (10, 60, 110):
-        lid.Placement = App.Placement(V(5, 3, -2), App.Rotation(V(0, 0, 1), 7) * App.Rotation(V(1, 0, 0), a))
+    for x in (10, 40, 70):
+        lid.Placement = App.Placement(V(x, 3, -2), App.Rotation(V(0, 0, 1), 7) * App.Rotation(V(1, 0, 0), 20))
         asm.solve()
         pl = lid.Placement
-        axis_ok = abs(abs(pl.Rotation.Axis.x) - 1) < 1e-6 or pl.Rotation.Angle < 1e-9
-        hinge_ok = axis_ok and (pl.multVec(center) - center).Length < 1e-4
+        slide_ok = pl.Rotation.Angle < 1e-6 and abs(pl.Base.y) < 1e-4 and abs(pl.Base.z) < 1e-4
         follow_ok = all(o.Placement.isSame(pl.multiply(rest[k]), 1e-6) for k, o in moving.items())
-        if not (hinge_ok and follow_ok):
+        if not (slide_ok and follow_ok):
             ok = False
-            problems.append(f"lid thrown at {a} deg and solved: "
-                            + ("off the hinge axis" if not hinge_ok else "spring or magnets left behind"))
+            problems.append(f"lid thrown {x} mm away and solved: "
+                            + ("not moved along u only" if not slide_ok else "spring or magnets left behind"))
+    for k, o in moving.items():
+        o.Placement = rest[k]
     slider = pieces["glissiere_verrou"]
     slider.Placement = App.Placement(V(-2, 1, 1), App.Rotation(V(0, 0, 1), 3))
     asm.solve()
@@ -1225,31 +1374,44 @@ def motion_check(doc, pieces, refs, say, top=None):
         ok = False
         problems.append("latch slider not kept on its travel along u")
     slider.Placement = App.Placement()
-    top = get("couvercle_ouverture_max") if top is None else top
-    angles = list(range(0, 31)) + list(range(32, int(top), 2)) + [top]
-    fixed_shapes = {k: o.Shape for k, o in fixed.items()}
-    for a in angles:
-        turn = App.Placement(V(), App.Rotation(V(1, 0, 0), a), center)
-        for k, o in moving.items():
-            o.Placement = turn.multiply(rest[k])
-        for k, o in moving.items():
-            for f, fs in fixed_shapes.items():
-                if k == "ressort" and f.startswith("Aimant"):
-                    continue
-                v, _ = solid_overlap(o.Shape, fs)
-                if v >= 0.01:
-                    ok = False
-                    problems.append(f"{a} deg: {k} enters {f} ({v:.2f} mm3)")
-    for k, o in moving.items():                 # closed again (not solved: the hinge angle is free)
+    for k, o in moving.items():
         o.Placement = rest[k]
-    # the ready-made animations play: half way, the lid at its stop and the latch locked
+    # sweep: the lid and its magnets (the spring is elastic: its pads are checked on their path)
+    course = get("couvercle_course")
+    steps = [float(i) for i in range(int(course) + 1)] + [course]
+    rigid = {k: o.Shape for k, o in moving.items() if k != "ressort"}
+    fixed_shapes = {k: o.Shape for k, o in fixed.items()}
+
+    def entering(dx):
+        out = []
+        move = App.Placement(V(dx, 0, 0), App.Rotation()).toMatrix()
+        for k, sh in rigid.items():
+            moved = sh.transformGeometry(move)
+            for f, fs in fixed_shapes.items():
+                v, _ = solid_overlap(moved, fs)
+                if v >= 0.01:
+                    out.append((k, f, v))
+        return out
+    for dx in steps:
+        for k, f, v in entering(dx):
+            ok = False
+            problems.append(f"{dx:g} mm: {k} enters {f} ({v:.2f} mm3)")
+    beyond = entering(course + 0.5)
+    captive = beyond and all(f in pins for _, f, _ in beyond)
+    closed = [f for _, f, _ in entering(-0.5)]
+    stop = closed and all(f.startswith("piece") for f in closed)
+    ok &= bool(captive) and bool(stop)
+    say(f"  stops: 0.5 mm past the travel the dovetails hit the pins: {'yes' if captive else 'NO  <-- !'}; "
+        f"0.5 mm before closed the lip hits the heel: {'yes' if stop else 'NO  <-- !'}")
+    # the ready-made animations play: half way, the lid at the end of its travel and the latch locked
     parts = {o.Name: o.Placement for o in asm.Group if hasattr(o, "Placement")}
     for sim in [o for g in asm.Group if g.TypeId == "Assembly::SimulationGroup" for o in g.Group]:
         asm.generateSimulation(sim)
         asm.updateForFrame(asm.numberOfFrames() // 2)
         if sim.Name == "Ouverture_couvercle":
-            got, want = math.degrees(lid.Placement.Rotation.Angle), top
-            good = abs(got - want) < 0.5 and (lid.Placement.multVec(center) - center).Length < 1e-3
+            pl = lid.Placement
+            got, want = pl.Base.x, course
+            good = abs(got - want) < 0.01 and abs(pl.Base.y) < 1e-4 and abs(pl.Base.z) < 1e-4
         else:
             got, want = pieces["glissiere_verrou"].Placement.Base.x, -get("glissiere_course")
             good = abs(got - want) < 0.01
@@ -1258,13 +1420,14 @@ def motion_check(doc, pieces, refs, say, top=None):
     for o in asm.Group:
         if o.Name in parts:
             o.Placement = parts[o.Name]
-    say(f"  joints: lid on the hinge axis, spring and magnets following, latch on its travel: "
+    say(f"  joints: lid along u, spring and magnets following, latch on its travel: "
         f"{'yes' if not any('solved' in p or 'slider' in p for p in problems) else 'NO'}")
-    say(f"  {len(angles)} positions from 0 to {top:g} deg: "
+    say(f"  {len(steps)} positions from 0 to {course:g} mm: "
         f"{'no collision' if not problems else str(len(problems)) + ' problems'}")
     for p in problems[:12]:
         say(f"    {p}  <-- !")
-    return ok
+    good, lift = pad_path(doc, pieces, refs, vals, say)
+    return ok and good, lift
 
 
 def run_checks(doc, pieces, refs, verbose=True):
@@ -1279,7 +1442,7 @@ def run_checks(doc, pieces, refs, verbose=True):
             f"u[{bb.XMin:.2f},{bb.XMax:.2f}] v[{bb.YMin:.2f},{bb.YMax:.2f}] w[{bb.ZMin:.2f},{bb.ZMax:.2f}]",
             flush=True)
     p1, p2, p3, sp = (shapes[k] for k in ("piece1_interface", "piece2_cadre_verre",
-                                          "piece3_couvercle", "ressort_croix"))
+                                          "piece3_couvercle", "ressort_lames"))
     gl, ds = refs["Verre_57x57"].Shape, refs["Volet"].Shape
     latch, cover = shapes["glissiere_verrou"], shapes["capot_verrou"]
     travel = App.Placement(V(-param_values()["glissiere_course"], 0, 0), App.Rotation())
@@ -1288,11 +1451,25 @@ def run_checks(doc, pieces, refs, verbose=True):
              ("glass-p1", gl, p1), ("glass-p2", gl, p2), ("glass-p3", gl, p3),
              ("slide-p1", ds, p1), ("slide-p2", ds, p2), ("slide-p3", ds, p3),
              ("latch-p3", latch, p3), ("cover-p3", cover, p3),
-             ("spring-p1", sp, p1), ("spring-p2", sp, p2),
+             ("leaves-p1", sp, p1), ("leaves-p2", sp, p2), ("leaves-p3", sp, p3), ("leaves-slide", sp, ds),
              ("latch-p1", latch, p1), ("cover-p1", cover, p1), ("cover-p2", cover, p2),
              ("latch-p2", latch, p2), ("latch-cover", latch, cover),
              ("latch_locked-p1", latch_on, p1), ("latch_locked-cover", latch_on, cover),
              ("latch_locked-p3", latch_on, p3)]
+    vals = param_values()
+    gc = vals["verre_cote"]
+    gl_max = Part.makeBox(gc, gc, vals["verre_epaisseur_max"], V(-gc / 2, -gc / 2, vals["plan_film"]))
+    pairs += [("glass_max-p2", gl_max, p2), ("glass_max-p3", gl_max, p3)]
+    for k, o in refs.items():
+        if k.startswith("Goupille"):
+            pairs += [(f"{k}-p1", o.Shape, p1), (f"{k}-p2", o.Shape, p2), (f"{k}-p3", o.Shape, p3)]
+    ls = refs["Ressort_verrou"].Shape
+    ls_on = Part.makeCylinder(vals["ressort_verrou_diametre"] / 2, vals["ressort_verrou_longueur_ferme"],
+                              V(vals["glissiere_dent_gauche_pied"] - vals["glissiere_course"], vals["ressort_verrou_y"],
+                                vals["ressort_verrou_z"]), V(1, 0, 0))
+    pairs += [("latch_spring-p1", ls, p1), ("latch_spring-p2", ls, p2), ("latch_spring-latch", ls, latch),
+              ("latch_spring-cover", ls, cover), ("latch_spring_locked-p1", ls_on, p1),
+              ("latch_spring_locked-latch", ls_on, latch_on), ("latch_spring_locked-cover", ls_on, cover)]
     say("\nInterferences (mm3, expected 0):")
     for name, a, b in pairs:
         c = a.common(b)
@@ -1302,17 +1479,16 @@ def run_checks(doc, pieces, refs, verbose=True):
         ok &= v < 0.01
         note = "  (contact)" if c.Volume > 0.01 and v < 0.01 else ""
         say(f"  {name:12s} {v:8.3f}{'' if v < 0.01 else '  <-- !'}{note}")
-    vals = param_values()
-    feet = 4 * math.pi * (vals["ressort_pied_diametre"] / 2) ** 2
+    # leaf spring: only the pads touch the glass, squeezed by the preload (thinnest) or more
     for t in ("verre_epaisseur_min", "verre_epaisseur_max"):
-        back = vals["plan_film"] + vals[t]
-        g = Part.makeBox(vals["verre_cote"], vals["verre_cote"], vals[t],
-                         V(-vals["verre_cote"] / 2, -vals["verre_cote"] / 2, vals["plan_film"]))
-        squeeze = back - vals["ressort_pied_bout_z"]
-        got, want = sp.common(g).Volume, feet * min(squeeze, vals[t])   # rigid feet may go right through
-        good = abs(got - want) < 0.01 * want and back + vals["ressort_jeu_verre"] <= vals["ressort_face_avant"] + 1e-9
+        g = Part.makeBox(gc, gc, vals[t], V(-gc / 2, -gc / 2, vals["plan_film"]))
+        d = vals["plan_film"] + vals[t] - vals["patin_bas"]
+        d0 = max(0.0, vals["plan_film"] - vals["patin_bas"])     # a free pad may go through a thin glass
+        want = 2 * vals["lames_largeur"] * (vals["patin_largeur_bas"] * (d - d0) + d * d - d0 * d0)   # two pads, 45 deg sides
+        got = sp.common(g).Volume
+        good = abs(got - want) < 0.01 * want and vals["plan_film"] + vals[t] < vals["semelle_dessous"] - 0.5
         ok &= good
-        say(f"  spring on a {vals[t]:g} mm glass: feet squeezed {squeeze:.2f} mm, only the feet touch it"
+        say(f"  leaf pads on a {vals[t]:g} mm glass: squeezed {d:.2f} mm, only the pads touch it"
             + ("" if good else f"  <-- ! ({got:.1f} vs {want:.1f} mm3)"))
     # embedded magnets: inside their cavities, enough cover, and where to pause the prints
     for m in [o for o in doc.Objects if o.TypeId == "Part::Cylinder" and o.Name.startswith("Aimant_")]:
@@ -1324,37 +1500,78 @@ def run_checks(doc, pieces, refs, verbose=True):
     cover = vals["collerette_epaisseur"] - vals["aimant_peau"] - vals["aimant_epaisseur"] - vals["aimant_jeu"]
     ok &= cover >= 0.6
     seat_r = (vals["aimant_diametre"] + vals["aimant_jeu"]) / 2
-    walls = {"groove": vals["aimant_y"] - seat_r - vals["couvercle_gorge_axe"] - vals["couvercle_gorge_largeur"] / 2,
-             "top edge": vals["plaque_bord_haut"] - vals["aimant_y"] - seat_r,
-             "side edge": vals["plaque_demi_largeur"] - vals["aimant_x"] - seat_r}
+    csk = vals["vis_fraisure_diametre"] / 2
+    walls = {"rail": vals["aimant_y"] - seat_r - vals["rail_axe"] - vals["rail_queue_demi_largeur"],
+             "edge": vals["plaque_bord_haut"] - vals["aimant_y"] - seat_r,
+             "screws": min(math.hypot(vals["aimant_x"] - x, vals["aimant_y"] - abs(y)) - seat_r - csk
+                           for x, y in ((vals["vis_bas_x"], vals["vis_bas_y"]), (vals["vis_haut_droite_x"], vals["vis_haut_y"]))),
+             "claw clearance": vals["aimant_x"] - seat_r - vals["fenetre_griffe_droite"] - vals["griffes_degagement"]}
     thin = {k: w for k, w in walls.items() if w < 0.6}
     ok &= not thin
     say("  walls around the magnet seats: " + ", ".join(f"{k} {w:.2f}" for k, w in walls.items())
         + (f"  <-- ! under 0.6 mm" if thin else ""))
+    # latch spring: always compressed, both ends bearing (left tooth of the slider, island of piece 1)
+    sl, so = latch.distToShape(ls)[0], p1.distToShape(ls)[0]
+    sl_on, so_on = latch_on.distToShape(ls_on)[0], p1.distToShape(ls_on)[0]
+    pre = vals["ressort_verrou_precharge"]
+    good = pre > 0 and max(sl, so, sl_on, so_on) < 1e-6
+    ok &= good
+    say(f"  latch spring {vals['ressort_verrou_diametre']:g} x {vals['ressort_verrou_longueur_libre']:g}: "
+        f"{vals['ressort_verrou_longueur_ouvert']:g} mm open, {vals['ressort_verrou_longueur_ferme']:g} mm locked "
+        f"(preload {pre:.1f} mm), bearing on the slider and piece 1" + ("" if good else
+        f"  <-- ! (gaps {sl:.2f} {so:.2f} / {sl_on:.2f} {so_on:.2f})"))
+    # inner groove of the mating face: walls to the opening and to the dark slide slot
+    lip = {"to the opening": (vals["gorge_interieure_cote_interieur"] - vals["peau_ouverture"]) / 2,
+           "to the dark slide": vals["peau_epaisseur"] - vals["gorge_interieure_profondeur"]}
+    thin = {k: w for k, w in lip.items() if w < 0.6}
+    ok &= not thin
+    say("  walls around the inner lip groove: " + ", ".join(f"{k} {w:.2f}" for k, w in lip.items())
+        + (f"  <-- ! under 0.6 mm" if thin else ""))
     say(f"  magnets: {2 * vals['aimant_peau'] + vals['aimant_jeu']:.1f} mm apart through two skins, "
         f"{cover:.1f} mm over the cavity of piece 2" + ("" if cover >= 0.6 else "  <-- !"))
-    say(f"  print pause to drop the magnets in: piece 2 (rear face down) at "
-        f"{vals['aimant_peau'] + vals['aimant_epaisseur'] + vals['aimant_jeu']:.2f} mm, lid (outer face down) at "
+    say(f"  print pause to drop the magnets in: piece 2 (rear face down, on its left lip) at "
+        f"{vals['levre_gauche_hauteur'] + vals['aimant_peau'] + vals['aimant_epaisseur'] + vals['aimant_jeu']:.2f} mm, lid (outer face down) at "
         f"{vals['couvercle_hauteur'] - vals['aimant_peau']:.2f} mm")
-    # on the thickest glass the arm tips rise by the whole squeeze: the ring they sweep must be free
-    lift = vals["plan_film"] + vals["verre_epaisseur_max"] - vals["ressort_pied_bout_z"]
-    top, r_in = vals["ressort_face_arriere"] + lift + 0.2, vals["ressort_moyeu_diametre"] / 2
-    r_out = vals["ressort_bras_longueur"] + 0.2
-    ring = Part.makeCylinder(r_out, top - vals["ressort_face_avant"], V(0, 0, vals["ressort_face_avant"])).cut(
-        Part.makeCylinder(r_in, top, V(0, 0, 0)))
-    for name, other in (("piece 2", p2), ("couvercle", p3)):
-        v = ring.common(other).Volume
-        ok &= v < 0.01
-        say(f"  room for the spring arms lifted {lift:.1f} mm (up to z {top:.1f}) against {name}: {v:.3f} mm3"
-            + ("" if v < 0.01 else "  <-- !"))
+    # sliding lid: rails out through the straight face of the heel, walls, the lid clears the glass
+    q = vals["rail_axe"] + vals["rail_queue_demi_largeur"]
+    geo = {"channel to rail": vals["rail_axe"] - vals["rail_queue_demi_largeur"] - vals["couloir_demi_hauteur"],
+           "rail to the rounded heel corner": vals["talon_demi_hauteur"] - vals["rayon_coins"] - q,
+           "pin hole to the end of the rail": vals["talon_bord_droit"] - vals["goupille_x"] - vals["goupille_trou_diametre"] / 2,
+           "lid open past the glass seat": -vals["plaque_demi_largeur"] + vals["couvercle_course"]
+           - vals["verre_cote"] / 2 - vals["verre_jeu"]}
+    mins = {"channel to rail": 0.8, "rail to the rounded heel corner": 0.0, "pin hole to the end of the rail": 0.8,
+            "lid open past the glass seat": 0.5}
+    bad = [k for k, w in geo.items() if w < mins[k] - 1e-9]
+    ok &= not bad
+    say("  sliding lid: " + ", ".join(f"{k} {w:.2f}" for k, w in geo.items()) + ("  <-- ! " + ", ".join(bad) if bad else ""))
+    # pushed up by the leaves, the lid is held by the dovetails: free up to tete_jeu, caught just above
+    def lifted(dz):
+        return p3.transformGeometry(App.Placement(V(0, 0, dz), App.Rotation()).toMatrix()).common(p2).Volume
+    tj = vals["tete_jeu"]
+    free, caught = lifted(tj - 0.02), lifted(tj + 0.05)
+    good = free < 0.01 and caught >= 0.01
+    ok &= good
+    say(f"  lid pushed up by the leaves: free up to {tj:.2f} mm, the dovetails catch it above"
+        + ("" if good else f"  <-- ! ({free:.3f} / {caught:.3f} mm3)"))
     shift = {"glissiere_verrou": param_values()["verrou_paroi"] - 1.0, "capot_verrou": 0.0}
     for key, ref in (("glissiere_verrou", "Rayfor_glissiere"), ("capot_verrou", "Rayfor_capot")):
         r = doc.getObject(ref).Shape.transformGeometry(
             App.Placement(V(0, 0, shift[key]), App.Rotation()).toMatrix())
         say(f"  {key}: volume {shapes[key].Volume:.1f} vs Rayfor STL {r.Volume:.1f} mm3, "
             f"difference {shapes[key].cut(r).Volume + r.cut(shapes[key]).Volume:.1f} mm3")
-    say("\nOpening and closing the lid, dark slide in:")
-    ok &= motion_check(doc, pieces, refs, say)
+    say("\nSliding the lid open and closed, dark slide in:")
+    good, lift = motion_check(doc, pieces, refs, say)
+    ok &= good
+    # leaf spring, PETG (E about 2 GPa): force on the glass, strain at the highest lift
+    E, t, b, L = 2000.0, vals["lames_epaisseur"], vals["lames_largeur"], vals["lames_longueur"]
+    k = 3 * E * (b * t ** 3 / 12) / L ** 3
+    d0 = vals["lames_precharge"]
+    d1 = d0 + vals["verre_epaisseur_max"] - vals["verre_epaisseur_min"]
+    strain = 3 * t * lift / (2 * L ** 2)
+    say(f"  leaf spring: {2 * k * d0:.1f} N on the thinnest glass, {2 * k * d1:.1f} N on the thickest, "
+        f"{2 * k * lift:.1f} N at the highest lift ({lift:.2f} mm, strain {100 * strain:.1f} %)"
+        + ("" if strain < 0.02 else "  <-- ! over 2 %"))
+    ok &= strain < 0.02
     return ok, shapes
 
 

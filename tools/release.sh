@@ -10,6 +10,6 @@ $FC cad/build_cassette.py
 # the tag goes on the commit that was built (not on the default branch)
 gh release create "$TAG" --target "$(git rev-parse HEAD)" --title "Cassette ferrotype $TAG" --notes "$NOTES" \
   exports/piece1_interface.stl exports/piece2_cadre_verre.stl exports/piece3_couvercle.stl \
-  exports/ressort_croix.stl exports/glissiere_verrou.stl exports/capot_verrou.stl \
+  exports/ressort_lames.stl exports/glissiere_verrou.stl exports/capot_verrou.stl \
   exports/piece3_couvercle_pour_v0.1.stl \
   exports/*.step exports/cassette_ferrotype.FCStd

@@ -12,6 +12,9 @@ piece1_epaisseur,6.7,mm,epaisseur de la piece 1
 gorge_cote_interieur,70.7,mm,gorge de la face d'appui (recoit la levre du boitier) : cote interieur du carre
 gorge_largeur,1.5,mm,gorge : largeur
 gorge_profondeur,0.5,mm,gorge : profondeur
+gorge_interieure_cote_interieur,59,mm,deuxieme gorge de la face d'appui (recoit la levre interieure du boitier) : cote interieur du carre
+gorge_interieure_largeur,1,mm,deuxieme gorge : largeur (carre exterieur 61)
+gorge_interieure_profondeur,1,mm,deuxieme gorge : profondeur
 ergots_profondeur,5.9,mm,poches des ergots du boitier
 ergot1_gauche,39,mm,
 ergot1_droite,42,mm,
@@ -32,8 +35,7 @@ verrou_poche_gauche,-18.2,mm,poche de la glissiere Rayfor
 verrou_poche_droite,26.2,mm,
 verrou_poche_bas,37.25,mm,
 verrou_poche_haut,44.3,mm,
-verrou_ilot_gauche,2.75,mm,ilot de guidage dans la poche
-verrou_ilot_droite,11.75,mm,
+verrou_ilot_droite,11.75,mm,ilot de guidage dans la poche (taquet du ressort) : bord droit
 verrou_ilot_haut,40.25,mm,
 capot_gauche,-24.2,mm,poche du capot Rayfor
 capot_droite,32.2,mm,
@@ -61,11 +63,11 @@ verre_jeu,0.2,mm,jeu du verre par cote
 verre_face_arriere,plan_film + verre_epaisseur,mm,dos du verre
 butee_appui,1,mm,"appui du verre sur la butee, par cote"
 butee_ouverture,verre_cote - 2 * butee_appui,mm,ouverture de la butee = image
-peau_ouverture,61.9,mm,ouverture de la peau avant : laisse entrer la levre interieure du boitier (fenetre Rayfor 61.5 + jeu)
+peau_ouverture,55,mm,"ouverture de la peau avant, comme la butee de la piece 2 (la levre interieure du boitier entre dans la deuxieme gorge)"
 poche_cadre_droite,34,mm,poche de la piece 2 : bord droit
 poche_cadre_demi_hauteur,34.8,mm,poche de la piece 2 : demi-hauteur (reste a l'interieur de la gorge)
 cadre_jeu,0.2,mm,jeu insert / poche
-aimant_diametre,6,mm,"aimants : diametre (7 au plus : bande de 8,75 entre la gorge et le bord haut)"
+aimant_diametre,6,mm,aimants : diametre (dans la bande entre le rail du couvercle et le bord)
 aimant_epaisseur,2,mm,aimants : epaisseur (la collerette de la piece 2 suit)
 aimant_jeu,0.2,mm,logements des aimants : jeu au diametre et en profondeur
 aimant_peau,0.4,mm,aimants incrustes : peau entre l'aimant et le joint (pause d'impression pour les poser)
@@ -75,13 +77,6 @@ collerette_face_arriere,piece1_epaisseur + collerette_epaisseur,mm,face arriere 
 velours_gauche,-41.2,mm,gorges du velours a l'entree de la fente
 velours_droite,-38.2,mm,
 velours_profondeur,0.6,mm,
-couvercle_gorge_axe,33.5,mm,gorges du couvercle (piece 2) : axe de la gorge exterieure
-couvercle_gorges_entraxe,2.8,mm,deux gorges et deux nervures : entraxe
-couvercle_gorge2_axe,couvercle_gorge_axe - couvercle_gorges_entraxe,mm,axe de la gorge interieure
-couvercle_gorge_largeur,1.6,mm,
-couvercle_gorge_profondeur,1,mm,
-couvercle_nervure_largeur,1,mm,nervures du couvercle
-couvercle_nervure_hauteur,0.8,mm,
 chicane_axe,36.1,mm,"chicane collerette : axe (haut, bas, droite)"
 chicane_bout_gauche,-40.2,mm,chicane collerette : bout gauche
 chicane_gorge_largeur,1,mm,chicane collerette : largeur de la gorge
@@ -99,48 +94,62 @@ vis_bas_x,38,mm,"vis du bas, dans les coins, paire symetrique : x"
 vis_bas_y,-39,mm,"y (0,9 de paroi entre la fraisure et le bord)"
 vis_haut_x,-28,mm,"vis du haut, a gauche du verrou : x"
 vis_haut_y,39,mm,
-vis_talon_x,44,mm,vis du talon droit : x
-vis_talon_y,28,mm,
+vis_haut_droite_x,37,mm,"vis du haut a droite du verrou, hors du capot : x (l'ancienne vis du talon tombait dans le couloir)"
 avant_trou_diametre,2.5,mm,avant-trou piece 1 (vis M3 x 8 fraisees)
 avant_trou_profondeur,5.5,mm,
 vis_passage_diametre,3.4,mm,passage piece 2
 vis_fraisure_diametre,6.2,mm,fraisure 90 deg
 couvercle_hauteur,7.4,mm,"couvercle plein, dans le prolongement de la piece 2 : hauteur (prise ; matiere contre la transparence du PETG)"
 couvercle_face_exterieure,collerette_face_arriere + couvercle_hauteur,mm,face exterieure du couvercle
-noeud_rayon,2.4,mm,
-axe_trou_diametre,2.1,mm,trou de l'axe (axe 2)
-charniere_jeu_bord,0.4,mm,jeu entre noeuds et bord bas
-charniere_axe_y,plaque_bord_bas - noeud_rayon - charniere_jeu_bord,mm,axe de la charniere : v
-charniere_axe_z,collerette_face_arriere,mm,axe de la charniere : w
-bossage_demi_longueur,14,mm,noeud central (piece 1) : demi-longueur
-bossage_haut,plaque_bord_bas - charniere_jeu_bord,mm,"haut du bloc de charniere : hors de la cassette, sous la piece 2 (tenu par le gousset)"
-noeuds_jeu,0.4,mm,
-couvercle_noeuds_bout,22,mm,noeuds du couvercle : bout
-gousset_depart_z,1.1,mm,depart du gousset a 45 deg
-gousset_hauteur,charniere_axe_z - noeud_rayon - gousset_depart_z,mm,
-aimant_paroi,1,mm,paroi entre le logement d'un aimant et la fraisure de la vis du haut
-aimant_x,-vis_haut_x + vis_fraisure_diametre / 2 + aimant_paroi + (aimant_diametre + aimant_jeu) / 2,mm,"deux aimants, dans les coins opposes a la charniere, au plus loin du bord lateral (3,9) que permet la vis du haut"
-aimant_y,(plaque_bord_haut + couvercle_gorge_axe + couvercle_gorge_largeur / 2) / 2,mm,au milieu de la bande entre la gorge exterieure et le bord haut
-couvercle_ouverture_max,140,mm,"charniere : butee de la liaison pivot (le couvercle touche le gousset de la piece 1 vers 168 deg avec des aimants de 2, 151 deg avec 3)"
-ressort_bras_longueur,27,mm,bras : longueur depuis le centre (longs et fins : souples sur toute la course)
-ressort_bras_largeur,6,mm,
-ressort_epaisseur,1,mm,bras : epaisseur
-ressort_moyeu_diametre,14,mm,
-ressort_pied_diametre,5,mm,
-ressort_pied_rayon,ressort_bras_longueur - ressort_bras_largeur / 2,mm,pieds au bout des bras
-ressort_precharge,1.5,mm,ecrasement avec le verre le plus fin (le plus epais ajoute la difference)
-ressort_jeu_verre,0.3,mm,jeu entre le moyeu et le verre le plus epais
-ressort_pied_bout_z,plan_film + verre_epaisseur_min - ressort_precharge,mm,"bout des pieds, ressort libre"
-ressort_face_avant,plan_film + verre_epaisseur_max + ressort_jeu_verre,mm,moyeu et bras au-dessus du verre le plus epais
-ressort_face_arriere,ressort_face_avant + ressort_epaisseur,mm,
-tenon_diametre,8,mm,tenon du couvercle
-pion_diametre,3,mm,
-pion_longueur,1,mm,
-ressort_trou_diametre,pion_diametre + 0.5,mm,trou du ressort (Ø3.2 trop serre a l'essai)
-ressort_course,plan_film + verre_epaisseur_max - ressort_pied_bout_z,mm,ecrasement sur le verre le plus epais : les bras montent d'autant
-chambre_ressort_rayon,ressort_bras_longueur + 0.5,mm,chambre du ressort dans le couvercle
-chambre_ressort_haut_z,max(ressort_face_arriere + ressort_course + 0.5; collerette_face_arriere + 0.5),mm,"plafond de la chambre : bras souleves + 0,5, au moins 0,5 au-dessus de la piece 2"
-charniere_degagement_largeur,2.5,mm,degagement du couvercle au-dessus du noeud central de la piece 1
+couvercle_jeu,0.2,mm,"jeu du couvercle coulissant (rails, couloir, butees)"
+couloir_demi_hauteur,verre_cote / 2 + verre_jeu + couvercle_jeu,mm,couloir de la piece 2 ou glisse la semelle du couvercle : demi-hauteur
+couloir_gauche,-(verre_cote / 2 + verre_jeu + couvercle_jeu),mm,couloir : bord gauche (ferme) ; il sort par la droite
+couloir_fond,piece1_epaisseur + 0.6,mm,"couloir : fond (0,6 de collerette sur la piece 1)"
+semelle_dessous,couloir_fond + couvercle_jeu,mm,dessous de la semelle du couvercle (au-dessus du verre le plus epais)
+rail_axe,32.1,mm,rails du couvercle (haut et bas) : axe ; ils sortent par la face droite du talon
+levre_gauche_largeur,1.5,mm,"levre du bord gauche de la piece 2 (chicane), coiffee par une feuillure du couvercle : largeur"
+levre_gauche_hauteur,1.2,mm,levre gauche : hauteur au-dessus de la face arriere de la piece 2
+rail_gauche,-plaque_demi_largeur + levre_gauche_largeur,mm,"rails : bout gauche, ferme, au pied de la levre gauche"
+rail_gorge_largeur,1.6,mm,rails : gorge (chicane de la languette) : largeur
+rail_gorge_hauteur,0.8,mm,rails : gorge : hauteur
+rail_queue_hauteur,1.4,mm,rails : queue d'aronde a 45 deg sous la gorge : hauteur
+rail_fond,collerette_face_arriere - rail_gorge_hauteur - rail_queue_hauteur,mm,fond des rails
+rail_queue_demi_largeur,rail_gorge_largeur / 2 + rail_queue_hauteur,mm,rails : demi-largeur au fond
+languette_rail_demi_largeur,rail_gorge_largeur / 2 - couvercle_jeu,mm,languette continue du couvercle dans la gorge du rail : demi-largeur
+languette_rail_bas,collerette_face_arriere - rail_gorge_hauteur - couvercle_jeu,mm,languette : bas
+tete_longueur,12,mm,"queues d'aronde du couvercle, a son bout gauche : longueur"
+tete_bas,rail_fond + couvercle_jeu,mm,queue d'aronde : bas
+tete_jeu,0.1,mm,jeu des queues d'aronde sur leurs pans (en horizontal) : le bord gauche du couvercle ne monte que d'autant sous la poussee des lames
+tete_demi_largeur,rail_queue_demi_largeur - couvercle_jeu - tete_jeu,mm,queue d'aronde : demi-largeur en bas
+tete_epaule,tete_bas + tete_demi_largeur - languette_rail_demi_largeur,mm,queue d'aronde : haut du pan a 45 deg
+couvercle_degagement,1.5,mm,couvercle ouvert : son bord gauche depasse le logement du verre de
+couvercle_course,plaque_demi_largeur + verre_cote / 2 + verre_jeu + couvercle_degagement,mm,course du couvercle vers la droite
+goupille_diametre,2,mm,goupilles de butee : bouts de tige
+goupille_trou_diametre,goupille_diametre + 0.1,mm,
+goupille_x,rail_gauche + couvercle_jeu + tete_longueur + couvercle_course + couvercle_jeu + goupille_diametre / 2,mm,goupilles : position (elles arretent les queues d'aronde en fin de course)
+goupille_enfoncement,2.5,mm,goupille : profondeur dans la piece 1
+goupille_haut,languette_rail_bas - couvercle_jeu,mm,haut des goupilles (la languette passe au-dessus)
+goupille_longueur,goupille_haut - piece1_epaisseur + goupille_enfoncement,mm,goupille : longueur
+fente_couvercle_profondeur,1.7,mm,fente dans la paroi gauche du couloir (chicane) : profondeur
+languette_gauche_longueur,1.5,mm,"languette du bout de la semelle, dans la fente"
+languette_gauche_epaisseur,0.8,mm,
+languette_gauche_bas,semelle_dessous + 0.9,mm,
+levre_epaisseur,1.5,mm,"levre du bout droit du couvercle (butee de fermeture, chicane) : epaisseur"
+levre_bas,5,mm,"levre : bas, devant la face droite du talon de la piece 1"
+aimant_x,28,mm,"aimants : x (en haut et en bas, vers le bout droit du couvercle)"
+aimant_y,(plaque_bord_haut + rail_axe + rail_queue_demi_largeur) / 2,mm,au milieu de la bande entre le rail et le bord
+lames_epaisseur,1.2,mm,ressort a lames : epaisseur
+lames_largeur,8,mm,lames : largeur
+lames_axe,15,mm,lames : axe (paire symetrique)
+lames_racine_largeur,4,mm,barre de racine (collee dans le couvercle) : largeur
+lames_racine_droite,-19,mm,"racine : bord droit, depart des lames"
+lames_longueur,24,mm,"lames : longueur, de la racine au milieu du patin"
+lames_precharge,1.5,mm,ecrasement sur le verre le plus fin (le plus epais ajoute la difference)
+patin_largeur_bas,1,mm,patins : plat d'appui
+patin_bas,plan_film + verre_epaisseur_min - lames_precharge,mm,"bas des patins, lames libres"
+patin_hauteur,semelle_dessous - patin_bas,mm,patins : hauteur (chanfreins a 45 deg des deux cotes : ils montent les marches)
+patin_x,lames_racine_droite + lames_longueur,mm,milieu des patins
+chambre_lames_haut,semelle_dessous + lames_epaisseur + couloir_fond - patin_bas + 0.5,mm,"plafond de la chambre des lames : lames soulevees sur le fond du couloir + 0,5"
 glissiere_gauche,-14.7,mm,glissiere : bout gauche
 glissiere_barre_bas,41.25,mm,glissiere : bas de la barre
 glissiere_dent_droite_bout,18.25,mm,dent droite : bout (la dent va jusqu'a verrou_poche_droite)
@@ -162,3 +171,11 @@ moletage_dent_sommet,0.75,mm,dent : sommet
 moletage_hauteur,0.66,mm,
 glissiere_course,3.5,mm,course de la glissiere (vers u negatif)
 capot_epaisseur,2.4,mm,capot : epaisseur (affleure la face arriere de la piece 1)
+ressort_verrou_diametre,2,mm,ressort du verrou : diametre exterieur
+ressort_verrou_longueur_libre,10,mm,ressort du verrou : longueur libre
+ressort_verrou_precharge,1,mm,ressort du verrou : ecrasement glissiere verrouillee (il pousse encore)
+ressort_verrou_longueur_ferme,ressort_verrou_longueur_libre - ressort_verrou_precharge,mm,"longueur du ressort, glissiere verrouillee"
+ressort_verrou_longueur_ouvert,ressort_verrou_longueur_ferme - glissiere_course,mm,"longueur du ressort, glissiere poussee a droite (deverrouillee)"
+verrou_ilot_gauche,glissiere_dent_gauche_pied - glissiere_course + ressort_verrou_longueur_ferme - verrou_jeu,mm,"ilot (taquet du ressort) : bord gauche, a la longueur du ressort verrouille de la dent gauche"
+ressort_verrou_y,(verrou_poche_bas + glissiere_guide_bas) / 2,mm,axe du ressort : entre le fond de la poche et le guide de la glissiere
+ressort_verrou_z,verrou_paroi + glissiere_epaisseur / 2,mm,axe du ressort : milieu de la glissiere
