@@ -43,14 +43,15 @@ y = 16,22 et la face arrière en y = 9,52.
 | Poche A (côté manivelle) | 3 × 17 : u +39 → +42, v +2,76 → +19,76, profonde de 5,9 depuis la face d'appui |
 | Poche B (côté manivelle) | 2 × 4,5 : u +39,5 → +41,5, v −24,0 → −28,5, profonde de 5,9 |
 | Gorge anti-lumière (face d'appui) | Carré intérieur 70,7 × 70,7 centré, 1,5 de large × 0,5 de profondeur, sur les 4 côtés, une seule esquisse (`gorge_cote_interieur`, `gorge_largeur`, `gorge_profondeur`). Elle **reçoit une lèvre du boîtier** : sans gorge sur le côté gauche, la pièce 1 se soulevait (essai du 2026-10-14). Avant le 2026-10-21 : 2 × 1,2, axe sur un carré de 72, profondeur du côté gauche réglable à part |
-| Fenêtre de la plaque Rayfor | 61,5 × 61,5 centrée. Elle laisse entrer la **lèvre intérieure** du boîtier, autour de son ouverture. Dans la cassette : ouverture de la peau avant de 61,9 (`peau_ouverture`) ; avec 56, la lèvre intérieure soulevait la pièce 1 |
+| Fenêtre de la plaque Rayfor | 61,5 × 61,5 centrée. Elle laisse entrer la **lèvre intérieure** du boîtier, autour de son ouverture. Dans la cassette : ouverture de la peau avant de 57 (`peau_ouverture`), entourée d'une gorge de 2 de large (carré de 59 à 61, profondeur 0,5, `gorge_fenetre_profondeur`) qui reçoit la lèvre intérieure (59 × 59 intérieur, 61 × 61 extérieur, relevé du 2026-10-28). Avant : ouverture de 61,9 ; avec 56 sans gorge, la lèvre intérieure soulevait la pièce 1 |
 | 4 trous Ø3,1, entraxe 75 × 75 | Propres à l'Imacon. À réutiliser pour assembler la pièce 1 à la pièce 2 |
 
 Les poches A et B servent de dégagement pour les ergots et l'accouplement du
 boîtier. Il faut les garder : sans elles, la cassette ne se plaque pas.
 
 Le boîtier a **deux lèvres** à l'arrière : une intérieure, au bord de
-l'ouverture, qui entre dans l'ouverture de 61,9, et une entre le bord et
+l'ouverture (59 × 59 intérieur, 61 × 61 extérieur), qui entre dans la gorge
+autour de l'ouverture de 57, et une entre le bord et
 l'intérieur, qui entre dans la gorge de 2 × 1,2 (carré de 72). Leurs hauteurs
 n'ont pas été mesurées : la lèvre intérieure doit rester sous 1,9 (elle arrive
 devant le volet).
@@ -62,11 +63,14 @@ l'arrière :
 
 | Couche | Profondeur depuis la face d'appui | Épaisseur |
 |---|---|---|
-| Peau avant de la pièce 1, ouverture 61,9 (à gauche, sous la fente, il reste 0,7 au-dessus de la gorge) | 0 → 1,9 | 1,9 |
+| Peau avant de la pièce 1, ouverture 57 et gorge de la lèvre intérieure (à gauche, sous la fente, il reste 0,7 au-dessus de la gorge) | 0 → 1,9 | 1,9 |
 | Fente du volet, entre la peau et les rails de la pièce 2 | 1,9 → 2,3 | 0,4 |
 | Butée de la pièce 2, ouverture 55 × 55 (1 d'appui par côté) | 2,3 → 3,55 | 1,25 |
 | Plaque 57 × 57, de 1 à 3 d'épaisseur, dans un logement de 57,4 | 3,55 → 4,55 à 6,55 | 1 à 3 |
-| Ressort en croix : moyeu et bras à 0,3 au-dessus du verre le plus épais, pieds écrasés de 1,5 (verre de 1) à 3,5 (verre de 3) | 6,85 → 7,85 | 1,0 |
+| Ressort en croix posé libre : bras à 0,3 au-dessus du verre le plus épais, pieds écrasés de 1,5 (verre de 1) à 3,5 (verre de 3) | 6,85 → 7,85 | 1,0 |
+| Moyeu du ressort, jusqu'au plan de glissement du couvercle | 6,85 → 11,65 | 4,8 |
+| Collerette de la pièce 2 (face arrière = plan de glissement) | 6,7 → 11,65 | 4,95 |
+| Couvercle coulissant | 11,65 → 17,65 | 6,0 |
 
 ## Volet
 
@@ -80,62 +84,67 @@ l'arrière :
 
 - **Chicane de la collerette** : nervure en U de 0,6 × 0,8 sous la collerette
   de la pièce 2, dans une gorge de 1,0 × 1,0 à l'arrière de la pièce 1, à 36,1
-  du centre, en haut, en bas et à droite. Le bossage de la charnière descend à
-  −37,5 pour la laisser passer.
+  du centre, en haut, en bas et à droite.
 - **Chicane des rails** : nervure de 0,5 × 0,5 sous les rails du volet et sa
   butée de fond, dans une gorge de 0,9 × 0,6 du fond de la poche de la pièce 1.
   Elle coupe le chemin de la lumière qui longerait l'insert depuis le bord
   gauche jusqu'à la fente.
-- **Couvercle** : deux nervures de 1,0 × 0,8 dans deux gorges de 1,6 × 1,0 de la pièce 2, et une paroi qui ferme la face de la charnière.
+- **Couvercle** : jupes et queues d'aronde en haut et en bas, deux bandes de velours en travers aux deux bouts (voir plus bas).
 - Les fenêtres des griffes, en haut, sont hors de la zone étanche (au-delà de
   la lèvre du boîtier) ; la collerette de la pièce 2 a un dégagement en face
   d'elles, au cas où les griffes dépassent du capot.
 
-## Fermeture du couvercle
+## Couvercle coulissant (2026-10-28)
 
-- Couvercle plein dans le prolongement des pièces (2026-10-21) : contour de la
-  pièce 2 (plaque et talon), 7,4 de haut au-dessus d'elle (`couvercle_hauteur`),
-  posé à plat sur toute sa face arrière, sans rien qui descende sur les côtés :
-  on ouvre volet en place. Plein pour la matière contre la transparence du
-  PETG : il n'est creusé que d'une chambre ronde pour le ressort (rayon 27,5,
-  jusqu'à z 11,85 : bras soulevés de 3,5 + 0,5), des nervures, des logements
-  d'aimants et d'un dégagement de 2,5 × 2,8 au-dessus du nœud central de la
-  charnière. 5,65 de matière au-dessus de la chambre. Cassette de 17,5
-  d'épaisseur avec des aimants de 2 mm (pièce 2 à 3,4 pour les aimants incrustés).
-- Deux nervures de 1,0 × 0,8 dans deux gorges de 1,6 × 1,0 de la pièce 2
-  (axes 33,5 et 30,7), autour de la chambre du ressort.
-- Charnière côté crochets, axe Ø2. Le bloc du nœud central de la pièce 1 est
-  hors de la cassette, sous la pièce 2 (jeu 0,4), tenu par le gousset à 45° :
-  il laisse tourner le couvercle. La pièce 2 n'a plus de dégagement.
-- Fermeture par aimants incrustés : deux paires Ø6 × 2 dans les coins opposés à
-  la charnière, x ±35,2, y 38,675. En y, au milieu de la bande entre la gorge
-  extérieure (34,3) et le bord haut (43,05) : 1,28 de paroi de chaque côté, le
-  maximum. En x, au plus loin du bord latéral (3,9) que permet la fraisure de la
-  vis du haut (1 de paroi). Logements fermés Ø6,2 × 2,2 (jeu 0,2) sous une peau
-  de 0,4 côté joint, posés pendant une pause d'impression (pièce 2 à 2,60 mm,
-  couvercle à 7,00 mm) ; 1,0 entre les aimants couvercle fermé. Collerette de
-  la pièce 2 = peau + aimant + jeu + 0,8 (3,4 avec des aimants de 2) : elle suit
-  l'épaisseur des aimants, la cassette aussi (15,5 + épaisseur de l'aimant).
-  Tailles essayées au build : Ø5 × 1, Ø6 × 2, Ø7 × 3, Ø6 × 4 bonnes ; Ø8
-  refusée (0,27 de paroi vers la gorge et le bord haut ; le build exige 0,6).
-  Vis : deux dans les coins du bas (x ±38, y −39 : 0,9 de paroi entre la
-  fraisure et les bords, contre 0,44 en v0.1), une en haut à gauche du verrou
-  (x −28), une sur le talon droit
-  (44, 28), M3 × 8.
-- Assemblage FreeCAD : liaison pivot de la charnière, butée à 140° (le couvercle
-  plein touche le gousset de la pièce 1 vers 168° avec des aimants de 2 mm,
-  151° avec 3 mm : la pièce 2 s'épaissit et la charnière monte d'autant). Le build vérifie que la liaison est
-  bien la charnière modélisée, puis ouvre le couvercle degré par degré de 0 à
-  30°, de 2 en 2 au-delà, volet en place : aucune collision.
-- Clips abandonnés (2026-10-21) : plus d'ergots sur le talon de la pièce 1. Le couvercle de test
-  pour les pièces de la v0.1 (`tools/lid_for_v0_1.py`) garde les clips.
-- Ressort pour des verres de 1 à 3 mm (`verre_epaisseur_min`, `verre_epaisseur_max`) :
-  bras de 27 × 6 × 1, pieds Ø5 au bout. Écrasement 1,5 sur le verre le plus fin,
-  3,5 sur le plus épais ; le bout des bras monte alors jusqu'à z 11,4, dans le
-  logement du verre, sans toucher la pièce 2 ni le couvercle (vérifié au build).
-  Force estimée (PETG, E ≈ 2 GPa) : environ 4 N sur un verre de 1, 8 à 9 N sur
-  un verre de 3, que les deux paires d'aimants doivent retenir : à vérifier à
-  l'essai. Déformation maximale des bras environ 1,8 %.
+Il remplace le couvercle à charnière : il glisse **vers la droite** (côté talon)
+et sort complètement. Le gauche est l'entrée du volet, le haut celui de la
+languette du verrou.
+
+- Couvercle plein, contour de la pièce 2 (plaque et talon), 6 au-dessus d'elle
+  (`couvercle_hauteur`), posé à plat. Rien ne descend à gauche ni à droite : il
+  passe au-dessus de la pièce 2 sur toute sa course.
+- **Queues d'aronde** dans les bords haut et bas de la pièce 2, sur toute la
+  longueur sauf 3 à gauche (`queue_aronde_butee`) : c'est la butée du couvercle
+  fermé. Profondeur 1,4 dans le bord, 1,2 de matière au-dessus
+  (`queue_aronde_dessus`). La face côté couvercle est plate (elle retient le
+  couvercle contre le ressort), la face côté boîtier est à 45° (pièce 2
+  imprimée face arrière sur le plateau, sans support). Le couvercle a deux jupes
+  de 1,6 avec une lèvre qui entre dans la queue d'aronde, avec 0,2 de jeu
+  (`couvercle_jeu`) : 1,0 de prise. La lèvre a un dessous plat de 1,2 en
+  porte-à-faux à l'impression (face extérieure sur le plateau).
+- En haut, la queue d'aronde passe à 0,49 des dégagements des griffes de la
+  pièce 2 (fenêtres à v 38,95 → 41,16).
+- Course pour libérer le logement du verre : 71,9 (`couvercle_course`), puis le
+  couvercle sort des glissières.
+- **Ressort posé libre** sur le verre (plus de tenon ni de pion). Un poussoir
+  Ø14 collé sur son moyeu (`poussoir_ressort`, imprimé à part pour que le
+  ressort reste plat sur le plateau) monte jusqu'au plan de glissement : couvercle fermé, la face plate du
+  couvercle l'écrase de 1,5 sur un verre de 1 et de 3,5 sur un verre de 3, comme
+  avant. Sans couvercle, sur un verre de 3, il remonte de 3,5 : les bras restent
+  sous le plan de glissement (jusqu'à w 11,35, jeu 0,3), seul le poussoir dépasse.
+  Le couvercle a une **rampe d'entrée** sous son bout gauche (3,8 de haut sur
+  8,5, 16 de large) qui l'écrase en glissant.
+- C'est ce qui fixe la face arrière de la pièce 2 : `collerette_face_arriere` =
+  max(pile des aimants, bras du ressort détendu + 0,3) = 11,65 (10,3 avant). La
+  collerette passe de 3,6 à 4,95 ; les vis deviennent des **M3 × 10** (5,05 dans
+  la pièce 1, avant-trou de 5,5).
+- **Étanchéité** : en haut et en bas, la jupe et la lèvre dans la queue
+  d'aronde font une chicane. Aux deux bouts, deux bandes de velours de 3 en
+  travers, collées sous le couvercle dans des gorges de 0,6 : à gauche
+  u −33 → −30, à droite u 31 → 34, de part et d'autre du logement (±28,7). Les
+  anciennes nervures en carré ne sont plus possibles (elles croiseraient le
+  sens de glissement).
+- **Aimants** : deux paires Ø6 × 2 à gauche (x −37,5, y ±20), hors du velours
+  et de la rampe. Ils tiennent le couvercle fermé (cran). Pause d'impression :
+  pièce 2 à 2,60 mm, couvercle à 5,60 mm.
+- Assemblage FreeCAD : liaison glissière du couvercle (0 à 71,9), ressort fixé
+  à la pièce 2 (écrasé, couvercle fermé), poussoir fixé au ressort. Le build vérifie que la liaison ne laisse que la translation
+  selon u, puis fait glisser le couvercle millimètre par millimètre, volet en
+  place, ressort écrasé : aucune collision.
+- Hauteurs non essayées : la prise de 1,0 des lèvres et la force du ressort sur
+  la rampe sont à valider à l'impression.
+- Ancienne version à charnière : voir l'historique git (avant le 2026-10-28).
+  `tools/lid_for_v0_1.py` (couvercle pour les pièces v0.1) n'est plus à jour.
 
 ## Verrou
 
@@ -144,8 +153,7 @@ l'arrière :
   0,8 (1,0 était trop épais à l'essai).
 - Le capot affleure l'arrière de la pièce 1 et c'est la collerette de la pièce 2
   qui le tient : pas de vis.
-- Derrière la lèvre des crochets, 5,6 de vide sur la largeur des encoches : ni
-  charnière ni couvercle à cet endroit.
+- Derrière la lèvre des crochets, 5,6 de vide sur la largeur des encoches.
 
 ## Validé
 

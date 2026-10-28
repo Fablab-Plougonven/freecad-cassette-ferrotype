@@ -18,10 +18,11 @@ Les STL, STEP et le fichier FreeCAD sont publiés dans les
 | Fichier | Pièce | À imprimer |
 |---|---|---|
 | `piece1_interface.stl` | Contre le boîtier : crochets, verrou, fente du volet, gorge de la lèvre du boîtier | Face d'appui (côté boîtier) sur le plateau |
-| `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes, deux gorges anti-lumière, deux aimants Ø6 × 2 incrustés dans les coins opposés à la charnière | Face arrière (côté couvercle) sur le plateau ; **pause à 2,60 mm** pour poser les aimants |
-| `piece3_couvercle.stl` | Couvercle articulé plein, dans le prolongement des pièces (on ouvre volet en place) : chambre du ressort, deux nervures anti-lumière, tenon du ressort, deux aimants Ø6 × 2 incrustés dans les coins opposés à la charnière | Face extérieure sur le plateau ; **pause à 7,00 mm** pour poser les aimants ; 4 périmètres et remplissage élevé contre la transparence du PETG |
+| `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes, queues d'aronde du couvercle en haut et en bas, deux aimants Ø6 × 2 incrustés à gauche | Face arrière (côté couvercle) sur le plateau ; **pause à 2,60 mm** pour poser les aimants |
+| `piece3_couvercle.stl` | Couvercle plein **coulissant** (sort vers la droite, volet en place) : jupes à lèvres pour les queues d'aronde, rampe d'entrée pour le ressort, deux gorges de velours, deux aimants Ø6 × 2 incrustés à gauche | Face extérieure sur le plateau ; **pause à 5,60 mm** pour poser les aimants ; 4 périmètres et remplissage élevé contre la transparence du PETG |
 | `piece3_couvercle_pour_v0.1.stl` | Couvercle-boîte à clips pour des pièces 1 et 2 imprimées en v0.1 (`tools/lid_for_v0_1.py`), avec le ressort de la v0.1 | Face extérieure sur le plateau |
-| `ressort_croix.stl` | Ressort en croix qui presse le dos de la plaque, pour des verres de 1 à 3 mm (bras longs et fins) | Face plate sur le plateau, pieds vers le haut, 100 % de remplissage, PETG |
+| `ressort_croix.stl` | Ressort en croix posé libre sur le dos de la plaque, pour des verres de 1 à 3 mm (bras longs et fins) | Face plate sur le plateau, pieds vers le haut, 100 % de remplissage, PETG |
+| `poussoir_ressort.stl` | Poussoir Ø14 × 3,8 collé sur le moyeu du ressort : le couvercle appuie dessus | À plat, 100 % de remplissage |
 | `glissiere_verrou.stl` | Glissière du verrou (dessin de Rayfor, remodélisé) | À plat, face côté boîtier sur le plateau |
 | `capot_verrou.stl` | Capot de la glissière (idem) | À plat |
 | `cassette_ferrotype.FCStd` | Modèle FreeCAD en esquisses, toutes les cotes dans la feuille `Parametres` | — |
@@ -32,23 +33,23 @@ parois fines sortent trop épaisses et les rampes en escalier.
 
 ## Quincaillerie
 
-- 4 vis M3 × 8 à tête fraisée, auto-taraudées dans la pièce 1 (deux dans les coins
+- 4 vis M3 × 10 à tête fraisée, auto-taraudées dans la pièce 1 (deux dans les coins
   du bas, une en haut à gauche du verrou, une sur le talon droit).
 - 4 aimants néodyme Ø6 × 2 mm (N52 ou N45, aimantés dans l'épaisseur), incrustés
-  à l'impression : deux dans les coins hauts de la pièce 2, deux en face dans le
+  à l'impression : deux à gauche de la pièce 2, deux en face dans le
   couvercle. Couvercle fermé, 1 mm de plastique les sépare (deux peaux de 0,4 et
-  le jeu de 0,2).
-- 1 axe de charnière Ø2 × 44 mm (tige acier ou clou coupé).
-- Velours ou feutrine adhésive, 3 mm de large, 0,5 à 0,7 mm d'épaisseur,
-  2 bandes de 66 mm : à l'entrée de la fente du volet, une sur chaque pièce.
+  le jeu de 0,2) : ils le tiennent fermé.
+- Velours ou feutrine adhésive, 3 mm de large, 0,5 à 0,7 mm d'épaisseur :
+  2 bandes de 66 mm à l'entrée de la fente du volet (une sur chaque pièce), et
+  2 bandes de 86 mm en travers sous le couvercle, dans leurs gorges.
+- Colle cyano pour fixer le poussoir sur le moyeu du ressort.
 - Volet : plaque métal de 65,88 mm de large, 0,35 mm d'épaisseur au plus
   (fente de 66,38 × 0,4), environ 88 mm de long dont 73 engagés.
-- Colle cyano pour fixer le ressort sur le tenon.
 
 ## Aimants incrustés (pendant l'impression)
 
 Les logements des aimants sont fermés : il faut une pause d'impression pour les
-poser, à 2,60 mm pour la pièce 2 (face arrière sur le plateau) et à 7,00 mm pour
+poser, à 2,60 mm pour la pièce 2 (face arrière sur le plateau) et à 5,60 mm pour
 le couvercle (face extérieure sur le plateau). Ces hauteurs valent pour des aimants de
 2 mm ; le build les recalcule et les affiche si l'on change `aimant_epaisseur`. Dans le trancheur, insérer la
 pause avant le premier calque au-dessus de cette hauteur. Logements Ø6,2 × 2,2 :
@@ -65,8 +66,12 @@ marquée **vers le plateau** ; dans le couvercle, face marquée **vers le haut**
 2. Coller les deux bandes de velours.
 3. Emboîter la pièce 2 dans la pièce 1 : les deux chicanes s'engagent dans leurs
    gorges. Visser les 4 vis M3.
-4. Coller le ressort sur le tenon du couvercle, pieds vers la plaque.
-5. Monter la charnière avec l'axe Ø2.
+4. Coller les deux bandes de velours dans les gorges, sous le couvercle, et le
+   poussoir sur le moyeu du ressort (côté opposé aux pieds).
+5. Chargement : faire glisser le couvercle vers la droite jusqu'à le sortir,
+   poser la plaque, puis le ressort par-dessus (pieds vers la plaque), et
+   remettre le couvercle par la droite : sa rampe écrase le ressort, les aimants
+   le tiennent fermé contre la butée.
 
 Sur le boîtier : accrocher le bas sur les crochets, rabattre le haut, puis
 pousser la languette de la glissière vers la gauche (vue de l'arrière). Les
@@ -74,13 +79,14 @@ griffes du boîtier montent sur la rampe des dents et plaquent la cassette.
 
 ## Étanchéité à la lumière
 
-- Face d'appui : une gorge reçoit la lèvre du boîtier, et l'ouverture de 61,9
-  laisse entrer sa lèvre intérieure, comme sur un magasin d'origine.
+- Face d'appui : une gorge reçoit la lèvre du boîtier, et une seconde gorge
+  (carré de 59 à 61, 2 de large) reçoit sa lèvre intérieure, autour de
+  l'ouverture de 57.
 - Entre la pièce 1 et la pièce 2 : une nervure en U sous la collerette et une
   nervure sous les rails du volet, chacune dans une gorge.
-- Couvercle : plein, posé à plat sur la pièce 2, avec deux nervures dans deux
-  gorges autour de la chambre du ressort, sur les 4 côtés. Au-dessus de la
-  chambre, 5,65 mm de matière contre la transparence du PETG.
+- Couvercle : plein (6 mm), posé à plat sur la pièce 2. En haut et en bas, ses
+  jupes et leurs lèvres dans les queues d'aronde font une chicane ; aux deux
+  bouts, deux bandes de velours en travers.
 - Valider par un essai : papier photo dans la cassette fermée, 10 min au soleil,
   puis développement.
 - Fente du volet : velours des deux côtés.
@@ -109,16 +115,16 @@ pas dans l'esquisse. Exporter ensuite le corps en STL.
 
 Les pièces sont réunies dans l'assemblage **Cassette** (atelier Assemblage), par
 des liaisons : pièce 1 fixe, pièce 2 et capot fixés dessus, couvercle en
-**pivot** sur la charnière (butée à `couvercle_ouverture_max`), ressort fixé au
-couvercle, glissière du verrou en **glissière** sur sa course, aimants fixés dans
+**glissière** vers la droite (course `couvercle_course`), ressort posé dans la
+pièce 2, glissière du verrou en **glissière** sur sa course, aimants fixés dans
 leurs logements. Pour ouvrir le couvercle : double-cliquer *Cassette*, puis
 faire glisser le couvercle à la souris.
 
 Deux animations sont prêtes (Cassette › Simulations) : *Ouvrir et fermer le
-couvercle* (jusqu'à la butée) et *Verrouiller et déverrouiller*. Atelier
+couvercle* (jusqu'à libérer le verre) et *Verrouiller et déverrouiller*. Atelier
 **Assembly**, double-cliquer *Cassette*, puis double-cliquer l'animation,
 cliquer **Générer** (*Generate*) et lancer la lecture sous la barre des images. Les liaisons s'appuient sur des repères
-(« Repère charnière »…) placés par la feuille, jamais sur une arête : elles
+(« Repère glissière couvercle »…) placés par la feuille, jamais sur une arête : elles
 suivent les changements de cotes.
 
 **Par le script** (régénère le FCStd, les STL, les STEP et les contrôles) :
@@ -134,8 +140,8 @@ Le script réécrit le FCStd : un changement fait seulement dans FreeCAD est per
 s'il n'est pas reporté dans `PARAMS`. La table est aussi écrite dans
 [cad/parameters.csv](cad/parameters.csv). Le script vérifie qu'aucune esquisse
 n'a de degré libre, qu'aucune pièce n'en chevauche une autre (verre, volet,
-glissière en position ouverte et verrouillée compris) et que le couvercle s'ouvre
-jusqu'à 120° sans rien accrocher.
+glissière en position ouverte et verrouillée compris) et que le couvercle glisse
+sur toute sa course sans rien accrocher.
 
 Publier une version : `tools/release.sh v0.1 "notes"` (construit puis crée la
 release GitHub avec `gh`). Captures d'écran : `tools/screenshots.py`, à lancer

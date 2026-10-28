@@ -1,0 +1,53 @@
+# Construit le modèle avec FreeCAD (Linux), lance les contrôles du script et
+# publie le FCStd, les STL et les STEP comme artefact téléchargeable. Les STL et
+# le FCStd vont aussi sur une branche apercu/<branche>, où GitHub les affiche en
+# 3D (utile depuis une tablette).
+name: Construire la cassette
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: freecad
+          create-args: freecad=1.1.3
+          init-shell: bash
+          cache-environment: true
+      - name: Construire et contrôler
+        shell: bash -el {0}
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          FC_LIB=$(dirname "$(find "$CONDA_PREFIX" -name 'FreeCAD.so' | head -1)")
+          ASSEMBLY=$(dirname "$(find "$CONDA_PREFIX" -name JointObject.py | head -1)")
+          export PYTHONPATH="$FC_LIB:$ASSEMBLY:${PYTHONPATH:-}"
+          python cad/build_cassette.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cassette-exports
+          path: exports/
+      - name: Publier les STL sur la branche d'aperçu
+        if: success() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          BRANCH="apercu/${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          cd exports
+          git init -q -b "$BRANCH"
+          git add *.stl *.FCStd
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "Exports de ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
