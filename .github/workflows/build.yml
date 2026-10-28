@@ -1,5 +1,7 @@
 # Construit le modèle avec FreeCAD (Linux), lance les contrôles du script et
-# publie le FCStd, les STL et les STEP comme artefact téléchargeable.
+# publie le FCStd, les STL et les STEP comme artefact téléchargeable. Les STL et
+# le FCStd vont aussi sur une branche apercu/<branche>, où GitHub les affiche en
+# 3D (utile depuis une tablette).
 name: Construire la cassette
 
 on:
@@ -7,6 +9,9 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -34,3 +39,15 @@ jobs:
         with:
           name: cassette-exports
           path: exports/
+      - name: Publier les STL sur la branche d'aperçu
+        if: success() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          BRANCH="apercu/${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          cd exports
+          git init -q -b "$BRANCH"
+          git add *.stl *.FCStd
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "Exports de ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
