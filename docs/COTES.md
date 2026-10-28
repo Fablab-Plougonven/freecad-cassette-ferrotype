@@ -43,14 +43,15 @@ y = 16,22 et la face arrière en y = 9,52.
 | Poche A (côté manivelle) | 3 × 17 : u +39 → +42, v +2,76 → +19,76, profonde de 5,9 depuis la face d'appui |
 | Poche B (côté manivelle) | 2 × 4,5 : u +39,5 → +41,5, v −24,0 → −28,5, profonde de 5,9 |
 | Gorge anti-lumière (face d'appui) | Carré intérieur 70,7 × 70,7 centré, 1,5 de large × 0,5 de profondeur, sur les 4 côtés, une seule esquisse (`gorge_cote_interieur`, `gorge_largeur`, `gorge_profondeur`). Elle **reçoit une lèvre du boîtier** : sans gorge sur le côté gauche, la pièce 1 se soulevait (essai du 2026-10-14). Avant le 2026-10-21 : 2 × 1,2, axe sur un carré de 72, profondeur du côté gauche réglable à part |
-| Fenêtre de la plaque Rayfor | 61,5 × 61,5 centrée. Elle laisse entrer la **lèvre intérieure** du boîtier, autour de son ouverture. Dans la cassette : ouverture de la peau avant de 61,9 (`peau_ouverture`) ; avec 56, la lèvre intérieure soulevait la pièce 1 |
+| Fenêtre de la plaque Rayfor | 61,5 × 61,5 centrée. Elle laisse entrer la **lèvre intérieure** du boîtier, autour de son ouverture. Dans la cassette : ouverture de la peau avant de 57 (`peau_ouverture`), entourée d'une gorge de 2 de large (carré de 59 à 61, profondeur 0,5, `gorge_fenetre_profondeur`) qui reçoit la lèvre intérieure (59 × 59 intérieur, 61 × 61 extérieur, relevé du 2026-10-28). Avant : ouverture de 61,9 ; avec 56 sans gorge, la lèvre intérieure soulevait la pièce 1 |
 | 4 trous Ø3,1, entraxe 75 × 75 | Propres à l'Imacon. À réutiliser pour assembler la pièce 1 à la pièce 2 |
 
 Les poches A et B servent de dégagement pour les ergots et l'accouplement du
 boîtier. Il faut les garder : sans elles, la cassette ne se plaque pas.
 
 Le boîtier a **deux lèvres** à l'arrière : une intérieure, au bord de
-l'ouverture, qui entre dans l'ouverture de 61,9, et une entre le bord et
+l'ouverture (59 × 59 intérieur, 61 × 61 extérieur), qui entre dans la gorge
+autour de l'ouverture de 57, et une entre le bord et
 l'intérieur, qui entre dans la gorge de 2 × 1,2 (carré de 72). Leurs hauteurs
 n'ont pas été mesurées : la lèvre intérieure doit rester sous 1,9 (elle arrive
 devant le volet).
@@ -62,7 +63,7 @@ l'arrière :
 
 | Couche | Profondeur depuis la face d'appui | Épaisseur |
 |---|---|---|
-| Peau avant de la pièce 1, ouverture 61,9 (à gauche, sous la fente, il reste 0,7 au-dessus de la gorge) | 0 → 1,9 | 1,9 |
+| Peau avant de la pièce 1, ouverture 57 et gorge de la lèvre intérieure (à gauche, sous la fente, il reste 0,7 au-dessus de la gorge) | 0 → 1,9 | 1,9 |
 | Fente du volet, entre la peau et les rails de la pièce 2 | 1,9 → 2,3 | 0,4 |
 | Butée de la pièce 2, ouverture 55 × 55 (1 d'appui par côté) | 2,3 → 3,55 | 1,25 |
 | Plaque 57 × 57, de 1 à 3 d'épaisseur, dans un logement de 57,4 | 3,55 → 4,55 à 6,55 | 1 à 3 |

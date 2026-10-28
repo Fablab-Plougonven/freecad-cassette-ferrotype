@@ -95,7 +95,10 @@ PARAMS = [
     ("verre_face_arriere", "plan_film + verre_epaisseur", "dos du verre"),
     ("butee_appui", "1", "appui du verre sur la butee, par cote"),
     ("butee_ouverture", "verre_cote - 2 * butee_appui", "ouverture de la butee = image"),
-    ("peau_ouverture", "61.9", "ouverture de la peau avant : laisse entrer la levre interieure du boitier (fenetre Rayfor 61.5 + jeu)"),
+    ("peau_ouverture", "57", "ouverture de la peau avant (la levre interieure du boitier entre dans la gorge autour)"),
+    ("levre_fenetre_cote_interieur", "59", "levre interieure du boitier autour de sa fenetre : cote interieur (59 x 59)"),
+    ("levre_fenetre_cote_exterieur", "61", "levre interieure du boitier : cote exterieur (61 x 61)"),
+    ("gorge_fenetre_profondeur", "0.5", "gorge de la levre interieure : profondeur"),
     # Insert pocket (piece 1) / insert (piece 2)
     ("poche_cadre_droite", "34", "poche de la piece 2 : bord droit"),
     ("poche_cadre_demi_hauteur", "34.8", "poche de la piece 2 : demi-hauteur (reste a l'interieur de la gorge)"),
@@ -697,6 +700,10 @@ def build_piece1(pd):
     pd.mirrored(b, "Fenetres_griffes_symetrie", [win])
     pd.pocket(b, "Ouverture_image", pd.sk(b, "Ouverture_image", "XY", lambda s: pd.rect(
         s, "-peau_ouverture / 2", "peau_ouverture / 2", "-peau_ouverture / 2", "peau_ouverture / 2")), reverse=True)
+    li, le = "levre_fenetre_cote_interieur / 2", "levre_fenetre_cote_exterieur / 2"
+    pd.pocket(b, "Gorge_levre_fenetre", pd.sk(b, "Gorge_levre_fenetre", "XY", lambda s: (
+        pd.rect(s, neg(le), le, neg(le), le, "exterieur"), pd.rect(s, neg(li), li, neg(li), li, "interieur"))),
+        "gorge_fenetre_profondeur", reverse=True)
     # rear face (sketches on the rear plane, pockets towards the mating face)
     pd.pocket(b, "Poche_cadre", pd.sk(b, "Poche_cadre", rear, lambda s: pd.rect(
         s, f"-{P} - 1", "poche_cadre_droite", neg("poche_cadre_demi_hauteur"), "poche_cadre_demi_hauteur")), "piece1_epaisseur - peau_epaisseur")

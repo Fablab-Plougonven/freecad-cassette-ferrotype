@@ -61,7 +61,10 @@ verre_jeu,0.2,mm,jeu du verre par cote
 verre_face_arriere,plan_film + verre_epaisseur,mm,dos du verre
 butee_appui,1,mm,"appui du verre sur la butee, par cote"
 butee_ouverture,verre_cote - 2 * butee_appui,mm,ouverture de la butee = image
-peau_ouverture,61.9,mm,ouverture de la peau avant : laisse entrer la levre interieure du boitier (fenetre Rayfor 61.5 + jeu)
+peau_ouverture,57,mm,ouverture de la peau avant (la levre interieure du boitier entre dans la gorge autour)
+levre_fenetre_cote_interieur,59,mm,levre interieure du boitier autour de sa fenetre : cote interieur (59 x 59)
+levre_fenetre_cote_exterieur,61,mm,levre interieure du boitier : cote exterieur (61 x 61)
+gorge_fenetre_profondeur,0.5,mm,gorge de la levre interieure : profondeur
 poche_cadre_droite,34,mm,poche de la piece 2 : bord droit
 poche_cadre_demi_hauteur,34.8,mm,poche de la piece 2 : demi-hauteur (reste a l'interieur de la gorge)
 cadre_jeu,0.2,mm,jeu insert / poche

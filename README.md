@@ -74,8 +74,9 @@ griffes du boîtier montent sur la rampe des dents et plaquent la cassette.
 
 ## Étanchéité à la lumière
 
-- Face d'appui : une gorge reçoit la lèvre du boîtier, et l'ouverture de 61,9
-  laisse entrer sa lèvre intérieure, comme sur un magasin d'origine.
+- Face d'appui : une gorge reçoit la lèvre du boîtier, et une seconde gorge
+  (carré de 59 à 61, 2 de large) reçoit sa lèvre intérieure, autour de
+  l'ouverture de 57.
 - Entre la pièce 1 et la pièce 2 : une nervure en U sous la collerette et une
   nervure sous les rails du volet, chacune dans une gorge.
 - Couvercle : plein, posé à plat sur la pièce 2, avec deux nervures dans deux
