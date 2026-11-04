@@ -23,8 +23,9 @@ Les STL, STEP et le fichier FreeCAD sont publiés dans les
 | `piece3_couvercle_pour_v0.1.stl` | Couvercle-boîte à clips pour des pièces 1 et 2 imprimées en v0.1 (`tools/lid_for_v0_1.py`), avec le ressort de la v0.1 | Face extérieure sur le plateau |
 | `ressort_croix.stl` | Ressort en croix qui presse le dos de la plaque, pour des verres de 1 à 3 mm (bras longs et fins), vissé dans le tenon du couvercle (bossage fraisé côté verre) | Face plate sur le plateau, pieds et bossage vers le haut, 100 % de remplissage, PETG |
 | `glissiere_verrou.stl` | Glissière du verrou (dessin de Rayfor, remodélisé) | À plat, face côté boîtier sur le plateau |
-| `capot_verrou.stl` | Capot de la glissière (idem) | À plat |
+| `capot_verrou.stl` | Capot de la glissière (idem) | Face visible (arrière, à fleur de la pièce 1) sur le plateau |
 | `cassette_ferrotype.FCStd` | Modèle FreeCAD en esquisses, toutes les cotes dans la feuille `Parametres` | — |
+| `cassette_ferrotype.3mf` | Plateau Bambu Studio : les six pièces orientées et placées, réglages par pièce, pauses des aimants posées (voir « Plateau d'impression ») | Ouvrir dans Bambu Studio, vérifier les pauses dans l'aperçu |
 
 Matière : PETG noir (ou ASA), pas de PLA (nitrate d'argent, chaleur). Couches de
 0,12 à 0,16 et 4 périmètres pour les pièces 1 et 2 : en brouillon (0,28), les
@@ -60,6 +61,19 @@ l'aimant tombe au fond, il reste 0,2 au-dessus pour que la buse ne le touche pas
 **Polarité** (on ne peut plus la changer ensuite) : coller deux aimants l'un sur
 l'autre et marquer au feutre les deux faces en contact. Dans la pièce 2, face
 marquée **vers le plateau** ; dans le couvercle, face marquée **vers le haut**.
+
+## Plateau d'impression (Bambu Studio)
+
+`tools/plateau.py` (interpréteur de FreeCAD, après le build) écrit
+`exports/plateau/cassette_ferrotype.3mf` : les six pièces sur un plateau de X1
+Carbon, PETG Basic noir, 0,16 mm Optimal, plaque PEI texturée (préréglages dans
+`cad/bambu/project_settings.config`, refaits par `--settings`). Chaque pièce a sa
+face visible ou sa plus grande face plate sur le plateau, comme dans le tableau
+plus haut ; 4 parois pour les pièces 1, 2 et 3, couvercle rempli à 50 %, ressort
+à 100 %. Les deux pauses des aimants sont déjà posées : avant le calque qui finit
+à 2,76 (pièce 2) et avant celui qui finit à 7,08 (couvercle), à vérifier dans
+l'aperçu avant de lancer. Les STL tournées et placées sont dans
+`exports/plateau/stl/`.
 
 ## Montage
 
