@@ -101,21 +101,22 @@ l'arrière :
   jusqu'à z 13,05 : bras soulevés de 3,5 + 0,5), des nervures, des logements
   d'aimants et d'un dégagement de 2,5 × 2,8 au-dessus du nœud central de la
   charnière. 4,45 de matière au-dessus de la chambre (5,65 avec le ressort collé, avant le 2026-11-04). Cassette de 17,5
-  d'épaisseur avec des aimants de 2 mm (pièce 2 à 3,4 pour les aimants incrustés).
+  d'épaisseur avec des aimants de 2 mm (pièce 2 à 3,4 : logement de 2,3 et 1,1 dessous).
 - Deux nervures de 1,0 × 0,8 dans deux gorges de 1,6 × 1,0 de la pièce 2
   (axes 33,5 et 30,7), autour de la chambre du ressort.
 - Charnière côté crochets, axe Ø2. Le bloc du nœud central de la pièce 1 est
   hors de la cassette, sous la pièce 2 (jeu 0,4), tenu par le gousset à 45° :
   il laisse tourner le couvercle. La pièce 2 n'a plus de dégagement.
-- Fermeture par aimants incrustés : deux paires Ø6 × 2 dans les coins opposés à
-  la charnière, x ±35,2, y 38,675. En y, au milieu de la bande entre la gorge
-  extérieure (34,3) et le bord haut (43,05) : 1,28 de paroi de chaque côté, le
-  maximum. En x, au plus loin du bord latéral (3,9) que permet la fraisure de la
-  vis du haut (1 de paroi). Logements fermés Ø6,2 × 2,2 (jeu 0,2) sous une peau
-  de 0,4 côté joint, posés pendant une pause d'impression (pièce 2 à 2,60 mm,
-  couvercle à 7,00 mm) ; 1,0 entre les aimants couvercle fermé. Collerette de
-  la pièce 2 = peau + aimant + jeu + 0,8 (3,4 avec des aimants de 2) : elle suit
-  l'épaisseur des aimants, la cassette aussi (15,5 + épaisseur de l'aimant).
+- Fermeture par aimants collés : deux paires Ø6 × 2 dans les coins opposés à
+  la charnière, x ±35,3, y 38,675. En y, au milieu de la bande entre la gorge
+  extérieure (34,3) et le bord haut (43,05) : 1,17 de paroi de chaque côté, le
+  maximum. En x, au plus loin du bord latéral (3,7) que permet la fraisure de la
+  vis du haut (1 de paroi). Logements ouverts sur les faces de joint (2026-11-11,
+  à la place des aimants incrustés sous une peau de 0,4 avec pause d'impression) :
+  Ø6,4 (jeu 0,4) × 2,3 (aimant + 0,3 de retrait pour la colle, l'aimant ne dépasse
+  pas) ; 0,6 entre les aimants couvercle fermé. Collerette de la pièce 2 =
+  logement + 1,1 (3,4 avec des aimants de 2, inchangée) : elle suit l'épaisseur
+  des aimants, la cassette aussi (15,5 + épaisseur de l'aimant).
   Tailles essayées au build : Ø5 × 1, Ø6 × 2, Ø7 × 3, Ø6 × 4 bonnes ; Ø8
   refusée (0,27 de paroi vers la gorge et le bord haut ; le build exige 0,6).
   Vis : deux dans les coins du bas (x ±38, y −39 : 0,9 de paroi entre la

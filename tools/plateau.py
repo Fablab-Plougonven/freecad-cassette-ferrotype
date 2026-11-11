@@ -1,26 +1,27 @@
-"""Print plate: the six printed pieces in one Bambu Studio project (3MF), black PETG.
+"""Print plates: the six printed pieces in two Bambu Studio projects (3MF), one per filament.
+
+- cassette_boitier.3mf: pieces 1, 2 and the lid, black PLA, 0.16 mm layers;
+- cassette_ressort.3mf: the cross spring, the latch slider and its cover, green PETG,
+  0.12 mm layers.
 
 Each piece is turned so that its visible face, or its largest flat face, is on
 the bed (WAY), laid on z = 0 and placed on the X1 Carbon's 256 x 256 plate
-(clear of the excluded front-left corner). The 3MF is in Bambu Studio's own
-project layout: per-object settings (walls, infill), and the two print pauses
-for the embedded magnets (piece 2 and the lid) in
-Metadata/custom_gcode_per_layer.xml, at the first layer above the ceiling of
-the magnet seats.
+(clear of the excluded front-left corner). Each 3MF is in Bambu Studio's own
+project layout, with per-object settings (walls, infill). No print pause: the
+magnets are glued afterwards in seats open on the joint faces.
 
-The presets (cad/bambu/project_settings.config) are written once by Bambu
-Studio's command line (--settings): X1 Carbon 0.4, 0.16mm Optimal, textured PEI,
-Bambu PETG Basic black.
+The presets of each plate (cad/bambu/<plate>.config) are written once by Bambu
+Studio's command line (--settings): X1 Carbon 0.4, textured PEI, the plate's
+process and filament (PLATES).
 
 Run with FreeCAD's interpreter, after cad/build_cassette.py:
   /Applications/FreeCAD.app/Contents/Resources/bin/python tools/plateau.py [--settings] [--slice]
-Writes exports/plateau/cassette_ferrotype.3mf and exports/plateau/stl/*.stl;
---slice also slices it with Bambu Studio and prints time, filament and pauses.
+Writes exports/plateau/cassette_<plate>.3mf;
+--slice also slices them with Bambu Studio and prints time and filament.
 (--slice needs Bambu Studio's command line to write its own temporary files: run it
 from a normal terminal, not from a sandbox.)
 """
 import json
-import math
 import os
 import shutil
 import subprocess
@@ -38,13 +39,11 @@ V = App.Vector
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FCSTD = os.path.join(ROOT, "exports", "cassette_ferrotype.FCStd")
 OUT = os.path.join(ROOT, "exports", "plateau")
-SETTINGS = os.path.join(ROOT, "cad", "bambu", "project_settings.config")
+SETTINGS = os.path.join(ROOT, "cad", "bambu", "{}.config")
 
 APP = "/Applications/BambuStudio.app"
 PROFILES = os.path.join(APP, "Contents/Resources/profiles/BBL")
 MACHINE = "Bambu Lab X1 Carbon 0.4 nozzle"
-PROCESS = "0.16mm Optimal @BBL X1C"
-FILAMENT = ("Bambu PETG Basic @BBL X1C", "#000000")
 BED_TYPE = "Textured PEI Plate"
 
 PLATE = 256.0
@@ -54,22 +53,34 @@ GAP = 6.0                          # between pieces, and to the plate edge
 # body, file name, label, way it lies ("tel": as modelled, w = 0 on the bed;
 # "retourne": turned over, its highest face on the bed), turned a quarter about z,
 # per-object Bambu settings
-PIECES = [
+BOITIER = [
     ("Piece1_Interface", "piece1_interface", "Pièce 1 interface", "tel", False,
-     [("wall_loops", "4")]),
+     [("wall_loops", "4"), ("sparse_infill_density", "25%")]),
     ("Piece2_CadreVerre", "piece2_cadre_verre", "Pièce 2 cadre verre", "retourne", False,
-     [("wall_loops", "4")]),
+     [("wall_loops", "4"), ("sparse_infill_density", "25%")]),
     ("Piece3_Couvercle", "piece3_couvercle", "Pièce 3 couvercle", "retourne", False,
      [("wall_loops", "4"), ("sparse_infill_density", "50%")]),
+]
+RESSORT = [
     ("Ressort_Croix", "ressort_croix", "Ressort en croix", "retourne", False,
      [("sparse_infill_density", "100%")]),
-    ("Glissiere_Verrou", "glissiere_verrou", "Glissière du verrou", "tel", True, []),
-    ("Capot_Verrou", "capot_verrou", "Capot du verrou", "retourne", True, []),
+    ("Glissiere_Verrou", "glissiere_verrou", "Glissière du verrou", "tel", True,
+     [("sparse_infill_density", "100%")]),
+    ("Capot_Verrou", "capot_verrou", "Capot du verrou", "retourne", True,
+     [("sparse_infill_density", "100%")]),
 ]
-# where each piece goes: lower-left corner of its footprint on the plate
-SLOTS = {"piece1_interface": (24, 30), "piece3_couvercle": (24 + 91 + GAP + 4, 30),
-         "piece2_cadre_verre": (24, 30 + 96 + GAP + 4), "ressort_croix": (125, 140),
-         "glissiere_verrou": (125 + 54 + GAP, 140), "capot_verrou": (125 + 54 + GAP + 12 + GAP + 2, 140)}
+# one project per filament: process, (filament preset, colour), pieces, where each piece goes
+# (lower-left corner of its footprint; None: in a row at the middle of the plate)
+PLATES = {
+    "boitier": dict(title="Cassette ferrotype : boîtier", process="0.16mm Optimal @BBL X1C",
+                    filament=("Bambu PLA Basic @BBL X1C", "#000000"), pieces=BOITIER,
+                    slots={"piece1_interface": (24, 30), "piece3_couvercle": (24 + 91 + GAP + 4, 30),
+                           "piece2_cadre_verre": (24, 30 + 96 + GAP + 4)}),
+    "ressort": dict(title="Cassette ferrotype : ressort et verrou", process="0.12mm Fine @BBL X1C",
+                    filament=("Bambu PETG Basic @BBL X1C", "#00AE42"), pieces=RESSORT,
+                    slots=None),
+}
+ROW_GAP = 12.0                     # between the pieces of a row
 
 
 # --- presets -----------------------------------------------------------------
@@ -83,15 +94,16 @@ def flattened(kind, name):
     return merged
 
 
-def write_settings():
-    """Bambu Studio's project settings for the plate, from its command line (a small cube sliced as a project)."""
+def write_settings(plate):
+    """Bambu Studio's project settings for a plate, from its command line (a small cube exported as a project)."""
+    process, filament = PLATES[plate]["process"], PLATES[plate]["filament"]
     with tempfile.TemporaryDirectory() as tmp:
         with open(os.path.join(tmp, "machine.json"), "w") as f:
             json.dump(flattened("machine", MACHINE), f)
         with open(os.path.join(tmp, "process.json"), "w") as f:
-            json.dump(flattened("process", PROCESS), f)
-        fil = flattened("filament", FILAMENT[0])
-        fil["filament_colour"] = [FILAMENT[1]]
+            json.dump(flattened("process", process), f)
+        fil = flattened("filament", filament[0])
+        fil["filament_colour"] = [filament[1]]
         with open(os.path.join(tmp, "filament.json"), "w") as f:
             json.dump(fil, f)
         lines = ["solid cube"]
@@ -109,12 +121,14 @@ def write_settings():
         subprocess.run(cmd, cwd=tmp, check=True, capture_output=True)
         with zipfile.ZipFile(os.path.join(tmp, "project.3mf")) as z:
             settings = json.loads(z.read("Metadata/project_settings.config"))
-    if settings.get("printer_settings_id") != MACHINE or settings.get("filament_colour") != [FILAMENT[1]]:
-        raise SystemExit("unexpected presets in Bambu Studio's project")
-    os.makedirs(os.path.dirname(SETTINGS), exist_ok=True)
-    with open(SETTINGS, "w") as f:
+    if (settings.get("printer_settings_id") != MACHINE or settings.get("print_settings_id") != process
+            or settings.get("filament_settings_id") != [filament[0]] or settings.get("filament_colour") != [filament[1]]):
+        raise SystemExit(f"unexpected presets in Bambu Studio's project for {plate}")
+    path = SETTINGS.format(plate)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
         f.write(json.dumps(settings, indent=4, sort_keys=True) + "\n")
-    print(f"{SETTINGS}: Bambu Studio {settings['version']}, {len(settings)} settings")
+    print(f"{os.path.relpath(path, ROOT)}: Bambu Studio {settings['version']}, {len(settings)} settings")
 
 
 # --- layout ------------------------------------------------------------------
@@ -164,10 +178,8 @@ _HEAD = ('<?xml version="1.0" encoding="UTF-8"?>\n<model unit="millimeter" xml:l
 _ID = "1 0 0 0 1 0 0 0 1 0 0 0"
 
 
-def write_3mf(path, objects, pauses):
-    """objects: [(file name, label, mesh, settings)], vertices in plate coordinates; pauses: [top_z]."""
-    with open(SETTINGS) as f:
-        project = json.load(f)
+def write_3mf(path, title, project, objects):
+    """objects: [(file name, label, mesh, settings)], vertices in plate coordinates."""
     files, resources, items, cfg, rels = {}, [], [], [], []
     for k, (name, label, mesh, settings) in enumerate(objects, 1):
         sub = f"3D/Objects/object_{k}.model"
@@ -195,7 +207,7 @@ def write_3mf(path, objects, pauses):
     files["3D/3dmodel.model"] = (
         _HEAD + f' <metadata name="Application">BambuStudio-{project["version"]}</metadata>\n'
         ' <metadata name="BambuStudio:3mfVersion">1</metadata>\n'
-        ' <metadata name="Title">Cassette ferrotype</metadata>\n'
+        f' <metadata name="Title">{title}</metadata>\n'
         " <resources>\n" + "\n".join(resources) + "\n </resources>\n"
         f' <build p:UUID="{_uuid("build")}">\n' + "\n".join(items) + "\n </build>\n</model>\n")
     files["3D/_rels/3dmodel.model.rels"] = (
@@ -205,13 +217,8 @@ def write_3mf(path, objects, pauses):
     files["Metadata/model_settings.config"] = (
         '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n' + "\n".join(cfg) + "\n"
         '  <plate>\n    <metadata key="plater_id" value="1"/>\n'
-        '    <metadata key="plater_name" value="Cassette ferrotype"/>\n    <metadata key="locked" value="false"/>\n'
+        f'    <metadata key="plater_name" value={quoteattr(title)}/>\n    <metadata key="locked" value="false"/>\n'
         "  </plate>\n</config>\n")
-    layers = "\n".join(f'<layer top_z="{z:.2f}" type="1" extruder="1" color="" extra="" gcode="M400 U1"/>'
-                       for z in pauses)
-    files["Metadata/custom_gcode_per_layer.xml"] = (
-        '<?xml version="1.0" encoding="utf-8"?>\n<custom_gcodes_per_layer>\n<plate>\n<plate_info id="1"/>\n'
-        f'{layers}\n<mode value="SingleExtruder"/>\n</plate>\n</custom_gcodes_per_layer>\n')
     files["Metadata/project_settings.config"] = json.dumps(project, indent=4, sort_keys=True) + "\n"
     files["[Content_Types].xml"] = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -226,24 +233,14 @@ def write_3mf(path, objects, pauses):
         'Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>\n</Relationships>\n')
     order = ["[Content_Types].xml", "_rels/.rels", "3D/3dmodel.model", "3D/_rels/3dmodel.model.rels",
              *sorted(n for n in files if n.startswith("3D/Objects/")), "Metadata/model_settings.config",
-             "Metadata/project_settings.config", "Metadata/custom_gcode_per_layer.xml"]
+             "Metadata/project_settings.config"]
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
         for n in order:
             z.writestr(n, files[n])
 
 
-def pause_layers(project, ceilings):
-    """First layer whose top is above each magnet-seat ceiling (the seat is still open below it)."""
-    h0, h = float(project["initial_layer_print_height"]), float(project["layer_height"])
-    out = []
-    for c in ceilings:
-        k = math.floor((c - h0) / h + 1e-6) + 1
-        out.append(round(h0 + k * h, 4))
-    return out
-
-
 def slice_plate(path):
-    """Slice with Bambu Studio's command line; print time, filament and the pauses found in the G-code."""
+    """Slice with Bambu Studio's command line; print time and filament from the G-code."""
     folder = os.path.dirname(path)
     cmd = [os.path.join(APP, "Contents/MacOS/BambuStudio"), "--slice", "1", "--outputdir", folder,
            "--export-3mf", "sliced.3mf", path]
@@ -257,34 +254,33 @@ def slice_plate(path):
     os.remove(sliced)
     info = [ln for ln in gcode.splitlines() if ln.startswith(("; model printing time", "; total filament weight",
                                                                 "; total estimated time"))]
-    z_now, pauses = 0.0, []
-    for ln in gcode.splitlines():
-        if ln.startswith("; Z_HEIGHT:"):
-            z_now = float(ln.split(":")[1])
-        elif ln.startswith("M400 U1"):
-            pauses.append(z_now)
     print("\n".join(info))
-    print("pauses (M400 U1) after the layer at z:", pauses)
-    return pauses
+    return True
 
 
-def main(argv):
-    if "--settings" in argv or not os.path.exists(SETTINGS):
-        write_settings()
-    with open(SETTINGS) as f:
+def make_plate(doc, plate, argv):
+    """Lay out, check and write one plate; True when everything is fine."""
+    spec = PLATES[plate]
+    if "--settings" in argv or not os.path.exists(SETTINGS.format(plate)):
+        write_settings(plate)
+    with open(SETTINGS.format(plate)) as f:
         project = json.load(f)
-    doc = App.openDocument(FCSTD)
-    sheet = doc.getObject("Parametres")
-    get = lambda n: float(sheet.get(n))  # noqa: E731
-    if os.path.exists(OUT):
-        shutil.rmtree(OUT)
-    os.makedirs(os.path.join(OUT, "stl"))
+    print(f"\n{spec['title']}: {spec['filament'][0]} {spec['filament'][1]}, {spec['process']}")
+    laid_out = [(name, label, way, settings, laid(doc.getObject(body).Shape, way, quarter))
+                for body, name, label, way, quarter, settings in spec["pieces"]]
+    slots = spec["slots"]
+    if slots is None:  # a row at the middle of the plate
+        sizes = [s.optimalBoundingBox(True, False) for *_, s in laid_out]
+        x = (PLATE - sum(b.XLength for b in sizes) - ROW_GAP * (len(sizes) - 1)) / 2
+        slots = {}
+        for (name, *_), b in zip(laid_out, sizes):
+            slots[name] = (round(x, 2), round((PLATE - b.YLength) / 2, 2))
+            x += b.XLength + ROW_GAP
     objects, boxes, ok = [], {}, True
     print(f"{'piece':20s} {'lies':9s} {'footprint (mm)':>16s} {'height':>7s} {'on the bed':>11s}")
-    for body, name, label, way, quarter, settings in PIECES:
-        s = laid(doc.getObject(body).Shape, way, quarter)
+    for name, label, way, settings, s in laid_out:
         bb = s.optimalBoundingBox(True, False)
-        x, y = SLOTS[name]
+        x, y = slots[name]
         s.translate(V(x, y, 0))
         boxes[name] = (x, y, x + bb.XLength, y + bb.YLength)
         area = bed_area(s)
@@ -298,28 +294,29 @@ def main(argv):
         if mesh.hasNonManifolds():
             ok = False
             print(f"  {name}: non-manifold mesh  <-- !")
-        mesh.write(os.path.join(OUT, "stl", f"{name}.stl"))
         objects.append((name, label, mesh, settings))
     problems = check_layout(boxes)
     for p in problems:
         print("layout:", p, " <-- !")
     ok &= not problems
-    # magnet seats: ceilings measured from the bed (piece 2 and the lid lie on their faces at the magnet skins)
-    ceilings = {"piece2_cadre_verre": get("aimant_peau") + get("aimant_epaisseur") + get("aimant_jeu"),
-                "piece3_couvercle": get("couvercle_hauteur") - get("aimant_peau")}
-    pauses = pause_layers(project, sorted(ceilings.values()))
-    for (n, c), z in zip(sorted(ceilings.items(), key=lambda kv: kv[1]), pauses):
-        top = c - get("aimant_jeu")
-        print(f"pause for the magnets of {n}: seat closed at {c:.2f}, magnet top at {top:.2f}, "
-              f"pause before the layer ending at {z:.2f} (nozzle at {z - float(project['layer_height']):.2f})")
-    path = os.path.join(OUT, "cassette_ferrotype.3mf")
-    write_3mf(path, objects, pauses)
-    App.closeDocument(doc.Name)
+    path = os.path.join(OUT, f"cassette_{plate}.3mf")
+    write_3mf(path, spec["title"], project, objects)
     print("written", os.path.relpath(path, ROOT))
     if "--slice" in argv:
-        found = slice_plate(path)
-        ok &= bool(found) and len(found) == len(pauses)
-    print("PLATE OK" if ok else "PLATE PROBLEMS", flush=True)
+        ok &= slice_plate(path)
+    return ok
+
+
+def main(argv):
+    doc = App.openDocument(FCSTD)
+    if os.path.exists(OUT):
+        shutil.rmtree(OUT)
+    os.makedirs(OUT)
+    ok = True
+    for plate in PLATES:
+        ok &= make_plate(doc, plate, argv)
+    App.closeDocument(doc.Name)
+    print("PLATES OK" if ok else "PLATE PROBLEMS", flush=True)
     return ok
 
 

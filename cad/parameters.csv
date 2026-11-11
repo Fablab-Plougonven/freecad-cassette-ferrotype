@@ -69,10 +69,11 @@ poche_cadre_demi_hauteur,34.8,mm,poche de la piece 2 : demi-hauteur (reste a l'i
 cadre_jeu,0.2,mm,jeu insert / poche
 aimant_diametre,6,mm,"aimants : diametre (7 au plus : bande de 8,75 entre la gorge et le bord haut)"
 aimant_epaisseur,2,mm,aimants : epaisseur (la collerette de la piece 2 suit)
-aimant_jeu,0.2,mm,logements des aimants : jeu au diametre et en profondeur
-aimant_peau,0.4,mm,aimants incrustes : peau entre l'aimant et le joint (pause d'impression pour les poser)
-aimant_couverture,0.8,mm,matiere au-dessus de la cavite de l'aimant dans la piece 2
-collerette_epaisseur,aimant_peau + aimant_epaisseur + aimant_jeu + aimant_couverture,mm,collerette de la piece 2 : epaisseur (porte les aimants incrustes)
+aimant_jeu,0.4,mm,"logements des aimants : jeu au diametre (l'aimant y entre sans forcer, colle)"
+aimant_retrait,0.3,mm,"aimants colles : l'aimant reste en retrait de la face (place pour la colle, il ne depasse pas)"
+aimant_logement_profondeur,aimant_epaisseur + aimant_retrait,mm,logements des aimants : profondeur depuis la face de joint
+aimant_couverture,1.1,mm,matiere au fond du logement de l'aimant dans la piece 2
+collerette_epaisseur,aimant_logement_profondeur + aimant_couverture,mm,collerette de la piece 2 : epaisseur (porte les logements des aimants)
 collerette_face_arriere,piece1_epaisseur + collerette_epaisseur,mm,face arriere de la piece 2
 velours_gauche,-41.2,mm,gorges du velours a l'entree de la fente
 velours_droite,-38.2,mm,

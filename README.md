@@ -18,27 +18,31 @@ Les STL, STEP et le fichier FreeCAD sont publiés dans les
 | Fichier | Pièce | À imprimer |
 |---|---|---|
 | `piece1_interface.stl` | Contre le boîtier : crochets, verrou (taquet du ressort), fente du volet, ouverture 55 × 55, gorges des deux lèvres du boîtier | Face d'appui (côté boîtier) sur le plateau |
-| `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes, deux gorges anti-lumière, deux aimants Ø6 × 2 incrustés dans les coins opposés à la charnière | Face arrière (côté couvercle) sur le plateau ; **pause à 2,60 mm** pour poser les aimants |
-| `piece3_couvercle.stl` | Couvercle articulé plein, dans le prolongement des pièces (on ouvre volet en place) : chambre du ressort, deux nervures anti-lumière, tenon du ressort avec son trou d'insert M3, deux aimants Ø6 × 2 incrustés dans les coins opposés à la charnière | Face extérieure sur le plateau ; **pause à 7,00 mm** pour poser les aimants ; 4 périmètres et remplissage élevé contre la transparence du PETG |
+| `piece2_cadre_verre.stl` | Cadre du verre : logement 57,4, butée et ouverture 55, rails du volet, chicanes, deux gorges anti-lumière, deux logements d'aimants Ø6 × 2 dans les coins opposés à la charnière | Face arrière (côté couvercle) sur le plateau |
+| `piece3_couvercle.stl` | Couvercle articulé plein, dans le prolongement des pièces (on ouvre volet en place) : chambre du ressort, deux nervures anti-lumière, tenon du ressort avec son trou d'insert M3, deux logements d'aimants Ø6 × 2 dans les coins opposés à la charnière | Face extérieure sur le plateau ; 4 périmètres et remplissage élevé contre la lumière |
 | `piece3_couvercle_pour_v0.1.stl` | Couvercle-boîte à clips pour des pièces 1 et 2 imprimées en v0.1 (`tools/lid_for_v0_1.py`), avec le ressort de la v0.1 | Face extérieure sur le plateau |
 | `ressort_croix.stl` | Ressort en croix qui presse le dos de la plaque, pour des verres de 1 à 3 mm (bras longs et fins), vissé dans le tenon du couvercle (bossage fraisé côté verre) | Face plate sur le plateau, pieds et bossage vers le haut, 100 % de remplissage, PETG |
 | `glissiere_verrou.stl` | Glissière du verrou (dessin de Rayfor, remodélisé) | À plat, face côté boîtier sur le plateau |
 | `capot_verrou.stl` | Capot de la glissière (idem) | Face visible (arrière, à fleur de la pièce 1) sur le plateau |
 | `cassette_ferrotype.FCStd` | Modèle FreeCAD en esquisses, toutes les cotes dans la feuille `Parametres` | — |
-| `cassette_ferrotype.3mf` | Plateau Bambu Studio : les six pièces orientées et placées, réglages par pièce, pauses des aimants posées (voir « Plateau d'impression ») | Ouvrir dans Bambu Studio, vérifier les pauses dans l'aperçu |
+| `cassette_boitier.3mf` | Plateau Bambu Studio du boîtier : pièces 1, 2 et couvercle orientées et placées, PLA noir, réglages par pièce (voir « Plateaux d'impression ») | Ouvrir dans Bambu Studio |
+| `cassette_ressort.3mf` | Plateau Bambu Studio du ressort, de la glissière et du capot, PETG vert, 0,12 mm | Ouvrir dans Bambu Studio |
 
-Matière : PETG noir (ou ASA), pas de PLA (nitrate d'argent, chaleur). Couches de
-0,12 à 0,16 et 4 périmètres pour les pièces 1 et 2 : en brouillon (0,28), les
-parois fines sortent trop épaisses et les rampes en escalier.
+Matière : boîtier (pièces 1, 2 et couvercle) en PLA noir, ressort et petites pièces
+du verrou en PETG (plus souple, il ne casse pas à la flexion). Le PLA ramollit vers
+55 °C : ne pas laisser la cassette au soleil ni dans une voiture ; en PETG noir ou
+en ASA, le boîtier tient mieux la chaleur. Couches de 0,12 à 0,16 et 4 périmètres
+pour les pièces 1 et 2 : en brouillon (0,28), les parois fines sortent trop
+épaisses et les rampes en escalier.
 
 ## Quincaillerie
 
 - 4 vis M3 × 8 à tête fraisée, auto-taraudées dans la pièce 1 (deux dans les coins
   du bas, une en haut à gauche du verrou, une sur le talon droit).
-- 4 aimants néodyme Ø6 × 2 mm (N52 ou N45, aimantés dans l'épaisseur), incrustés
-  à l'impression : deux dans les coins hauts de la pièce 2, deux en face dans le
-  couvercle. Couvercle fermé, 1 mm de plastique les sépare (deux peaux de 0,4 et
-  le jeu de 0,2).
+- 4 aimants néodyme Ø6 × 2 mm (N52 ou N45, aimantés dans l'épaisseur), collés
+  après l'impression : deux dans les coins hauts de la pièce 2, deux en face dans
+  le couvercle. Couvercle fermé, 0,6 mm d'air les sépare.
+- Colle pour les aimants : cyanoacrylate (gel) ou époxy.
 - 1 axe de charnière Ø2 × 44 mm (tige acier ou clou coupé).
 - Velours ou feutrine adhésive, 3 mm de large, 0,5 à 0,7 mm d'épaisseur,
   2 bandes de 66 mm : à l'entrée de la fente du volet, une sur chaque pièce.
@@ -49,31 +53,35 @@ parois fines sortent trop épaisses et les rampes en escalier.
 - 1 vis M3 × 6 à tête fraisée (ISO 10642) pour le ressort.
 - 1 ressort de compression Ø2 × 10 mm pour le verrou.
 
-## Aimants incrustés (pendant l'impression)
+## Aimants collés (après l'impression)
 
-Les logements des aimants sont fermés : il faut une pause d'impression pour les
-poser, à 2,60 mm pour la pièce 2 (face arrière sur le plateau) et à 7,00 mm pour
-le couvercle (face extérieure sur le plateau). Ces hauteurs valent pour des aimants de
-2 mm ; le build les recalcule et les affiche si l'on change `aimant_epaisseur`. Dans le trancheur, insérer la
-pause avant le premier calque au-dessus de cette hauteur. Logements Ø6,2 × 2,2 :
-l'aimant tombe au fond, il reste 0,2 au-dessus pour que la buse ne le touche pas.
+Pas de pause d'impression : les logements débouchent sur les faces qui se touchent,
+la face arrière de la pièce 2 et la face intérieure du couvercle. Ils font
+Ø6,4 × 2,3 pour des aimants Ø6 × 2. Le jeu de 0,4 au diamètre laisse entrer
+l'aimant sans forcer. Les 0,3 de profondeur en plus laissent la place à la colle
+au fond : l'aimant reste en retrait de la face et ne dépasse jamais. Une goutte de
+colle au fond, l'aimant enfoncé jusqu'à la colle, sans en mettre sur la face.
 
-**Polarité** (on ne peut plus la changer ensuite) : coller deux aimants l'un sur
-l'autre et marquer au feutre les deux faces en contact. Dans la pièce 2, face
-marquée **vers le plateau** ; dans le couvercle, face marquée **vers le haut**.
+**Polarité** (on ne peut plus la changer une fois collé) : coller deux aimants
+l'un sur l'autre et marquer au feutre les deux faces en contact. Dans la pièce 2
+comme dans le couvercle, face marquée **visible** (vers la face de joint) : couvercle
+fermé, les faces marquées se retrouvent face à face et s'attirent. Vérifier en
+présentant le couvercle avant que la colle ne prenne.
 
-## Plateau d'impression (Bambu Studio)
+## Plateaux d'impression (Bambu Studio)
 
-`tools/plateau.py` (interpréteur de FreeCAD, après le build) écrit
-`exports/plateau/cassette_ferrotype.3mf` : les six pièces sur un plateau de X1
-Carbon, PETG Basic noir, 0,16 mm Optimal, plaque PEI texturée (préréglages dans
-`cad/bambu/project_settings.config`, refaits par `--settings`). Chaque pièce a sa
-face visible ou sa plus grande face plate sur le plateau, comme dans le tableau
-plus haut ; 4 parois pour les pièces 1, 2 et 3, couvercle rempli à 50 %, ressort
-à 100 %. Les deux pauses des aimants sont déjà posées : avant le calque qui finit
-à 2,76 (pièce 2) et avant celui qui finit à 7,08 (couvercle), à vérifier dans
-l'aperçu avant de lancer. Les STL tournées et placées sont dans
-`exports/plateau/stl/`.
+`tools/plateau.py` (interpréteur de FreeCAD, après le build) écrit deux projets
+Bambu Studio pour X1 Carbon, plaque PEI texturée, dans `exports/plateau/` :
+
+- `cassette_boitier.3mf` : pièces 1, 2 et couvercle, Bambu PLA Basic noir,
+  0,16 mm Optimal ; pièces 1 et 2 : 4 parois, remplissage 25 % ; couvercle :
+  4 parois, 50 %.
+- `cassette_ressort.3mf` : ressort en croix, glissière et capot du verrou, Bambu
+  PETG Basic vert, 0,12 mm Fine, remplissage 100 %.
+
+Chaque pièce a sa face visible ou sa plus grande face plate sur le plateau, comme
+dans le tableau plus haut. Les préréglages de chaque plateau sont dans
+`cad/bambu/boitier.config` et `cad/bambu/ressort.config`, refaits par `--settings`.
 
 ## Montage
 
@@ -102,7 +110,7 @@ boîtier montent sur la rampe des dents et plaquent la cassette.
   nervure sous les rails du volet, chacune dans une gorge.
 - Couvercle : plein, posé à plat sur la pièce 2, avec deux nervures dans deux
   gorges autour de la chambre du ressort, sur les 4 côtés. Au-dessus de la
-  chambre, 4,45 mm de matière contre la transparence du PETG.
+  chambre, 4,45 mm de matière contre la lumière.
 - Valider par un essai : papier photo dans la cassette fermée, 10 min au soleil,
   puis développement.
 - Fente du volet : velours des deux côtés.

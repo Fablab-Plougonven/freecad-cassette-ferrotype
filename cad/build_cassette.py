@@ -105,10 +105,11 @@ PARAMS = [
     ("cadre_jeu", "0.2", "jeu insert / poche"),
     ("aimant_diametre", "6", "aimants : diametre (7 au plus : bande de 8,75 entre la gorge et le bord haut)"),
     ("aimant_epaisseur", "2", "aimants : epaisseur (la collerette de la piece 2 suit)"),
-    ("aimant_jeu", "0.2", "logements des aimants : jeu au diametre et en profondeur"),
-    ("aimant_peau", "0.4", "aimants incrustes : peau entre l'aimant et le joint (pause d'impression pour les poser)"),
-    ("aimant_couverture", "0.8", "matiere au-dessus de la cavite de l'aimant dans la piece 2"),
-    ("collerette_epaisseur", "aimant_peau + aimant_epaisseur + aimant_jeu + aimant_couverture", "collerette de la piece 2 : epaisseur (porte les aimants incrustes)"),
+    ("aimant_jeu", "0.4", "logements des aimants : jeu au diametre (l'aimant y entre sans forcer, colle)"),
+    ("aimant_retrait", "0.3", "aimants colles : l'aimant reste en retrait de la face (place pour la colle, il ne depasse pas)"),
+    ("aimant_logement_profondeur", "aimant_epaisseur + aimant_retrait", "logements des aimants : profondeur depuis la face de joint"),
+    ("aimant_couverture", "1.1", "matiere au fond du logement de l'aimant dans la piece 2"),
+    ("collerette_epaisseur", "aimant_logement_profondeur + aimant_couverture", "collerette de la piece 2 : epaisseur (porte les logements des aimants)"),
     ("collerette_face_arriere", "piece1_epaisseur + collerette_epaisseur", "face arriere de la piece 2"),
     ("velours_gauche", "-41.2", "gorges du velours a l'entree de la fente"), ("velours_droite", "-38.2", ""),
     ("velours_profondeur", "0.6", ""),
@@ -789,10 +790,9 @@ def build_piece2(pd):
         s, "velours_gauche", "velours_droite", neg(sh), sh)), "velours_profondeur", reverse=True)
     pd.pocket(b, "Gorges_couvercle", pd.sk(b, "Gorges_couvercle", rear, lambda s: square_rings(
         pd, s, ("couvercle_gorge_axe", "couvercle_gorge2_axe"), "couvercle_gorge_largeur")), "couvercle_gorge_profondeur")
-    # magnets embedded under a skin on the joint side (printed rear face down: pause to drop them in)
-    under_skin = pd.datum(b, "Plan_peau_aimants", "collerette_face_arriere - aimant_peau")
-    pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", under_skin, lambda s: pd.circles(
-        s, magnet_points(), "aimant_diametre + aimant_jeu")), "aimant_epaisseur + aimant_jeu")
+    # magnets glued in seats open on the joint face, a little below it
+    pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", rear, lambda s: pd.circles(
+        s, magnet_points(), "aimant_diametre + aimant_jeu")), "aimant_logement_profondeur")
     cr = "griffes_degagement"
     claw = pd.pocket(b, "Degagement_griffe", pd.sk(b, "Degagement_griffe", rear, lambda s: pd.rect(
         s, f"fenetre_griffe_gauche - {cr}", f"fenetre_griffe_droite + {cr}", f"fenetre_griffe_bas - {cr}",
@@ -826,11 +826,10 @@ def build_piece3(pd):
     pd.pad(b, "Nervures", pd.sk(b, "Nervures", seat, lambda s: square_rings(
         pd, s, ("couvercle_gorge_axe", "couvercle_gorge2_axe"), "couvercle_nervure_largeur")),
         "couvercle_nervure_hauteur", reverse=True)
-    # closure: magnets embedded in the corners opposite the hinge, facing those of piece 2
-    # through two skins (printed outer face down: pause to drop them in)
-    above_skin = pd.datum(b, "Plan_peau_aimants", "collerette_face_arriere + aimant_peau")
-    pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", above_skin, lambda s: pd.circles(
-        s, magnet_points(), "aimant_diametre + aimant_jeu")), "aimant_epaisseur + aimant_jeu", reverse=True)
+    # closure: magnets glued in the corners opposite the hinge, in seats open on the
+    # joint face, facing those of piece 2
+    pd.pocket(b, "Logements_aimants", pd.sk(b, "Logements_aimants", seat, lambda s: pd.circles(
+        s, magnet_points(), "aimant_diametre + aimant_jeu")), "aimant_logement_profondeur", reverse=True)
     # hinge: clearance over the central knuckle of piece 1, from piece 2 up
     pd.pocket(b, "Degagement_noeud_central", pd.sk(b, "Degagement_noeud_central", seat, lambda s: pd.rect(
         s, "-bossage_demi_longueur - noeuds_jeu", "bossage_demi_longueur + noeuds_jeu", f"{vb} - 1",
@@ -996,8 +995,8 @@ def assemble(doc, pd, pieces):
     hinge = [pd.frame(b, "Repere_charniere", 0, "charniere_axe_y", "charniere_axe_z", along_u=True) for b in (p1, p3)]
     latch = [pd.frame(b, "Repere_verrou", along_u=True) for b in (p1, slider)]
     seats = {}
-    for b, z in ((p2, "collerette_face_arriere - aimant_peau - aimant_epaisseur"),
-                 (p3, "collerette_face_arriere + aimant_peau + aimant_jeu")):
+    for b, z in ((p2, "collerette_face_arriere - aimant_logement_profondeur"),
+                 (p3, "collerette_face_arriere + aimant_retrait")):
         for side, x in (("droite", "aimant_x"), ("gauche", neg("aimant_x"))):
             seats[(b.Name, side)] = pd.frame(b, f"Repere_aimant_{side}", x, "aimant_y", z)
     magnets = {}
@@ -1407,15 +1406,15 @@ def run_checks(doc, pieces, refs, verbose=True):
     ok &= not thin
     say("  walls around the inner lip groove: " + ", ".join(f"{k} {w:.2f}" for k, w in lip.items())
         + (f"  <-- ! under 0.6 mm" if thin else ""))
-    # embedded magnets: inside their cavities, enough cover, and where to pause the prints
+    # glued magnets: inside their seats, below the joint faces, enough material under them
     for m in [o for o in doc.Objects if o.TypeId == "Part::Cylinder" and o.Name.startswith("Aimant_")]:
         piece = p2 if "piece2" in m.Name else p3
         v = m.Shape.common(piece).Volume
         ok &= v < 0.01
         if v >= 0.01:
             say(f"  {m.Label} enters its piece ({v:.2f} mm3)  <-- !")
-    cover = vals["collerette_epaisseur"] - vals["aimant_peau"] - vals["aimant_epaisseur"] - vals["aimant_jeu"]
-    ok &= cover >= 0.6
+    cover = vals["collerette_epaisseur"] - vals["aimant_logement_profondeur"]
+    ok &= cover >= 0.6 and vals["aimant_retrait"] > 0
     seat_r = (vals["aimant_diametre"] + vals["aimant_jeu"]) / 2
     walls = {"groove": vals["aimant_y"] - seat_r - vals["couvercle_gorge_axe"] - vals["couvercle_gorge_largeur"] / 2,
              "top edge": vals["plaque_bord_haut"] - vals["aimant_y"] - seat_r,
@@ -1424,11 +1423,10 @@ def run_checks(doc, pieces, refs, verbose=True):
     ok &= not thin
     say("  walls around the magnet seats: " + ", ".join(f"{k} {w:.2f}" for k, w in walls.items())
         + (f"  <-- ! under 0.6 mm" if thin else ""))
-    say(f"  magnets: {2 * vals['aimant_peau'] + vals['aimant_jeu']:.1f} mm apart through two skins, "
-        f"{cover:.1f} mm over the cavity of piece 2" + ("" if cover >= 0.6 else "  <-- !"))
-    say(f"  print pause to drop the magnets in: piece 2 (rear face down) at "
-        f"{vals['aimant_peau'] + vals['aimant_epaisseur'] + vals['aimant_jeu']:.2f} mm, lid (outer face down) at "
-        f"{vals['couvercle_hauteur'] - vals['aimant_peau']:.2f} mm")
+    say(f"  magnets: seats {vals['aimant_diametre'] + vals['aimant_jeu']:.1f} x {vals['aimant_logement_profondeur']:.1f}, "
+        f"{vals['aimant_retrait']:.1f} below the joint faces, {2 * vals['aimant_retrait']:.1f} mm apart lid closed, "
+        f"{cover:.1f} mm under the seats of piece 2, {vals['couvercle_hauteur'] - vals['aimant_logement_profondeur']:.1f} "
+        f"in the lid" + ("" if cover >= 0.6 else "  <-- !"))
     # on the thickest glass the arm tips rise by the whole squeeze: the ring they sweep must be free
     lift = vals["plan_film"] + vals["verre_epaisseur_max"] - vals["ressort_pied_bout_z"]
     top, r_in = vals["ressort_face_arriere"] + lift + 0.2, vals["ressort_moyeu_diametre"] / 2
